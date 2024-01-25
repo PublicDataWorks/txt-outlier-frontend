@@ -1,8 +1,8 @@
-import { jwtDecode } from 'jwt-decode'
 import { useToken } from '../../providers/auth'
 import { GOOGLE_OAUTH } from '../../constants/misc'
 import { useNavigate } from 'react-router-dom'
 import { LOGOUT_PATH } from '../../constants/routes'
+import BroadcastDashboard from 'components/broadcaster/BroadcastDashBoard'
 
 function Home() {
   const { token } = useToken()
@@ -20,8 +20,7 @@ function Home() {
           Logout
         </button>
         <br />
-        <br />
-        <b> Hi {JSON.stringify(jwtDecode(token))}</b>
+        <BroadcastDashboard />
       </>
     )
   }
