@@ -27,12 +27,14 @@ const BroadcastDashboard = () => {
   return (
     <div className='container mx-auto mt-4 w-[22rem] max-w-md'>
       <div className='rounded-md'>
-        <h2 className='font-bold' data-cy='most-recent'>Most recent batch sent on {DateUtils.format(latestBatch.runAt)}</h2>
+        <h2 className='font-bold' data-cy='most-recent'>
+          Most recent batch sent on {DateUtils.format(latestBatch?.runAt)}
+        </h2>
         <ul className='pt-5'>
-          <li>Total conversation starters sent: {latestBatch.totalSent}</li>
-          <li>Second messages sent: {latestBatch.totalSent}</li>
-          <li>Delivered successfully: {latestBatch.successfullyDelivered}</li>
-          <li>Failed to deliver: {latestBatch.failedDelivered}</li>
+          <li>Total conversation starters sent: {latestBatch?.totalFirstSent}</li>
+          <li>Second messages sent: {latestBatch?.totalSecondSent}</li>
+          <li>Delivered successfully: {latestBatch?.successfullyDelivered}</li>
+          <li>Failed to deliver: {latestBatch?.failedDelivered}</li>
         </ul>
       </div>
 

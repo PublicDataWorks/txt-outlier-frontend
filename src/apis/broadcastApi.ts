@@ -21,7 +21,8 @@ interface PastBroadcast {
   firstMessage: string
   secondMessage: string
   runAt: number
-  totalSent: number
+  totalFirstSent: number
+  totalSecondSent: number
   successfullyDelivered: number
   failedDelivered: number
 }

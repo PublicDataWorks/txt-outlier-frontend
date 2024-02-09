@@ -70,10 +70,10 @@ const PastBroadcasts = () => {
               {selected === broadcast.id && (
                 <div className='mx-3 my-5 text-sm'>
                   <p className='font-bold'>
-                    Total recipients: <span className='font-normal'>{broadcast.totalSent}</span>
+                    Total recipients: <span className='font-normal'>{broadcast.totalFirstSent}</span>
                   </p>
                   <p className='mt-2 font-bold'>
-                    Second messages sent: <span className='font-normal'>{broadcast.totalSent}</span>
+                    Second messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
                   </p>
                   <h3 className='mt-2 font-bold'>Conversation starter</h3>
                   <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
