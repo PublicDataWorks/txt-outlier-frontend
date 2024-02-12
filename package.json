@@ -87,5 +87,11 @@
     "vite-plugin-istanbul": "^5.0.0",
     "vite-tsconfig-paths": "^4.2.3",
     "vitest": "^0.34.6"
+  },
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=1.22",
+    "npm": "please-use-yarn",
+    "pnpm": "please-use-yarn"
   }
 }
