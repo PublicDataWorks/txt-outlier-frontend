@@ -1,35 +1,25 @@
-import moment from 'moment'
+import { format, differenceInMinutes, addMinutes } from 'date-fns'
 
-const options: Intl.DateTimeFormatOptions = {
-  weekday: 'short',
-  month: 'short',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  timeZoneName: 'short'
-}
-
-const format = (unixTimestamp: number): string => {
+const formatFn = (unixTimestamp: number): string => {
   const date = new Date(unixTimestamp * 1000)
-  return date.toLocaleString(undefined, options).replace(',', '')
+  return format(date, 'EEE MMM d, h:mm a z')
 }
 
-const formatDate = (date: Date): string => moment(date).format('YYYY/MM/DD')
+const formatDate = (date: Date): string => format(date, 'yyyy/MM/dd')
 
 const diffInMinutes = (runAt: number) => {
   const runAtDate = new Date(runAt * 1000)
   const now = new Date()
-  return Math.abs(runAtDate.getTime() - now.getTime()) / (1000 * 60)
+  return differenceInMinutes(runAtDate, now)
 }
 
 const advance = (noMinutes: number) => {
-  const date = new Date()
-  date.setMinutes(date.getMinutes() + noMinutes)
-  return date.toLocaleString(undefined, options).replace(',', '')
+  const date = addMinutes(new Date(), noMinutes)
+  return format(date, 'EEE MMM d, h:mm a z')
 }
 
 export default {
-  format,
+  format: formatFn,
   diffInMinutes,
   advance,
   formatDate

@@ -6,12 +6,12 @@ describe('Broadcasts', () => {
 
   it('visits the dashboard', () => {
     cy.seed()
-    cy.get('[data-cy="most-recent"]').should('include.text', 'Most recent batch sent on Wed Jan 31, 2:30 PM UTC')
+    cy.get('[data-cy="most-recent"]').should('include.text', 'Most recent batch sent on Wed Jan 31, 2:30 PM GMT+0')
     cy.contains('Total conversation starters sent: 120')
     cy.contains('Delivered successfully: 230')
     cy.contains('Failed to deliver: 2')
 
-    cy.contains('Next batch scheduled to send on Sun Oct 10, 4:16 PM UTC')
+    cy.contains('Next batch scheduled to send on Sun Oct 10, 4:16 PM GMT+0')
     cy.contains('this is the first messages in test')
     cy.contains('this is the second messages in test')
   })
