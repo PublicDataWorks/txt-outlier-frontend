@@ -12,7 +12,7 @@
       "firstMessage": "first messages",
       "secondMessage": "seocnd",
       "runAt": 1706711403,
-      "totalSent": 120,
+      "totalFirstSent": 120,
       "successfullyDelivered": 230,
       "failedDelivered": 2
     },
@@ -21,7 +21,7 @@
       "firstMessage": "494c9feb789a10f073a42fbbfc76f72a",
       "secondMessage": "26 Jan",
       "runAt": 1706065924,
-      "totalSent": 0,
+      "totalFirstSent": 0,
       "successfullyDelivered": 0,
       "failedDelivered": 0
     },
@@ -30,7 +30,7 @@
       "firstMessage": "4b1c16bc11d2368139a8d0c2d352089a",
       "secondMessage": "second message",
       "runAt": 1705553524,
-      "totalSent": 0,
+      "totalFirstSent": 0,
       "successfullyDelivered": 0,
       "failedDelivered": 0
     },
@@ -39,7 +39,7 @@
       "firstMessage": "00ed2c487c02c7d1045d68207743663c",
       "secondMessage": "26 Jan",
       "runAt": 1704165124,
-      "totalSent": 0,
+      "totalFirstSent": 0,
       "successfullyDelivered": 0,
       "failedDelivered": 0
     },
@@ -48,7 +48,7 @@
       "firstMessage": "c778376c030810fc8587e42a58adcf72",
       "secondMessage": "second message",
       "runAt": 1704084724,
-      "totalSent": 0,
+      "totalFirstSent": 0,
       "successfullyDelivered": 0,
       "failedDelivered": 0
     }
