@@ -6,10 +6,10 @@ import { ROOT_PATH } from '../constants/routes'
 // TODO: remove me
 const Logout = () => {
   const navigate = useNavigate()
-  const { onTokenChanged } = useTokenChanged()
+  const { updateToken } = useTokenChanged()
 
   useEffect(() => {
-    onTokenChanged('')
+    updateToken('')
     navigate(ROOT_PATH, { replace: true })
   }, [])
 

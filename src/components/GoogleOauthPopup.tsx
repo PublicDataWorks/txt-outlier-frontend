@@ -5,7 +5,7 @@ import { ACCESS_TOKEN, GOOGLE_OAUTH } from '../constants/misc'
 
 const GoogleOauthPopup = () => {
   const navigate = useNavigate()
-  const { onTokenChanged } = useTokenChanged()
+  const { updateToken } = useTokenChanged()
   const [externalWindow, setExternalWindow] = useState<Window | null>()
   const intervalReference = useRef<number>()
 
@@ -14,7 +14,7 @@ const GoogleOauthPopup = () => {
   }
 
   const onToken = (token: string) => {
-    onTokenChanged(token)
+    updateToken(token)
     navigate('/', { replace: true }) // TODO: make it constant
   }
 

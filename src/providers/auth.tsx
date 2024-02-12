@@ -7,7 +7,7 @@ interface TokenContextValue {
 }
 
 interface TokenChangedValue {
-  onTokenChanged: (token: string) => void
+  updateToken: (token: string) => void
 }
 
 const TokenContext = createContext<TokenContextValue>({} as TokenContextValue)
@@ -20,27 +20,32 @@ interface AuthProviderProperties {
 function AuthProvider({ children }: AuthProviderProperties) {
   const [token, setToken] = useState<string>() // TODO: Do we need this?
 
-  const onTokenChanged = useCallback((accessToken: string | null) => {
-    if (accessToken) {
-      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-      Missive.storeSet('token', accessToken)
-      setToken(accessToken)
-    } else {
-      delete axios.defaults.headers.common.Authorization
-      Missive.storeSet('token', '')
-      setToken('')
-    }
+  const updateToken = useCallback((accessToken: string | null) => {
+    const authHeader = accessToken ? `Bearer ${accessToken}` : ''
+    axios.defaults.headers.common.Authorization = authHeader
+    Missive.storeSet('token', authHeader)
+    setToken(authHeader)
   }, [])
 
   useEffect(() => {
     void Missive.storeGet<string>('token').then((accessToken: string) => {
-      onTokenChanged(accessToken)
+      updateToken(accessToken)
     })
+  }, [])
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      updateToken('test-token')
+    } else {
+      void Missive.storeGet<string>('token').then((accessToken: string) => {
+        updateToken(accessToken)
+      })
+    }
   })
 
   const tokenContextValue = useMemo(() => ({ token }), [token])
 
-  const tokenChangedContextValue = useMemo(() => ({ onTokenChanged }), [onTokenChanged])
+  const tokenChangedContextValue = useMemo(() => ({ updateToken }), [updateToken])
 
   return (
     <TokenChangedContext.Provider value={tokenChangedContextValue}>
