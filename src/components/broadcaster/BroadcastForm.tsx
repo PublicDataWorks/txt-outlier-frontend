@@ -47,24 +47,29 @@ const BroadcastForm: FC<BroadcastFormProps> = ({ broadcast, isOpen, onClose, isF
   }
   const onCloseWrapper = () => !isPending && onClose()
 
-  let warning = ''
-  let note = ''
-  let saveBtnText = 'Save changes'
-  if (DateUtils.diffInMinutes(broadcast.runAt) < 90) {
-    saveBtnText = 'Save changes and delay the next batch'
-    warning = `The next batch is scheduled to send less than 90 minutes from now.
-    Making these message updates will delay today's batch by 2-3 hours, sending at approximately ${DateUtils.advance(90)}
-    instead of ${DateUtils.format(broadcast.runAt)}. These changes will also apply to all future batches.`
-    if (!isFirstMessage) {
-      note = `Note: second messages are sent 10 minutes after the conversation starter,
-      only if the recipient does not reply to the starter message.`
+  const getWarningAndNote = () => {
+    let warning = ''
+    let note = ''
+    let saveBtnText = 'Save changes'
+    if (DateUtils.diffInMinutes(broadcast.runAt) < 90) {
+      saveBtnText = 'Save changes and delay the next batch'
+      warning = `The next batch is scheduled to send less than 90 minutes from now.
+      Making these message updates will delay today's batch by 2-3 hours, sending at approximately ${DateUtils.advance(90)}
+      instead of ${DateUtils.format(broadcast.runAt)}. These changes will also apply to all future batches.`
+      if (!isFirstMessage) {
+        note = `Note: second messages are sent 10 minutes after the conversation starter,
+        only if the recipient does not reply to the starter message.`
+      }
+    } else {
+      note = isFirstMessage
+        ? 'Note: these updates will apply to all future batches.'
+        : `Note: these updates will apply to all future batches. Second messages are sent 10 minutes
+        after the conversation starter, only if the recipient does not reply to the starter message.`
     }
-  } else {
-    note = isFirstMessage
-      ? 'Note: these updates will apply to all future batches.'
-      : `Note: these updates will apply to all future batches. Second messages are sent 10 minutes
-      after the conversation starter, only if the recipient does not reply to the starter message.`
+    return { warning, note, saveBtnText }
   }
+
+  const { warning, note, saveBtnText } = getWarningAndNote()
   const title = isFirstMessage ? 'Edit conversation starter' : 'Edit second message'
 
   return (
