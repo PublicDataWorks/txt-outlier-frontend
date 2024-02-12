@@ -28,7 +28,6 @@ interface PastBroadcast extends BroadcastSentDetail {
   firstMessage: string
   secondMessage: string
   runAt: number
-
 }
 
 interface UpdateBroadcast {

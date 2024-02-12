@@ -13,7 +13,9 @@ const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefine
   const [mostRecentBroadcastDetails, setMostRecentBroadcastDetails] = useState<BroadcastSentDetail | undefined>()
 
   const channel = client.channel('most-recent-broadcast')
-  channel.on('broadcast', { event: 'details' }, (message: RealtimeMessage) => setMostRecentBroadcastDetails(message.payload)).subscribe()
+  channel
+    .on('broadcast', { event: 'details' }, (message: RealtimeMessage) => setMostRecentBroadcastDetails(message.payload))
+    .subscribe()
 
   return mostRecentBroadcastDetails
 }

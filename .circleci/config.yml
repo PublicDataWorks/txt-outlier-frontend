@@ -21,6 +21,9 @@ jobs:
           paths:
             - node_modules
       - run:
+        name: Format Check
+        command: yarn format:check
+      - run:
           name: Linter
           command: yarn lint
 

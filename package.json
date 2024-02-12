@@ -15,7 +15,8 @@
     "cy:run": "TZ=UTC start-server-and-test start:test http://127.0.0.1:3000/ 'cypress run'",
     "prepare": "husky install",
     "nyc": "nyc",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "nyc": {
     "report-dir": "cypress-coverage"

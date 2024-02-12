@@ -36,10 +36,24 @@ const BroadcastDashboard = () => {
           Most recent batch sent on {DateUtils.format(latestBatch?.runAt)}
         </h2>
         <ul className='pt-5'>
-          <li>Total conversation starters sent: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalFirstSent : latestBatch?.totalFirstSent}</li>
-          <li>Second messages sent: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalSecondSent : latestBatch?.totalSecondSent}</li>
-          <li>Delivered successfully: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.successfullyDelivered : latestBatch?.successfullyDelivered}</li>
-          <li>Failed to deliver: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.failedDelivered : latestBatch?.failedDelivered}</li>
+          <li>
+            Total conversation starters sent:{' '}
+            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalFirstSent : latestBatch?.totalFirstSent}
+          </li>
+          <li>
+            Second messages sent:{' '}
+            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalSecondSent : latestBatch?.totalSecondSent}
+          </li>
+          <li>
+            Delivered successfully:{' '}
+            {mostRecentBroadcastDetails
+              ? mostRecentBroadcastDetails.successfullyDelivered
+              : latestBatch?.successfullyDelivered}
+          </li>
+          <li>
+            Failed to deliver:{' '}
+            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.failedDelivered : latestBatch?.failedDelivered}
+          </li>
         </ul>
       </div>
 
