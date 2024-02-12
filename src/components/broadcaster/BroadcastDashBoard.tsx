@@ -5,12 +5,16 @@ import Button from 'components/Button'
 import { useBroadcastDashboardQuery } from 'hooks/broadcast'
 import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
+import { useSubscribeMostRecentBroadcastDetail } from 'hooks/supabase'
+import { set } from 'date-fns'
+import { BroadcastSentDetail } from 'apis/broadcastApi'
 
 const BroadcastDashboard = () => {
   const { data, isPending } = useBroadcastDashboardQuery()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isFirstMessage, setIsFirstMessage] = useState<boolean>(true)
+  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail()
 
   const onEditClick = (isFirst: boolean) => {
     setIsPopupOpen(true)
@@ -21,6 +25,7 @@ const BroadcastDashboard = () => {
     return <span>Loading...</span>
   }
 
+  // mostRecentBroadcastDetails take priority over the latest batch
   const [latestBatch] = data.data.past
   const { upcoming } = data.data
 
@@ -31,10 +36,10 @@ const BroadcastDashboard = () => {
           Most recent batch sent on {DateUtils.format(latestBatch?.runAt)}
         </h2>
         <ul className='pt-5'>
-          <li>Total conversation starters sent: {latestBatch?.totalFirstSent}</li>
-          <li>Second messages sent: {latestBatch?.totalSecondSent}</li>
-          <li>Delivered successfully: {latestBatch?.successfullyDelivered}</li>
-          <li>Failed to deliver: {latestBatch?.failedDelivered}</li>
+          <li>Total conversation starters sent: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalFirstSent : latestBatch?.totalFirstSent}</li>
+          <li>Second messages sent: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalSecondSent : latestBatch?.totalSecondSent}</li>
+          <li>Delivered successfully: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.successfullyDelivered : latestBatch?.successfullyDelivered}</li>
+          <li>Failed to deliver: {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.failedDelivered : latestBatch?.failedDelivered}</li>
         </ul>
       </div>
 

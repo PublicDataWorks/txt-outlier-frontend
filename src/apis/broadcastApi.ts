@@ -16,15 +16,19 @@ interface UpcomingBroadcast {
   delay: string
 }
 
-interface PastBroadcast {
-  id: number
-  firstMessage: string
-  secondMessage: string
-  runAt: number
+interface BroadcastSentDetail {
   totalFirstSent: number
   totalSecondSent: number
   successfullyDelivered: number
   failedDelivered: number
+}
+
+interface PastBroadcast extends BroadcastSentDetail {
+  id: number
+  firstMessage: string
+  secondMessage: string
+  runAt: number
+
 }
 
 interface UpdateBroadcast {
@@ -59,4 +63,4 @@ const updateBroadcast = async ({
   })
 
 export { getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
-export type { UpdateBroadcast, UpcomingBroadcast, PastBroadcast, BroadcastDashboard }
+export type { UpdateBroadcast, UpcomingBroadcast, PastBroadcast, BroadcastDashboard, BroadcastSentDetail }

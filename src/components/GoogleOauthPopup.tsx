@@ -23,7 +23,7 @@ const GoogleOauthPopup = () => {
     const top = window.screenY + (window.outerHeight - 500) / 2.5
     setExternalWindow(
       window.open(
-        import.meta.env.VITE_GOOGLE_OAUTH_URL as string,
+        import.meta.env.VITE_GOOGLE_OAUTH_URL,
         '_blank',
         `width=500,height=500,left=${left},top=${top}`
       )
