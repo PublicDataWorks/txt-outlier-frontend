@@ -23,28 +23,19 @@ function AuthProvider({ children }: AuthProviderProperties) {
   const onTokenChanged = useCallback((accessToken: string | null) => {
     if (accessToken) {
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       Missive.storeSet('token', accessToken)
       setToken(accessToken)
     } else {
       delete axios.defaults.headers.common.Authorization
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       Missive.storeSet('token', '')
       setToken('')
     }
   }, [])
 
   useEffect(() => {
-    if (import.meta.env.DEV) {
-      onTokenChanged('test-token')
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      Missive.storeGet('token')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        .then((accessToken: string) => {
-          onTokenChanged(accessToken)
-        })
-    }
+    void Missive.storeGet<string>('token').then((accessToken: string) => {
+      onTokenChanged(accessToken)
+    })
   })
 
   const tokenContextValue = useMemo(() => ({ token }), [token])
