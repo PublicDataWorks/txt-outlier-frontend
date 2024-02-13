@@ -1,0 +1,28 @@
+name: Test
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches-ignore:
+      - main
+
+env:
+  VITE_GOOGLE_OAUTH_URL: ${{ secrets.VITE_GOOGLE_OAUTH_URL }}
+  VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
+  VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+  VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/workflows/composite/install-deps
+      - name: Format Check
+        run: yarn format:check
+      # - name: Linter
+      #   run: yarn lint
+      - name: Run cypress E2E tests
+        run: yarn cy:run
