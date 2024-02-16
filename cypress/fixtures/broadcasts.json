@@ -2,7 +2,7 @@
   "upcoming": {
     "id": 35,
     "firstMessage": "this is the first messages in test",
-    "secondMessage": "this is the second messages in test",
+    "secondMessage": "this is the follow-up messages in test",
     "runAt": 2706797803,
     "delay": "10 minutes"
   },

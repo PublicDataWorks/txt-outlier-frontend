@@ -49,8 +49,8 @@ const PastBroadcasts = () => {
 
   return (
     <>
-      <h2 className='mb-6 mt-5 font-bold'>Past batches</h2>
-      <div className='dropdown'>
+      <h2 className='mb-4 mt-4 font-bold'>Past batches</h2>
+      <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (
             <Fragment key={broadcast.id}>
@@ -73,13 +73,13 @@ const PastBroadcasts = () => {
                     Total recipients: <span className='font-normal'>{broadcast.totalFirstSent}</span>
                   </p>
                   <p className='mt-2 font-bold'>
-                    Second messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
+                    Follow-up messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
                   </p>
                   <h3 className='mt-2 font-bold'>Conversation starter</h3>
                   <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
                     {broadcast.firstMessage}
                   </p>
-                  <h3 className='mt-2 font-bold'>Second message</h3>
+                  <h3 className='mt-2 font-bold'>Follow-up message</h3>
                   <p id='secondMessage' className='bg-missive-background-color px-3 py-4 italic'>
                     {broadcast.secondMessage}
                   </p>
@@ -88,12 +88,14 @@ const PastBroadcasts = () => {
             </Fragment>
           ))
         )}
-        <Button
-          text={btnText}
-          onClick={onLoadMore}
-          className='bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
-          disabled={isFetchingNextPage}
-        />
+        {selected ? (
+          <Button
+            text={btnText}
+            onClick={onLoadMore}
+            className='bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
+            disabled={isFetchingNextPage}
+          />
+        ) : null}
       </div>
       <div ref={bottomRef} />
     </>
