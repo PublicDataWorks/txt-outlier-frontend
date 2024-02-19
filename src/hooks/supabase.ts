@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { BroadcastSentDetail } from 'apis/broadcastApi'
+import type { BroadcastSentDetail } from 'apis/broadcastApi'
 import { useState } from 'react'
 
 interface RealtimeMessage {
@@ -7,7 +7,7 @@ interface RealtimeMessage {
   type: string
   payload: BroadcastSentDetail
 }
-const client = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_KEY)
+const client = createClient(import.meta.env.VITE_SUPABASE_URL as string, import.meta.env.VITE_SUPABASE_KEY as string)
 
 const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefined => {
   const [mostRecentBroadcastDetails, setMostRecentBroadcastDetails] = useState<BroadcastSentDetail | undefined>()
@@ -20,4 +20,4 @@ const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefine
   return mostRecentBroadcastDetails
 }
 
-export { useSubscribeMostRecentBroadcastDetail }
+export default useSubscribeMostRecentBroadcastDetail

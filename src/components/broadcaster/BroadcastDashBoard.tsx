@@ -1,20 +1,50 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import BroadcastForm from './BroadcastForm'
 import DateUtils from 'utils/date'
 import Button from 'components/Button'
 import { useBroadcastDashboardQuery } from 'hooks/broadcast'
 import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
-import { useSubscribeMostRecentBroadcastDetail } from 'hooks/supabase'
-import { set } from 'date-fns'
-import { BroadcastSentDetail } from 'apis/broadcastApi'
+import useSubscribeMostRecentBroadcastDetail from 'hooks/supabase'
+import type { BroadcastSentDetail } from 'apis/broadcastApi'
 
 const BroadcastDashboard = () => {
   const { data, isPending } = useBroadcastDashboardQuery()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isFirstMessage, setIsFirstMessage] = useState<boolean>(true)
-  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail()
+  const [renderMostRecentBroadcastDetails, setRenderMostRecentBroadcastDetails] = useState<BroadcastSentDetail>({
+    totalFirstSent: 0,
+    totalSecondSent: 0,
+    successfullyDelivered: 0,
+    failedDelivered: 0
+  }) // default broadcast detail to be shown with fallback value in case mostRecentBroadcastDetails has no data
+  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may has one or all fields as undefined/no data
+
+  useEffect(() => {
+    if (!isPending && data?.data && data.data.past.length > 0) {
+      const newMostRecent = {
+        totalFirstSent: data.data.past[0].totalFirstSent,
+        totalSecondSent: data.data.past[0].totalSecondSent,
+        successfullyDelivered: data.data.past[0].successfullyDelivered,
+        failedDelivered: data.data.past[0].failedDelivered
+      }
+      setRenderMostRecentBroadcastDetails(newMostRecent)
+    }
+  }, [isPending])
+
+  useEffect(() => {
+    if (mostRecentBroadcastDetails !== undefined) {
+      const newMostRecent = {
+        totalFirstSent: mostRecentBroadcastDetails.totalFirstSent || renderMostRecentBroadcastDetails.totalFirstSent,
+        totalSecondSent: mostRecentBroadcastDetails.totalSecondSent || renderMostRecentBroadcastDetails.totalSecondSent,
+        successfullyDelivered:
+          mostRecentBroadcastDetails.successfullyDelivered || renderMostRecentBroadcastDetails.successfullyDelivered,
+        failedDelivered: mostRecentBroadcastDetails.failedDelivered || renderMostRecentBroadcastDetails.failedDelivered
+      }
+      setRenderMostRecentBroadcastDetails(newMostRecent)
+    }
+  }, [mostRecentBroadcastDetails])
 
   const onEditClick = (isFirst: boolean) => {
     setIsPopupOpen(true)
@@ -75,27 +105,13 @@ const BroadcastDashboard = () => {
 
       <div className='mt-2 rounded-md'>
         <h2 className='font-bold' data-cy='most-recent'>
-          Most recent batch sent on {DateUtils.format(latestBatch?.runAt)}
+          Most recent batch sent on {latestBatch?.runAt ? DateUtils.format(latestBatch.runAt) : 'None'}
         </h2>
         <ul className='pt-5'>
-          <li>
-            Total conversation starters sent:{' '}
-            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalFirstSent : latestBatch?.totalFirstSent}
-          </li>
-          <li>
-            Follow-up messages sent:{' '}
-            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.totalSecondSent : latestBatch?.totalSecondSent}
-          </li>
-          <li>
-            Delivered successfully:{' '}
-            {mostRecentBroadcastDetails
-              ? mostRecentBroadcastDetails.successfullyDelivered
-              : latestBatch?.successfullyDelivered}
-          </li>
-          <li>
-            Failed to deliver:{' '}
-            {mostRecentBroadcastDetails ? mostRecentBroadcastDetails.failedDelivered : latestBatch?.failedDelivered}
-          </li>
+          <li>Total conversation starters sent: {renderMostRecentBroadcastDetails.totalFirstSent}</li>
+          <li>Follow-up messages sent: {renderMostRecentBroadcastDetails.totalSecondSent}</li>
+          <li>Delivered successfully: {renderMostRecentBroadcastDetails.successfullyDelivered}</li>
+          <li>Failed to deliver: {renderMostRecentBroadcastDetails.failedDelivered}</li>
         </ul>
       </div>
 
