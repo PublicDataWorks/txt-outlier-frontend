@@ -28,12 +28,6 @@ function AuthProvider({ children }: AuthProviderProperties) {
   }, [])
 
   useEffect(() => {
-    void Missive.storeGet<string>('token').then((accessToken: string) => {
-      updateToken(accessToken)
-    })
-  }, [])
-
-  useEffect(() => {
     if (import.meta.env.DEV) {
       updateToken('test-token')
     } else {
@@ -41,7 +35,7 @@ function AuthProvider({ children }: AuthProviderProperties) {
         updateToken(accessToken)
       })
     }
-  })
+  }, [])
 
   const tokenContextValue = useMemo(() => ({ token }), [token])
 

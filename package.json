@@ -91,7 +91,6 @@
   "engines": {
     "node": ">=18",
     "yarn": ">=1.22",
-    "npm": "please-use-yarn",
-    "pnpm": "please-use-yarn"
+    "npm": "please-use-yarn"
   }
 }
