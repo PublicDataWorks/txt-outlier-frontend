@@ -16,12 +16,13 @@ const PastBroadcasts = () => {
     pages: [queryClient.getQueryData(['broadcastDashboard'])],
     pageParams: [0]
   }
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePastBroadcastsQuery(initialData)
-  let btnText = 'Collapse'
+
+  const collapseBtnText = 'Collapse'
+  let showMoreBtnText = 'Show more'
   if (isFetchingNextPage) {
-    btnText = 'Loading more...'
-  } else if (hasNextPage || currentPage < totalPages) {
-    btnText = 'Show more'
+    showMoreBtnText = 'Loading more...'
   }
   useEffect(() => {
     // Run only once when hasNextPage go from true to false
@@ -49,7 +50,7 @@ const PastBroadcasts = () => {
 
   return (
     <>
-      <h2 className='mb-4 mt-4 font-bold'>Past batches</h2>
+      <h2 className='mb-2 mt-2 font-bold'>Past batches</h2>
       <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (
@@ -90,9 +91,17 @@ const PastBroadcasts = () => {
         )}
         {selected ? (
           <Button
-            text={btnText}
+            text={collapseBtnText}
             onClick={onLoadMore}
             className='bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
+            disabled={isFetchingNextPage}
+          />
+        ) : null}
+        {hasNextPage ? (
+          <Button
+            text={showMoreBtnText}
+            onClick={onLoadMore}
+            className='mt-2 bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
             disabled={isFetchingNextPage}
           />
         ) : null}

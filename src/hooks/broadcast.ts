@@ -3,16 +3,33 @@ import {
   type UpdateBroadcast,
   getBroadcastDashboard,
   getPastBroadcasts,
-  updateBroadcast
+  updateBroadcast,
+  type BroadcastDashboard
 } from '../apis/broadcastApi'
 import { type QueryClient, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import type { AxiosResponse } from 'axios'
 
-const useBroadcastDashboardQuery = () =>
+function isBroadcastDataEqual(
+  oldData: AxiosResponse<BroadcastDashboard> | undefined,
+  newData: AxiosResponse<BroadcastDashboard>
+) {
+  return !!(oldData && oldData.data.upcoming.id === newData.data.upcoming.id)
+}
+
+const useBroadcastDashboardQuery = (queryClient: QueryClient) =>
   useQuery({
     queryKey: ['broadcastDashboard'],
-    queryFn: getBroadcastDashboard
+    queryFn: getBroadcastDashboard,
+    structuralSharing: (
+      oldData: AxiosResponse<BroadcastDashboard> | undefined,
+      newData: AxiosResponse<BroadcastDashboard>
+    ) => {
+      if (!isBroadcastDataEqual(oldData, newData)) {
+        void queryClient.invalidateQueries({ queryKey: ['pastBroadcasts'] })
+      }
+      return newData
+    }
   })
-
 const usePastBroadcastsQuery = initialData =>
   useInfiniteQuery({
     queryKey: ['pastBroadcasts'],

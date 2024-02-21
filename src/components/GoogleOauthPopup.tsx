@@ -64,12 +64,7 @@ const GoogleOauthPopup = () => {
   }, [externalWindow])
 
   return (
-    <button
-      type='button'
-      className='button bg-missive-conversation-list-background-color text-4xl'
-      onClick={onClick}
-      aria-label={GOOGLE_OAUTH}
-    >
+    <button type='button' className='button text-4xl' onClick={onClick} aria-label={GOOGLE_OAUTH}>
       Login with Google
     </button>
   )

@@ -1,8 +1,9 @@
-import { format, differenceInMinutes, addMinutes } from 'date-fns'
+import { differenceInMinutes, addMinutes } from 'date-fns'
+import { format } from 'date-fns-tz'
 
 const formatFn = (unixTimestamp: number): string => {
   const date = new Date(unixTimestamp * 1000)
-  return format(date, 'EEE MMM d, h:mm a z')
+  return format(date, 'EEE MMM d, h:mm a zzz')
 }
 
 const formatDate = (date: Date): string => format(date, 'yyyy/MM/dd')

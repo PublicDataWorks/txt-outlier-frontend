@@ -7,9 +7,11 @@ import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
 import useSubscribeMostRecentBroadcastDetail from 'hooks/supabase'
 import type { BroadcastSentDetail } from 'apis/broadcastApi'
+import { useQueryClient } from '@tanstack/react-query'
 
 const BroadcastDashboard = () => {
-  const { data, isPending } = useBroadcastDashboardQuery()
+  const queryClient = useQueryClient()
+  const { data, isPending } = useBroadcastDashboardQuery(queryClient)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isFirstMessage, setIsFirstMessage] = useState<boolean>(true)
@@ -68,7 +70,7 @@ const BroadcastDashboard = () => {
         Pause batch schedule
       </button>
       <h3 className='mt-5 font-bold'>Conversation starter</h3>
-      <p className='mt-3 bg-missive-background-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
+      <p className='mt-3 bg-missive-text-color-d px-3 py-4 italic'>{upcoming.firstMessage}</p>
       <Button
         text='edit'
         className='mt-px bg-missive-background-color'
@@ -76,13 +78,11 @@ const BroadcastDashboard = () => {
         onClick={() => onEditClick(true)}
       />
 
-      <h3 className='mt-5 font-bold'>
-        Follow-up message <span className='font-normal italic'>{`(sent ${upcoming.delay} later if no reply)`}</span>
-      </h3>
-      <p className='mt-3 bg-missive-background-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
+      <h3 className='mt-5 font-bold'>Follow-up message</h3>
+      <p className='mt-3 bg-missive-text-color-d px-3 py-4 italic'>{upcoming.secondMessage}</p>
       <Button
         text='edit'
-        className='data-edit-second-message mb-6 mt-px bg-missive-background-color'
+        className='data-edit-second-message mt-px bg-missive-background-color'
         onClick={() => onEditClick(false)}
       />
 
@@ -101,9 +101,9 @@ const BroadcastDashboard = () => {
         onClose={() => setIsPopupOpen(false)}
         isFirstMessage={isFirstMessage}
       />
-      <hr className='border-gray-500' />
+      <hr className='mt-2 border-gray-500' />
 
-      <div className='mt-2 rounded-md'>
+      <div className='mt-2 text-base leading-4'>
         <h2 className='font-bold' data-cy='most-recent'>
           Most recent batch sent on {latestBatch?.runAt ? DateUtils.format(latestBatch.runAt) : 'None'}
         </h2>

@@ -61,14 +61,14 @@ describe('Broadcasts', () => {
   it('edit follow-up message of far future', () => {
     cy.contains('Edit follow-up message').should('not.exist')
     cy.contains(
-      'Note: these updates will apply to all future batches. Follow-up messages are sent 10 minutes after the conversation starter, only if the recipient does not reply to the starter message.'
+      'Note: these updates will apply to all future batches. Follow-up messages are sent after the conversation starter, only if the recipient does not reply to the starter message.'
     ).should('not.exist')
 
     cy.get('.data-edit-second-message').click()
 
     cy.contains('Edit follow-up message')
     cy.contains(
-      'Note: these updates will apply to all future batches. Follow-up messages are sent 10 minutes after the conversation starter, only if the recipient does not reply to the starter message.'
+      'Note: these updates will apply to all future batches. Follow-up messages are sent after the conversation starter, only if the recipient does not reply to the starter message.'
     )
     cy.contains('button', 'Save changes').should('be.disabled')
 
@@ -99,7 +99,7 @@ describe('Broadcasts', () => {
       "The next batch is scheduled to send less than 90 minutes from now. Making these message updates will delay today's batch by 2-3 hours, sending at approximately"
     ).should('not.exist')
     cy.contains(
-      'Note: follow-up messages are sent 10 minutes after the conversation starter, only if the recipient does not reply to the starter message. '
+      'Note: follow-up messages are sent after the conversation starter, only if the recipient does not reply to the starter message. '
     ).should('not.exist')
 
     cy.get('.data-edit-second-message').click()
@@ -107,7 +107,7 @@ describe('Broadcasts', () => {
       "The next batch is scheduled to send less than 90 minutes from now. Making these message updates will delay today's batch by 2-3 hours, sending at approximately"
     )
     cy.contains(
-      'Note: follow-up messages are sent 10 minutes after the conversation starter, only if the recipient does not reply to the starter message.'
+      'Note: follow-up messages are sent after the conversation starter, only if the recipient does not reply to the starter message.'
     )
     cy.contains('button', 'Save changes and delay the next batch').should('be.disabled')
   })
