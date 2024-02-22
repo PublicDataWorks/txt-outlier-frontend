@@ -7,16 +7,13 @@ import DateUtils from 'utils/date'
 
 const PastBroadcasts = () => {
   const [selected, setSelected] = useState<number | undefined>()
-  const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
   const bottomRef = useRef<HTMLDivElement | null>(null)
-
   const queryClient = useQueryClient()
   const initialData = {
     pages: [queryClient.getQueryData(['broadcastDashboard'])],
     pageParams: [0]
   }
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePastBroadcastsQuery(initialData)
 
   const collapseBtnText = 'Collapse'
@@ -27,7 +24,6 @@ const PastBroadcasts = () => {
   useEffect(() => {
     // Run only once when hasNextPage go from true to false
     if (data?.pages.length) {
-      setTotalPages(data.pages.length)
       setCurrentPage(data.pages.length)
     }
   }, [data])
@@ -39,18 +35,20 @@ const PastBroadcasts = () => {
   const onLoadMore = () => {
     if (hasNextPage) {
       void fetchNextPage()
-    } else if (currentPage === totalPages) {
-      setCurrentPage(1)
-      setSelected(undefined)
     } else {
       setCurrentPage(currentPage + 1)
     }
+  }
+
+  const onCollapse = () => {
+    setCurrentPage(1)
+    setSelected(undefined)
   }
   const onSelect = (id: number) => (id === selected ? setSelected(undefined) : setSelected(id))
 
   return (
     <>
-      <h2 className='mb-2 mt-2 font-bold'>Past batches</h2>
+      <h2 className='mb-2 mt-1.5 font-bold'>Past batches</h2>
       <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (
@@ -92,19 +90,20 @@ const PastBroadcasts = () => {
         {selected ? (
           <Button
             text={collapseBtnText}
-            onClick={onLoadMore}
-            className='bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
+            onClick={onCollapse}
+            className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
             disabled={isFetchingNextPage}
           />
-        ) : null}
-        {hasNextPage ? (
-          <Button
-            text={showMoreBtnText}
-            onClick={onLoadMore}
-            className='mt-2 bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
-            disabled={isFetchingNextPage}
-          />
-        ) : null}
+        ) : (
+          hasNextPage && (
+            <Button
+              text={showMoreBtnText}
+              onClick={onLoadMore}
+              className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+              disabled={isFetchingNextPage}
+            />
+          )
+        )}
       </div>
       <div ref={bottomRef} />
     </>

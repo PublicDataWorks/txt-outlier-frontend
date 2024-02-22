@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import BroadcastForm from './BroadcastForm'
 import DateUtils from 'utils/date'
 import Button from 'components/Button'
 import { useBroadcastDashboardQuery } from 'hooks/broadcast'
 import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
-import useSubscribeMostRecentBroadcastDetail from 'hooks/supabase'
-import type { BroadcastSentDetail } from 'apis/broadcastApi'
 import { useQueryClient } from '@tanstack/react-query'
+import LastBroadcastStatus from './LastBroadcastStatus'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
@@ -15,38 +14,6 @@ const BroadcastDashboard = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isFirstMessage, setIsFirstMessage] = useState<boolean>(true)
-  const [renderMostRecentBroadcastDetails, setRenderMostRecentBroadcastDetails] = useState<BroadcastSentDetail>({
-    totalFirstSent: 0,
-    totalSecondSent: 0,
-    successfullyDelivered: 0,
-    failedDelivered: 0
-  }) // default broadcast detail to be shown with fallback value in case mostRecentBroadcastDetails has no data
-  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may has one or all fields as undefined/no data
-
-  useEffect(() => {
-    if (!isPending && data?.data && data.data.past.length > 0) {
-      const newMostRecent = {
-        totalFirstSent: data.data.past[0].totalFirstSent,
-        totalSecondSent: data.data.past[0].totalSecondSent,
-        successfullyDelivered: data.data.past[0].successfullyDelivered,
-        failedDelivered: data.data.past[0].failedDelivered
-      }
-      setRenderMostRecentBroadcastDetails(newMostRecent)
-    }
-  }, [isPending])
-
-  useEffect(() => {
-    if (mostRecentBroadcastDetails !== undefined) {
-      const newMostRecent = {
-        totalFirstSent: mostRecentBroadcastDetails.totalFirstSent || renderMostRecentBroadcastDetails.totalFirstSent,
-        totalSecondSent: mostRecentBroadcastDetails.totalSecondSent || renderMostRecentBroadcastDetails.totalSecondSent,
-        successfullyDelivered:
-          mostRecentBroadcastDetails.successfullyDelivered || renderMostRecentBroadcastDetails.successfullyDelivered,
-        failedDelivered: mostRecentBroadcastDetails.failedDelivered || renderMostRecentBroadcastDetails.failedDelivered
-      }
-      setRenderMostRecentBroadcastDetails(newMostRecent)
-    }
-  }, [mostRecentBroadcastDetails])
 
   const onEditClick = (isFirst: boolean) => {
     setIsPopupOpen(true)
@@ -57,32 +24,36 @@ const BroadcastDashboard = () => {
     return <span>Loading...</span>
   }
 
-  // mostRecentBroadcastDetails take priority over the latest batch
-  const [latestBatch] = data.data.past
   const { upcoming } = data.data
 
   return (
     <div className='container mx-auto mt-4 w-[22rem] max-w-md'>
       <h2 className='mt-3 font-bold'>
-        Next batch scheduled to send on <span className='font-normal italic'>{DateUtils.format(upcoming.runAt)}</span>
+        Next batch scheduled <span className='font-normal italic'>{DateUtils.format(upcoming.runAt)}</span>
       </h2>
-      <button type='button' className='button bg-button-color mt-3' onClick={() => setIsRunAtPickerOpen(true)}>
-        Pause batch schedule
-      </button>
+      <div className='mt-3 flex justify-center'>
+        <button type='button' className='button bg-button-color mr-1' onClick={() => setIsRunAtPickerOpen(true)}>
+          Pause schedule
+        </button>
+        <button type='button' className='button bg-button-color ml-1' onClick={() => true}>
+          Send now
+        </button>
+      </div>
+
       <h3 className='mt-5 font-bold'>Conversation starter</h3>
-      <p className='mt-3 bg-missive-text-color-d px-3 py-4 italic'>{upcoming.firstMessage}</p>
+      <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
       <Button
         text='edit'
-        className='mt-px bg-missive-background-color'
+        className='button bg-button-color mt-px'
         data-cy='edit-first-message'
         onClick={() => onEditClick(true)}
       />
 
       <h3 className='mt-5 font-bold'>Follow-up message</h3>
-      <p className='mt-3 bg-missive-text-color-d px-3 py-4 italic'>{upcoming.secondMessage}</p>
+      <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
       <Button
         text='edit'
-        className='data-edit-second-message mt-px bg-missive-background-color'
+        className='data-edit-second-message button bg-button-color mt-px'
         onClick={() => onEditClick(false)}
       />
 
@@ -101,19 +72,9 @@ const BroadcastDashboard = () => {
         onClose={() => setIsPopupOpen(false)}
         isFirstMessage={isFirstMessage}
       />
-      <hr className='mt-2 border-gray-500' />
+      <hr className='mt-3 border-gray-500' />
 
-      <div className='mt-2 text-base leading-4'>
-        <h2 className='font-bold' data-cy='most-recent'>
-          Most recent batch sent on {latestBatch?.runAt ? DateUtils.format(latestBatch.runAt) : 'None'}
-        </h2>
-        <ul className='pt-5'>
-          <li>Total conversation starters sent: {renderMostRecentBroadcastDetails.totalFirstSent}</li>
-          <li>Follow-up messages sent: {renderMostRecentBroadcastDetails.totalSecondSent}</li>
-          <li>Delivered successfully: {renderMostRecentBroadcastDetails.successfullyDelivered}</li>
-          <li>Failed to deliver: {renderMostRecentBroadcastDetails.failedDelivered}</li>
-        </ul>
-      </div>
+      <LastBroadcastStatus />
 
       <hr className='mt-2 border-gray-500' />
 
