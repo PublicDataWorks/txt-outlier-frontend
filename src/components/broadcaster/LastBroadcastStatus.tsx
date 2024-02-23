@@ -17,7 +17,8 @@ const LastBroadcastStatus = () => {
     failedDelivered: 0,
     successfullyDelivered: 0,
     totalFirstSent: 0,
-    totalSecondSent: 0
+    totalSecondSent: 0,
+    totalUnsubscribed: 0
   })
   const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may has one or all fields as undefined/no data
   const { data: pastData } = usePastBroadcastsQuery(initialData)
@@ -34,7 +35,8 @@ const LastBroadcastStatus = () => {
         totalFirstSent: newMostRecent.totalFirstSent ?? 0,
         totalSecondSent: newMostRecent.totalSecondSent ?? 0,
         successfullyDelivered: newMostRecent.successfullyDelivered ?? 0,
-        failedDelivered: newMostRecent.failedDelivered ?? 0
+        failedDelivered: newMostRecent.failedDelivered ?? 0,
+        totalUnsubscribed: newMostRecent.failedDelivered ?? 0
       })
     }
   }, [isPending])
@@ -46,7 +48,8 @@ const LastBroadcastStatus = () => {
         totalSecondSent: mostRecentBroadcastDetails.totalSecondSent || renderMostRecentBroadcastDetails.totalSecondSent,
         successfullyDelivered:
           mostRecentBroadcastDetails.successfullyDelivered || renderMostRecentBroadcastDetails.successfullyDelivered,
-        failedDelivered: mostRecentBroadcastDetails.failedDelivered || renderMostRecentBroadcastDetails.failedDelivered
+        failedDelivered: mostRecentBroadcastDetails.failedDelivered || renderMostRecentBroadcastDetails.failedDelivered,
+        totalUnsubscribed: renderMostRecentBroadcastDetails.totalUnsubscribed
       }
       setRenderMostRecentBroadcastDetails(newMostRecent)
     }
@@ -65,7 +68,7 @@ const LastBroadcastStatus = () => {
         <li>Follow-up messages sent: {renderMostRecentBroadcastDetails.totalSecondSent}</li>
         <li>Total delivered successfully: {renderMostRecentBroadcastDetails.successfullyDelivered}</li>
         <li>Failed to deliver: {renderMostRecentBroadcastDetails.failedDelivered}</li>
-        <li>Unsubscribes: {renderMostRecentBroadcastDetails.failedDelivered}</li>
+        <li>Unsubscribes: {renderMostRecentBroadcastDetails.totalUnsubscribed}</li>
       </ul>
     </div>
   )
