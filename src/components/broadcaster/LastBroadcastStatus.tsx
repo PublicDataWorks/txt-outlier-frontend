@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useBroadcastDashboardQuery, usePastBroadcastsQuery } from '../../hooks/broadcast'
+import { usePastBroadcastsQuery } from '../../hooks/broadcast'
 import DateUtils from '../../utils/date'
 import type { BroadcastSentDetail } from '../../apis/broadcastApi'
 import useSubscribeMostRecentBroadcastDetail from '../../hooks/supabase'
@@ -11,8 +11,6 @@ const LastBroadcastStatus = () => {
     pages: [queryClient.getQueryData(['broadcastDashboard'])],
     pageParams: [0]
   }
-  const { data, isPending } = useBroadcastDashboardQuery(queryClient)
-
   const [renderMostRecentBroadcastDetails, setRenderMostRecentBroadcastDetails] = useState<BroadcastSentDetail>({
     failedDelivered: 0,
     successfullyDelivered: 0,
@@ -23,23 +21,26 @@ const LastBroadcastStatus = () => {
   const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may has one or all fields as undefined/no data
   const { data: pastData } = usePastBroadcastsQuery(initialData)
 
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
   useEffect(() => {
-    if (!isPending && data?.data && data.data.past.length > 0) {
+    if (initialData.pages[0] && initialData.pages[0].data.past.length > 0) {
       const newMostRecent = {
-        totalFirstSent: data.data.past[0]?.totalFirstSent,
-        totalSecondSent: data.data.past[0]?.totalSecondSent,
-        successfullyDelivered: data.data.past[0]?.successfullyDelivered,
-        failedDelivered: data.data.past[0]?.failedDelivered
+        totalFirstSent: initialData.pages[0].data.past[0]?.totalFirstSent,
+        totalSecondSent: initialData.pages[0].data.past[0]?.totalSecondSent,
+        successfullyDelivered: initialData.pages[0].data.past[0]?.successfullyDelivered,
+        failedDelivered: initialData.pages[0].data.past[0]?.failedDelivered,
+        totalUnsubscribed: initialData.pages[0].data.past[0]?.totalUnsubscribed
       }
       setRenderMostRecentBroadcastDetails({
         totalFirstSent: newMostRecent.totalFirstSent ?? 0,
         totalSecondSent: newMostRecent.totalSecondSent ?? 0,
         successfullyDelivered: newMostRecent.successfullyDelivered ?? 0,
         failedDelivered: newMostRecent.failedDelivered ?? 0,
-        totalUnsubscribed: newMostRecent.failedDelivered ?? 0
+        totalUnsubscribed: newMostRecent.totalUnsubscribed ?? 0
       })
     }
-  }, [isPending])
+  }, [initialData])
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
   useEffect(() => {
     if (mostRecentBroadcastDetails !== undefined) {
