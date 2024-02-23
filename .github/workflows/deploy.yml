@@ -1,8 +1,8 @@
 name: Build and Deploy
 on:
   push:
-    branches:
-      - main
+#    branches:
+#      - main
 
 env:
   VITE_GOOGLE_OAUTH_URL: ${{ secrets.VITE_GOOGLE_OAUTH_URL }}

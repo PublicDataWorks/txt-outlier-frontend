@@ -53,8 +53,8 @@ const LastBroadcastStatus = () => {
   }, [mostRecentBroadcastDetails])
 
   return (
-    <div className='mt-1.5'>
-      <h2 className='font-bold' data-cy='most-recent'>
+    <div className='mt-1.5' data-cy='most-recent'>
+      <h2 className='font-bold'>
         Last batch sent{' '}
         <span className='font-normal italic'>
           {pastData?.pages[0]?.data.past[0] ? DateUtils.format(pastData.pages[0].data.past[0].runAt) : 'None'}

@@ -32,10 +32,10 @@ const BroadcastDashboard = () => {
         Next batch scheduled <span className='font-normal italic'>{DateUtils.format(upcoming.runAt)}</span>
       </h2>
       <div className='mt-3 flex justify-center'>
-        <button type='button' className='button bg-button-color mr-1' onClick={() => setIsRunAtPickerOpen(true)}>
+        <button type='button' className='button bg-button-color mr-2' onClick={() => setIsRunAtPickerOpen(true)}>
           Pause schedule
         </button>
-        <button type='button' className='button bg-button-color ml-1' onClick={() => true}>
+        <button type='button' className='button bg-button-color ml-2' onClick={() => true}>
           Send now
         </button>
       </div>
