@@ -21,6 +21,7 @@ interface BroadcastSentDetail {
   totalSecondSent: number
   successfullyDelivered: number
   failedDelivered: number
+  totalUnsubscribed: number
 }
 
 interface PastBroadcast extends BroadcastSentDetail {
@@ -47,6 +48,8 @@ const getPastBroadcasts = async ({ pageParam }: Params): Promise<AxiosResponse<B
   return axios.get(`${BROADCAST_PATH}?limit=${ITEMS_PER_PAGE}${cursor}`)
 }
 
+const makeBroadcast = async (): Promise<void> => axios.get(`${BROADCAST_PATH}/make`)
+
 const getBroadcastDashboard = async (): Promise<AxiosResponse<BroadcastDashboard>> => axios.get(BROADCAST_PATH)
 
 const updateBroadcast = async ({
@@ -61,5 +64,5 @@ const updateBroadcast = async ({
     runAt
   })
 
-export { getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
+export { makeBroadcast, getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
 export type { UpdateBroadcast, UpcomingBroadcast, PastBroadcast, BroadcastDashboard, BroadcastSentDetail }

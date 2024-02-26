@@ -7,6 +7,7 @@ import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
 import { useQueryClient } from '@tanstack/react-query'
 import LastBroadcastStatus from './LastBroadcastStatus'
+import { makeBroadcast } from '../../apis/broadcastApi'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
@@ -18,6 +19,10 @@ const BroadcastDashboard = () => {
   const onEditClick = (isFirst: boolean) => {
     setIsPopupOpen(true)
     setIsFirstMessage(isFirst)
+  }
+
+  const handleSendNow = () => {
+    void makeBroadcast()
   }
 
   if (isPending || !data?.data) {
@@ -35,7 +40,7 @@ const BroadcastDashboard = () => {
         <button type='button' className='button bg-button-color mr-2' onClick={() => setIsRunAtPickerOpen(true)}>
           Pause schedule
         </button>
-        <button type='button' className='button bg-button-color ml-2' onClick={() => true}>
+        <button type='button' className='button bg-button-color ml-2' onClick={handleSendNow}>
           Send now
         </button>
       </div>

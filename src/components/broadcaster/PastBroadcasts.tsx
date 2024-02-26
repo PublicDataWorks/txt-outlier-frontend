@@ -74,6 +74,9 @@ const PastBroadcasts = () => {
                   <p className='mt-2 font-bold'>
                     Follow-up messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
                   </p>
+                  <p className='mt-2 font-bold'>
+                    Unsubscribes: <span className='font-normal'>{broadcast.totalUnsubscribed}</span>
+                  </p>
                   <h3 className='mt-2 font-bold'>Conversation starter</h3>
                   <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
                     {broadcast.firstMessage}
