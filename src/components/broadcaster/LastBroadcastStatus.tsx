@@ -23,23 +23,18 @@ const LastBroadcastStatus = () => {
 
   /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
   useEffect(() => {
-    if (initialData.pages[0] && initialData.pages[0].data.past.length > 0) {
-      const newMostRecent = {
-        totalFirstSent: initialData.pages[0].data.past[0]?.totalFirstSent,
-        totalSecondSent: initialData.pages[0].data.past[0]?.totalSecondSent,
-        successfullyDelivered: initialData.pages[0].data.past[0]?.successfullyDelivered,
-        failedDelivered: initialData.pages[0].data.past[0]?.failedDelivered,
-        totalUnsubscribed: initialData.pages[0].data.past[0]?.totalUnsubscribed
-      }
-      setRenderMostRecentBroadcastDetails({
-        totalFirstSent: newMostRecent.totalFirstSent ?? 0,
-        totalSecondSent: newMostRecent.totalSecondSent ?? 0,
-        successfullyDelivered: newMostRecent.successfullyDelivered ?? 0,
-        failedDelivered: newMostRecent.failedDelivered ?? 0,
-        totalUnsubscribed: newMostRecent.totalUnsubscribed ?? 0
-      })
+    const initData = initialData.pages[0]?.data?.past[0] ?? {}
+
+    const newMostRecent = {
+      totalFirstSent: initData.totalFirstSent ?? 0,
+      totalSecondSent: initData.totalSecondSent ?? 0,
+      successfullyDelivered: initData.successfullyDelivered ?? 0,
+      failedDelivered: initData.failedDelivered ?? 0,
+      totalUnsubscribed: initData.totalUnsubscribed ?? 0
     }
-  }, [initialData])
+
+    setRenderMostRecentBroadcastDetails(newMostRecent)
+  }, [])
   /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
   useEffect(() => {

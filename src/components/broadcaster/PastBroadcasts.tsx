@@ -78,11 +78,11 @@ const PastBroadcasts = () => {
                     Unsubscribes: <span className='font-normal'>{broadcast.totalUnsubscribed}</span>
                   </p>
                   <h3 className='mt-2 font-bold'>Conversation starter</h3>
-                  <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
+                  <p id='firstMessage' className='bg-missive-light-border-color px-3 py-4 italic'>
                     {broadcast.firstMessage}
                   </p>
                   <h3 className='mt-2 font-bold'>Follow-up message</h3>
-                  <p id='secondMessage' className='bg-missive-background-color px-3 py-4 italic'>
+                  <p id='secondMessage' className='bg-missive-light-border-color px-3 py-4 italic'>
                     {broadcast.secondMessage}
                   </p>
                 </div>
