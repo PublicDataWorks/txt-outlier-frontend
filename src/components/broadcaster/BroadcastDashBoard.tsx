@@ -30,7 +30,6 @@ const BroadcastDashboard = () => {
   }
 
   const { upcoming } = data.data
-
   return (
     <div className='container mx-auto mt-4 w-[22rem] max-w-md'>
       <h2 className='mt-3 font-bold'>
@@ -87,7 +86,7 @@ const BroadcastDashboard = () => {
       />
       <hr className='mt-3 border-gray-500' />
 
-      <LastBroadcastStatus />
+      <LastBroadcastStatus latestBroadcast={data.data.past[0]} />
 
       <hr className='mt-2 border-gray-500' />
 

@@ -1,44 +1,24 @@
-import { useEffect, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { usePastBroadcastsQuery } from '../../hooks/broadcast'
+import { type FC, useEffect, useState } from 'react'
 import DateUtils from '../../utils/date'
-import type { BroadcastSentDetail } from '../../apis/broadcastApi'
+import type { BroadcastSentDetail, PastBroadcast } from '../../apis/broadcastApi'
 import useSubscribeMostRecentBroadcastDetail from '../../hooks/supabase'
 
-const LastBroadcastStatus = () => {
-  const queryClient = useQueryClient()
-  const initialData = {
-    pages: [queryClient.getQueryData(['broadcastDashboard'])],
-    pageParams: [0]
-  }
+interface LastBroadcastStatusProps {
+  latestBroadcast?: PastBroadcast
+}
+
+const LastBroadcastStatus: FC<LastBroadcastStatusProps> = ({ latestBroadcast }) => {
   const [renderMostRecentBroadcastDetails, setRenderMostRecentBroadcastDetails] = useState<BroadcastSentDetail>({
-    failedDelivered: 0,
-    successfullyDelivered: 0,
     totalFirstSent: 0,
     totalSecondSent: 0,
+    successfullyDelivered: 0,
+    failedDelivered: 0,
     totalUnsubscribed: 0
   })
-  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may has one or all fields as undefined/no data
-  const { data: pastData } = usePastBroadcastsQuery(initialData)
-
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-  useEffect(() => {
-    const initData = initialData.pages[0]?.data?.past[0] ?? {}
-
-    const newMostRecent = {
-      totalFirstSent: initData.totalFirstSent ?? 0,
-      totalSecondSent: initData.totalSecondSent ?? 0,
-      successfullyDelivered: initData.successfullyDelivered ?? 0,
-      failedDelivered: initData.failedDelivered ?? 0,
-      totalUnsubscribed: initData.totalUnsubscribed ?? 0
-    }
-
-    setRenderMostRecentBroadcastDetails(newMostRecent)
-  }, [])
-  /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+  const mostRecentBroadcastDetails = useSubscribeMostRecentBroadcastDetail() // may have one or all fields as undefined/no data
 
   useEffect(() => {
-    if (mostRecentBroadcastDetails !== undefined) {
+    if (mostRecentBroadcastDetails) {
       const newMostRecent = {
         totalFirstSent: mostRecentBroadcastDetails.totalFirstSent || renderMostRecentBroadcastDetails.totalFirstSent,
         totalSecondSent: mostRecentBroadcastDetails.totalSecondSent || renderMostRecentBroadcastDetails.totalSecondSent,
@@ -52,13 +32,21 @@ const LastBroadcastStatus = () => {
     }
   }, [mostRecentBroadcastDetails])
 
+  useEffect(() => {
+    setRenderMostRecentBroadcastDetails({
+      totalFirstSent: latestBroadcast?.totalFirstSent ?? 0,
+      totalSecondSent: latestBroadcast?.totalSecondSent ?? 0,
+      successfullyDelivered: latestBroadcast?.successfullyDelivered ?? 0,
+      failedDelivered: latestBroadcast?.failedDelivered ?? 0,
+      totalUnsubscribed: latestBroadcast?.totalUnsubscribed ?? 0
+    })
+  }, [latestBroadcast])
+
   return (
     <div className='mt-1.5' data-cy='most-recent'>
       <h2 className='font-bold'>
         Last batch sent{' '}
-        <span className='font-normal italic'>
-          {pastData?.pages[0]?.data.past[0] ? DateUtils.format(pastData.pages[0].data.past[0].runAt) : 'None'}
-        </span>
+        <span className='font-normal italic'>{latestBroadcast ? DateUtils.format(latestBroadcast.runAt) : 'None'}</span>
       </h2>
       <ul className='pt-5'>
         <li>Conversation starters sent: {renderMostRecentBroadcastDetails.totalFirstSent}</li>
@@ -71,4 +59,7 @@ const LastBroadcastStatus = () => {
   )
 }
 
+LastBroadcastStatus.defaultProps = {
+  latestBroadcast: undefined
+}
 export default LastBroadcastStatus
