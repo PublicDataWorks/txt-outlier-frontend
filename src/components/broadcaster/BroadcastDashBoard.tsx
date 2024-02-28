@@ -7,7 +7,7 @@ import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
 import { useQueryClient } from '@tanstack/react-query'
 import LastBroadcastStatus from './LastBroadcastStatus'
-import { makeBroadcast } from '../../apis/broadcastApi'
+// import { makeBroadcast } from '../../apis/broadcastApi'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
@@ -15,14 +15,37 @@ const BroadcastDashboard = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isFirstMessage, setIsFirstMessage] = useState<boolean>(true)
+  const [isSent, setIsSent] = useState<boolean>(false)
 
   const onEditClick = (isFirst: boolean) => {
     setIsPopupOpen(true)
     setIsFirstMessage(isFirst)
   }
 
+  const e = [{
+    type: "title",
+    data: {
+      subtitle: ["The OpenAI API is powered by a diverse set of models with different capabilities and price points. The default model will be used for all prompts unless you specify a different model in the prompt itself."]
+    }
+  }]
+
+  const globalForm = () => {
+    void Missive.openForm({
+      name: "Settings",
+      fields: e,
+      buttons: [{
+        type: "cancel",
+        label: "Cancel"
+      }, {
+        type: "submit",
+        label: "Update"
+      }]
+    });
+  }
+
   const handleSendNow = () => {
-    void makeBroadcast()
+    setIsSent(true)
+    // void makeBroadcast()
   }
 
   if (isPending || !data?.data) {
@@ -36,27 +59,56 @@ const BroadcastDashboard = () => {
         Next batch scheduled <span className='font-normal italic'>{DateUtils.format(upcoming.runAt)}</span>
       </h2>
       <div className='mt-3 flex justify-center'>
-        <button
-          type='button'
-          className='button mr-2 border-missive-text-color-a bg-missive-background-color py-3 hover:bg-rgba-missive-text-color-a'
-          onClick={() => setIsRunAtPickerOpen(true)}
-        >
-          Pause schedule
-        </button>
-        <button
-          type='button'
-          className='button ml-2 border-missive-text-color-a bg-missive-background-color py-3 hover:bg-rgba-missive-text-color-a'
-          onClick={handleSendNow}
-        >
-          Send now
-        </button>
+        <span className='mr-2 button p-0 bg-missive-blue-color'>
+          <button
+            type='button'
+            className='button py-3 hover:!bg-rgba-missive-no-bg-color'
+            onClick={() => setIsRunAtPickerOpen(true)}
+          >
+            Pause schedule
+          </button>
+        </span>
+        <span className='ml-2 button p-0 bg-missive-blue-color'>
+          <button type='button' className={`button button-async py-3 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`} onClick={ handleSendNow }>
+              <span>
+                <span className="button-async-label">Send now</span>
+              </span>
+            <div className="loading-icon ">
+              <i className="icon icon-circle w-6 h-6">
+                <svg className="w-6 h-6">
+                  <use xlinkHref="#circle" />
+                </svg>
+              </i>
+            </div>
+          </button>
+        </span>
       </div>
+
+      <button  type='button'  className={`button button-async ${isSent ? 'button-async--loading' : ''}`} onClick={ handleSendNow }>
+          <span>
+            <span className="button-async-label">Button</span>
+          </span>
+            <div className="loading-icon">
+              <i className="icon icon-circle w-6 h-6">
+                <svg className="w-6 h-6">
+                  <use xlinkHref="#circle" />
+                </svg>
+              </i>
+            </div>
+      </button>
+
+      <Button
+        text='dasdasdasdasdasd'
+        className='button mt-px bg-missive-background-color hover:!bg-rgba-missive-blue-color py-1 text-missive-blue-color'
+        data-cy='edit-first-message'
+        onClick={ globalForm }
+      />
 
       <h3 className='mt-5 font-bold'>Conversation starter</h3>
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
       <Button
         text='edit'
-        className='button mt-px bg-missive-background-color py-2 text-missive-blue-color'
+        className='button mt-px bg-missive-background-color hover:!bg-rgba-missive-blue-color py-1 text-missive-blue-color'
         data-cy='edit-first-message'
         onClick={() => onEditClick(true)}
       />
@@ -65,18 +117,17 @@ const BroadcastDashboard = () => {
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
       <Button
         text='edit'
-        className='data-edit-second-message button mt-px bg-missive-background-color py-2 text-missive-blue-color'
+        className='data-edit-second-message button bg-missive-background-color hover:!bg-rgba-missive-blue-color mt-px  py-1 text-missive-blue-color'
         onClick={() => onEditClick(false)}
       />
-
+      <div
+        className={`fixed left-0 top-0 h-full w-full ${isPopupOpen || isRunAtPickerOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
+      />
       <RunAtPicker
         isOpen={isRunAtPickerOpen}
         runAt={upcoming.runAt}
         broadcastId={upcoming.id}
         onClose={() => setIsRunAtPickerOpen(false)}
-      />
-      <div
-        className={`fixed left-0 top-0 h-full w-full ${isPopupOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
       />
       <BroadcastForm
         broadcast={upcoming}

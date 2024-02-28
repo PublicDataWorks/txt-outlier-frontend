@@ -11,6 +11,8 @@ const config = {
       colors: {
         'missive-background-color': 'var(--missive-background-color)',
         'missive-blue-color': 'var(--missive-blue-color)',
+        'rgba-missive-blue-color': 'rgba(var(--blueColorRGB), 0.1)',
+        'rgba-missive-no-bg-color': 'rgba(0, 0, 0, 0.1)',
         'missive-light-border-color': 'var(--missive-light-border-color)',
         'missive-border-radius': 'var(--missive-border-radius)',
         'missive-conversation-list-background-color': 'var(--missive-conversation-list-background-color)',

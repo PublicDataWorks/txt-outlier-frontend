@@ -94,7 +94,7 @@ const PastBroadcasts = () => {
           <Button
             text={collapseBtnText}
             onClick={onCollapse}
-            className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+            className='bg-missive-background-color py-1 text-missive-blue-color  hover:!bg-rgba-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
             disabled={isFetchingNextPage}
           />
         ) : (
@@ -102,7 +102,7 @@ const PastBroadcasts = () => {
             <Button
               text={showMoreBtnText}
               onClick={onLoadMore}
-              className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+              className='bg-missive-background-color py-1 text-missive-blue-color hover:!bg-rgba-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
               disabled={isFetchingNextPage}
             />
           )
