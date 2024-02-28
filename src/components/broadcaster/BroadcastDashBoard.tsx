@@ -37,10 +37,18 @@ const BroadcastDashboard = () => {
         Next batch scheduled <span className='font-normal italic'>{DateUtils.format(upcoming.runAt)}</span>
       </h2>
       <div className='mt-3 flex justify-center'>
-        <button type='button' className='button bg-button-color mr-2' onClick={() => setIsRunAtPickerOpen(true)}>
+        <button
+          type='button'
+          className='button mr-2 border-missive-text-color-a bg-missive-background-color py-3 hover:bg-rgba-missive-text-color-a'
+          onClick={() => setIsRunAtPickerOpen(true)}
+        >
           Pause schedule
         </button>
-        <button type='button' className='button bg-button-color ml-2' onClick={handleSendNow}>
+        <button
+          type='button'
+          className='button ml-2 border-missive-text-color-a bg-missive-background-color py-3 hover:bg-rgba-missive-text-color-a'
+          onClick={handleSendNow}
+        >
           Send now
         </button>
       </div>
@@ -49,7 +57,7 @@ const BroadcastDashboard = () => {
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
       <Button
         text='edit'
-        className='button bg-button-color mt-px'
+        className='button mt-px bg-missive-background-color py-2 text-missive-blue-color'
         data-cy='edit-first-message'
         onClick={() => onEditClick(true)}
       />
@@ -58,7 +66,7 @@ const BroadcastDashboard = () => {
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
       <Button
         text='edit'
-        className='data-edit-second-message button bg-button-color mt-px'
+        className='data-edit-second-message button mt-px bg-missive-background-color py-2 text-missive-blue-color'
         onClick={() => onEditClick(false)}
       />
 

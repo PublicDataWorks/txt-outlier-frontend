@@ -14,6 +14,8 @@ const config = {
         'missive-light-border-color': 'var(--missive-light-border-color)',
         'missive-border-radius': 'var(--missive-border-radius)',
         'missive-conversation-list-background-color': 'var(--missive-conversation-list-background-color)',
+        'missive-text-color-a': 'var(--missive-text-color-a)',
+        'rgba-missive-text-color-a': 'rgba(var(--missive-text-color-a), 0.05)',
         'missive-text-color-d': 'var(--missive-text-color-d)',
         'missive-text-color-e': 'var(--missive-text-color-e)'
       }

@@ -36,7 +36,7 @@ const PastBroadcasts = () => {
     if (hasNextPage) {
       void fetchNextPage()
     } else {
-      setCurrentPage(currentPage + 1)
+      setCurrentPage(currentPage)
     }
   }
 
