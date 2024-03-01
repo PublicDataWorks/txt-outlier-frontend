@@ -7,7 +7,7 @@ import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
 import { useQueryClient } from '@tanstack/react-query'
 import LastBroadcastStatus from './LastBroadcastStatus'
-// import { makeBroadcast } from '../../apis/broadcastApi'
+import { makeBroadcast } from '../../apis/broadcastApi'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
@@ -22,15 +22,37 @@ const BroadcastDashboard = () => {
     setIsFirstMessage(isFirst)
   }
 
+  // const editFirst = [{
+  //   type: "input",
+  //   data: {
+  //     subtitle: ["The OpenAI API is powered by a diverse set of models with different capabilities and price points. The default model will be used for all prompts unless you specify a different model in the prompt itself."]
+  //   }
+  // }]
+  //
+  //
+  // const editSecond = [{
+  //   type: "input",
+  //   data: {
+  //     type: "text",
+  //     focus: true,
+  //     name: "dadasd",
+  //     value: "dasdasd",
+  //     required: true
+  //   },
+  //   subtitle: ["The OpenAI API is powered by a diverse set of models with different capabilities and price points. The default model will be used for all prompts unless you specify a different model in the prompt itself."]
+  //
+  // }]
+
+
   const e = [{
-    type: "title",
+    type: "input",
     data: {
       subtitle: ["The OpenAI API is powered by a diverse set of models with different capabilities and price points. The default model will be used for all prompts unless you specify a different model in the prompt itself."]
     }
   }]
 
-  const globalForm = () => {
-    void Missive.openForm({
+  const globalForm = async () => {
+    const result = await Missive.openForm({
       name: "Settings",
       fields: e,
       buttons: [{
@@ -41,11 +63,13 @@ const BroadcastDashboard = () => {
         label: "Update"
       }]
     });
+    console.log(result)
   }
 
-  const handleSendNow = () => {
+  const handleSendNow = async () => {
     setIsSent(true)
-    // void makeBroadcast()
+    await makeBroadcast();
+    setIsSent(false);
   }
 
   if (isPending || !data?.data) {
@@ -69,7 +93,7 @@ const BroadcastDashboard = () => {
           </button>
         </span>
         <span className='ml-2 button p-0 bg-missive-blue-color'>
-          <button type='button' className={`button button-async py-3 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`} onClick={ handleSendNow }>
+          <button type='button' className={`button button-async py-3 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`} onClick={ () => handleSendNow }>
               <span>
                 <span className="button-async-label">Send now</span>
               </span>
@@ -84,24 +108,11 @@ const BroadcastDashboard = () => {
         </span>
       </div>
 
-      <button  type='button'  className={`button button-async ${isSent ? 'button-async--loading' : ''}`} onClick={ handleSendNow }>
-          <span>
-            <span className="button-async-label">Button</span>
-          </span>
-            <div className="loading-icon">
-              <i className="icon icon-circle w-6 h-6">
-                <svg className="w-6 h-6">
-                  <use xlinkHref="#circle" />
-                </svg>
-              </i>
-            </div>
-      </button>
-
       <Button
         text='dasdasdasdasdasd'
         className='button mt-px bg-missive-background-color hover:!bg-rgba-missive-blue-color py-1 text-missive-blue-color'
         data-cy='edit-first-message'
-        onClick={ globalForm }
+        onClick={ ()=> globalForm }
       />
 
       <h3 className='mt-5 font-bold'>Conversation starter</h3>
