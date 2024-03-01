@@ -1,16 +1,15 @@
 type StorageValue = Record<string, unknown> | unknown[] | string
 
 interface FormData {
-  name: string;
-  fields: never[];
-  comments: never[];
-  notes: never[];
-  buttons: never[];
+  name: string
+  fields: never[]
+  comments: never[]
+  notes: never[]
+  buttons: never[]
   options: {
-    autoClose: boolean;
-  };
+    autoClose: boolean
+  }
 }
-
 
 declare class MissiveClass {
   public constructor()
@@ -20,8 +19,8 @@ declare class MissiveClass {
   public storeSet(key: string, data: StorageValue): void
 
   public openForm(data: {
-    buttons: ({ label: string; type: string })[];
-    name: string;
+    buttons: { label: string; type: string }[]
+    name: string
     fields: { data: { subtitle: string[] }; type: string }[]
   }): Promise<never>
 }

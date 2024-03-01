@@ -89,7 +89,7 @@ const BroadcastForm: FC<BroadcastFormProps> = ({ broadcast, isOpen, onClose, isF
           <div className='mt-4 flex justify-center gap-x-4'>
             <button
               type='button'
-              className='button text-600 rounded-full border bg-missive-background-color hover:!bg-rgba-missive-blue-color px-10 py-2 font-medium text-missive-blue-color'
+              className='button text-600 rounded-full border bg-missive-background-color px-10 py-2 font-medium text-missive-blue-color hover:!bg-rgba-missive-blue-color'
               onClick={onClose}
             >
               Cancel
