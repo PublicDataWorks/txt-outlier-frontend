@@ -21,7 +21,14 @@ function AuthProvider({ children }: AuthProviderProperties) {
   const [token, setToken] = useState<string>() // TODO: Do we need this?
 
   const updateToken = useCallback((accessToken: string | null) => {
-    const authHeader = accessToken ? `Bearer ${accessToken}` : ''
+    let authHeader = '';
+    if (accessToken) {
+      if (accessToken.startsWith('Bearer ')) {
+        authHeader = accessToken;
+      } else {
+        authHeader = `Bearer ${accessToken}`;
+      }
+    }
     axios.defaults.headers.common.Authorization = authHeader
     Missive.storeSet('token', authHeader)
     setToken(authHeader)
