@@ -43,17 +43,32 @@ const LastBroadcastStatus: FC<LastBroadcastStatusProps> = ({ latestBroadcast }) 
   }, [latestBroadcast])
 
   return (
-    <div className='mt-1.5' data-cy='most-recent'>
-      <h2 className='font-bold'>
-        Last batch sent{' '}
-        <span className='font-normal italic'>{latestBroadcast ? DateUtils.format(latestBroadcast.runAt) : 'None'}</span>
-      </h2>
-      <ul className='pt-5'>
-        <li>Conversation starters sent: {renderMostRecentBroadcastDetails.totalFirstSent}</li>
-        <li>Follow-up messages sent: {renderMostRecentBroadcastDetails.totalSecondSent}</li>
-        <li>Total delivered successfully: {renderMostRecentBroadcastDetails.successfullyDelivered}</li>
-        <li>Failed to deliver: {renderMostRecentBroadcastDetails.failedDelivered}</li>
-        <li>Unsubscribes: {renderMostRecentBroadcastDetails.totalUnsubscribed}</li>
+    <div className='mt-7' data-cy='most-recent'>
+      <h2 className='text-lg font-bold'>Last batch</h2>
+      <h3 className='mt-2 font-normal'>
+        Sent on{' '}
+        <span className='font-medium'>{latestBroadcast ? DateUtils.format(latestBroadcast.runAt) : 'None'}</span>
+      </h3>
+
+      <ul className='pt-3.5'>
+        <li className='pt-3 font-medium'>
+          {renderMostRecentBroadcastDetails.totalFirstSent}{' '}
+          <span className='font-normal'>Conversation starters sent</span>
+        </li>
+        <li className='pt-3 font-medium'>
+          {renderMostRecentBroadcastDetails.totalSecondSent}{' '}
+          <span className='font-normal'>Follow-up messages sent</span>
+        </li>
+        <li className='pt-3 font-medium'>
+          {renderMostRecentBroadcastDetails.successfullyDelivered}{' '}
+          <span className='font-normal'>Delivered successfully</span>
+        </li>
+        <li className='pt-3 font-medium'>
+          {renderMostRecentBroadcastDetails.failedDelivered} <span className='font-normal'>Failed to deliver</span>
+        </li>
+        <li className='pt-3 font-medium'>
+          {renderMostRecentBroadcastDetails.totalUnsubscribed} <span className='font-normal'>Unsubscribes</span>
+        </li>
       </ul>
     </div>
   )
