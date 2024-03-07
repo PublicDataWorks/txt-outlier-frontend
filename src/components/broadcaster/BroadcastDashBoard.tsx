@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import DateUtils from 'utils/date'
-import Button from 'components/Button'
 import { useBroadcastDashboardQuery, useUpdateBroadcast } from 'hooks/broadcast'
 import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
@@ -61,35 +60,20 @@ const BroadcastDashboard = () => {
       ]
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (result[title]) {
-      setIsSent(true);
+      setIsSent(true)
       try {
-        await makeBroadcast();
+        await makeBroadcast()
       } catch (err) {
-        console.error(err);
+        /* empty */
       } finally {
-        setIsSent(false);
+        setIsSent(false)
       }
     }
-    // void result
-    //   .then(value => {
-    //     if (value[title]) {
-    //       setIsSent(true)
-    //       const makeResult = makeBroadcast()
-    //       void makeResult
-    //         .catch(err => console.log(err))
-    //         .then(value => console.log(value))
-    //         .finally(() => setIsSent(false))
-    //     } else {
-    //       /* empty */
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //   })
   }
 
-  const globalEditMessageForm = (isFirst: boolean) => {
+  const globalEditMessageForm = async (isFirst: boolean) => {
     let warning = ''
     let note = ''
     let saveBtnText = 'Save changes'
@@ -144,22 +128,12 @@ const BroadcastDashboard = () => {
       ]
     })
 
-    void result
-      .then(value => {
-        const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
-        if (value[title] !== messageToUpdate) {
-          const updated = isFirst ? { firstMessage: value[title] } : { secondMessage: value[title] }
-          mutate({
-            id: upcoming.id,
-            ...updated
-          })
-        } else {
-          /* empty */
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
+    if (result[title] !== messageToUpdate) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const updated = isFirst ? { firstMessage: result[title] } : { secondMessage: result[title] }
+      mutate({ id: upcoming.id, ...updated })
+    }
   }
 
   return (
@@ -173,6 +147,7 @@ const BroadcastDashboard = () => {
           <button
             type='button'
             className='button inline-block px-8 hover:!bg-rgba-missive-no-bg-color'
+            disabled={isSent}
             onClick={() => setIsRunAtPickerOpen(true)}
           >
             Pause schedule
@@ -183,7 +158,7 @@ const BroadcastDashboard = () => {
             type='button'
             className={`button button-async inline-block px-10 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`}
             onClick={() => {
-               void globalSendNowConfirm()
+              void globalSendNowConfirm()
             }}
           >
             <span>
@@ -201,29 +176,25 @@ const BroadcastDashboard = () => {
       </div>
 
       <h3 className='mt-5 flex'>
-        Conversation starter <img className='ml-2' src={EditIcon} alt='Edit icon' />
+        Conversation starter{' '}
+        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void globalEditMessageForm(true)}>
+          <img src={EditIcon} alt='Edit icon' />
+        </button>
       </h3>
 
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
-      <Button
-        text='edit'
-        className='button mt-px bg-missive-background-color py-1 text-missive-blue-color hover:!bg-rgba-missive-blue-color'
-        data-cy='edit-first-message'
-        onClick={() => globalEditMessageForm(true)}
-      />
 
-      <h3 className='mt-5 flex'>
-        Follow-up message <img className='ml-2' src={EditIcon} alt='Edit icon' />
+      <h3 className='mt-4 flex'>
+        Follow-up message{' '}
+        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void globalEditMessageForm(false)}>
+          <img src={EditIcon} alt='Edit icon' />
+        </button>
       </h3>
 
       <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
-      <Button
-        text='edit'
-        className='data-edit-second-message button mt-px bg-missive-background-color py-1  text-missive-blue-color hover:!bg-rgba-missive-blue-color'
-        onClick={() => globalEditMessageForm(false)}
-      />
+
       <div
-        className={`fixed left-0 top-0 h-full w-full ${ isRunAtPickerOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
+        className={`fixed left-0 top-0 h-full w-full ${isRunAtPickerOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
       />
       <RunAtPicker
         isOpen={isRunAtPickerOpen}

@@ -21,12 +21,12 @@ function AuthProvider({ children }: AuthProviderProperties) {
   const [token, setToken] = useState<string>() // TODO: Do we need this?
 
   const updateToken = useCallback((accessToken: string | null) => {
-    let authHeader = '';
+    let authHeader = ''
     if (accessToken) {
       if (accessToken.startsWith('Bearer ')) {
-        authHeader = accessToken;
+        authHeader = accessToken
       } else {
-        authHeader = `Bearer ${accessToken}`;
+        authHeader = `Bearer ${accessToken}`
       }
     }
     axios.defaults.headers.common.Authorization = authHeader
