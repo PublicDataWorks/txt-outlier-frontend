@@ -17,22 +17,79 @@ const BroadcastDashboard = () => {
 
   const { mutate } = useUpdateBroadcast(queryClient)
 
-  const handleSendNow = () => {
-    setIsSent(true)
-    const result = makeBroadcast()
-    void result
-      .catch(err => console.log(err))
-      .then(value => console.log(value))
-      .finally(() => setIsSent(false))
-  }
-
   if (isPending || !data?.data) {
     return <span>Loading...</span>
   }
 
   const { upcoming } = data.data
 
-  const globalForm = (isFirst: boolean) => {
+  const globalSendNowConfirm = async () => {
+    const note = `Conversation starters will be sent to [# of recipients] recipients. `
+    const sendBtnText = 'Send now'
+    const title = 'Send now'
+
+    const e = [
+      {
+        type: 'title',
+        data: {
+          subtitle: [note]
+        }
+      },
+      {
+        type: 'input',
+        data: {
+          type: 'hidden',
+          name: title,
+          value: true,
+          required: true
+        }
+      }
+    ]
+
+    const result = await Missive.openForm({
+      name: title,
+      fields: e,
+      buttons: [
+        {
+          type: 'cancel',
+          label: 'Cancel'
+        },
+        {
+          type: 'submit',
+          label: sendBtnText
+        }
+      ]
+    })
+
+    if (result[title]) {
+      setIsSent(true);
+      try {
+        await makeBroadcast();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSent(false);
+      }
+    }
+    // void result
+    //   .then(value => {
+    //     if (value[title]) {
+    //       setIsSent(true)
+    //       const makeResult = makeBroadcast()
+    //       void makeResult
+    //         .catch(err => console.log(err))
+    //         .then(value => console.log(value))
+    //         .finally(() => setIsSent(false))
+    //     } else {
+    //       /* empty */
+    //     }
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
+  }
+
+  const globalEditMessageForm = (isFirst: boolean) => {
     let warning = ''
     let note = ''
     let saveBtnText = 'Save changes'
@@ -91,14 +148,12 @@ const BroadcastDashboard = () => {
       .then(value => {
         const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
         if (value[title] !== messageToUpdate) {
-          console.log('update')
           const updated = isFirst ? { firstMessage: value[title] } : { secondMessage: value[title] }
           mutate({
             id: upcoming.id,
             ...updated
           })
         } else {
-          console.log('do nothing')
           /* empty */
         }
       })
@@ -127,7 +182,9 @@ const BroadcastDashboard = () => {
           <button
             type='button'
             className={`button button-async inline-block px-10 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`}
-            onClick={handleSendNow}
+            onClick={() => {
+               void globalSendNowConfirm()
+            }}
           >
             <span>
               <span className='button-async-label'>Send now</span>
@@ -152,7 +209,7 @@ const BroadcastDashboard = () => {
         text='edit'
         className='button mt-px bg-missive-background-color py-1 text-missive-blue-color hover:!bg-rgba-missive-blue-color'
         data-cy='edit-first-message'
-        onClick={() => globalForm(true)}
+        onClick={() => globalEditMessageForm(true)}
       />
 
       <h3 className='mt-5 flex'>
@@ -163,7 +220,7 @@ const BroadcastDashboard = () => {
       <Button
         text='edit'
         className='data-edit-second-message button mt-px bg-missive-background-color py-1  text-missive-blue-color hover:!bg-rgba-missive-blue-color'
-        onClick={() => globalForm(false)}
+        onClick={() => globalEditMessageForm(false)}
       />
       <div
         className={`fixed left-0 top-0 h-full w-full ${ isRunAtPickerOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
