@@ -177,7 +177,12 @@ const BroadcastDashboard = () => {
 
       <h3 className='mt-5 flex'>
         Conversation starter{' '}
-        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void globalEditMessageForm(true)}>
+        <button
+          type='button'
+          className='ml-2 bg-transparent p-0'
+          data-cy='edit-first-message'
+          onClick={() => void globalEditMessageForm(true)}
+        >
           <img src={EditIcon} alt='Edit icon' />
         </button>
       </h3>
