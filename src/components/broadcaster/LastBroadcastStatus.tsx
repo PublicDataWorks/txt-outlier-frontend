@@ -44,7 +44,7 @@ const LastBroadcastStatus: FC<LastBroadcastStatusProps> = ({ latestBroadcast }) 
 
   return (
     <div className='mt-7' data-cy='most-recent'>
-      <h2 className='text-lg font-bold'>Last batch</h2>
+      <h2 className='text-lg'>Last batch</h2>
       <h3 className='mt-2 font-normal'>
         Sent on{' '}
         <span className='font-medium'>{latestBroadcast ? DateUtils.format(latestBroadcast.runAt) : 'None'}</span>

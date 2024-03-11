@@ -23,7 +23,7 @@ const BroadcastDashboard = () => {
   const { upcoming } = data.data
 
   const globalSendNowConfirm = async () => {
-    const note = `Conversation starters will be sent to [# of recipients] recipients. `
+    const note = `Conversation starters will be sent to ${upcoming.noRecipients} recipients. `
     const sendBtnText = 'Send now'
     const title = 'Send now'
 

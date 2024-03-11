@@ -14,6 +14,7 @@ interface UpcomingBroadcast {
   secondMessage: string
   runAt: number
   delay: string
+  noRecipients: number
 }
 
 interface BroadcastSentDetail {
