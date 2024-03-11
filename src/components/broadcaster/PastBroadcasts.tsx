@@ -47,7 +47,7 @@ const PastBroadcasts = () => {
 
   return (
     <>
-      <h2 className='mb-2 mt-7 text-lg font-bold'>Past batches</h2>
+      <h2 className='mb-2 mt-7 text-lg'>Past batches</h2>
       <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (

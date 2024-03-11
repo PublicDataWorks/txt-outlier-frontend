@@ -138,8 +138,8 @@ const BroadcastDashboard = () => {
 
   return (
     <div className='container mx-auto mt-4 w-[22rem] max-w-md'>
-      <h2 className='mt-3 text-lg	font-bold'>Next batch</h2>
-      <h3 className='mt-2 font-normal'>
+      <h2 className='mt-3 text-lg'>Next batch</h2>
+      <h3 className='mt-2'>
         Scheduled for <span className='font-medium'>{DateUtils.format(upcoming.runAt)}</span>
       </h3>
       <div className='mt-3 flex justify-center'>
