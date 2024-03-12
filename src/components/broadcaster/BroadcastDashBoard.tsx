@@ -69,6 +69,7 @@ const BroadcastDashboard = () => {
         /* empty */
       } finally {
         setIsSent(false)
+        await queryClient.invalidateQueries({ queryKey: ['broadcastDashboard'] })
       }
     }
   }
@@ -131,7 +132,6 @@ const BroadcastDashboard = () => {
     const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
 
     if (result[title] !== messageToUpdate) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const updated = isFirst ? { firstMessage: result[title] } : { secondMessage: result[title] }
       mutate({ id: upcoming.id, ...updated })
     }
