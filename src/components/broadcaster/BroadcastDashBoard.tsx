@@ -113,7 +113,7 @@ const BroadcastDashboard = () => {
       }
     ]
 
-    const result = Missive.openForm({
+    const result = await Missive.openForm({
       name: 'Settings',
       fields: e,
       buttons: [
@@ -129,6 +129,7 @@ const BroadcastDashboard = () => {
     })
 
     const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
+
     if (result[title] !== messageToUpdate) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const updated = isFirst ? { firstMessage: result[title] } : { secondMessage: result[title] }
