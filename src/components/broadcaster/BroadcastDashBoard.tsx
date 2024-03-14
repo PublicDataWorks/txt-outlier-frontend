@@ -115,7 +115,7 @@ const BroadcastDashboard = () => {
     ]
 
     const result = await Missive.openForm({
-      name: 'Settings',
+      name: title,
       fields: e,
       buttons: [
         {
@@ -126,7 +126,10 @@ const BroadcastDashboard = () => {
           type: 'submit',
           label: saveBtnText
         }
-      ]
+      ],
+      options: {
+        autoClose: false
+      }
     })
 
     const messageToUpdate = isFirst ? upcoming.firstMessage : upcoming.secondMessage
@@ -134,6 +137,8 @@ const BroadcastDashboard = () => {
     if (result[title] !== messageToUpdate) {
       const updated = isFirst ? { firstMessage: result[title] } : { secondMessage: result[title] }
       mutate({ id: upcoming.id, ...updated })
+    } else {
+      await Missive.closeForm()
     }
   }
 

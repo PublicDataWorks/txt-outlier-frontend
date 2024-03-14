@@ -47,6 +47,7 @@ const useUpdateBroadcast = (queryClient: QueryClient) =>
     mutationFn: async (newData: UpdateBroadcast) => updateBroadcast(newData),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['broadcastDashboard'] })
+      await Missive.closeForm()
       // TODO: remove await
       // Get new content from response
     }

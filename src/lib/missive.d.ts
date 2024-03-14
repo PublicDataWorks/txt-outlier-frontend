@@ -23,6 +23,8 @@ declare class MissiveClass {
     name: string
     fields: { data: { subtitle: string[] }; type: string }[]
   }): Promise<never>
+
+  public closeForm(): Promise<never>
 }
 
 declare const Missive: InstanceType<typeof MissiveClass>
