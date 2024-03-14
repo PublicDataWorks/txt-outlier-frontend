@@ -49,7 +49,7 @@ const getPastBroadcasts = async ({ pageParam }: Params): Promise<AxiosResponse<B
   return axios.get(`${BROADCAST_PATH}?limit=${ITEMS_PER_PAGE}${cursor}`)
 }
 
-const makeBroadcast = async (): Promise<void> => axios.get(`${BROADCAST_PATH}/make`)
+const makeBroadcast = async (): Promise<void> => axios.get(`${BROADCAST_PATH}/send-now`)
 
 const getBroadcastDashboard = async (): Promise<AxiosResponse<BroadcastDashboard>> => axios.get(BROADCAST_PATH)
 

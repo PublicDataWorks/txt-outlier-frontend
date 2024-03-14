@@ -44,7 +44,9 @@ const usePastBroadcastsQuery = initialData =>
 
 const useUpdateBroadcast = (queryClient: QueryClient) =>
   useMutation({
-    mutationFn: async (newData: UpdateBroadcast) => updateBroadcast(newData),
+    mutationFn: async (newData: UpdateBroadcast) => {
+      await updateBroadcast(newData)
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['broadcastDashboard'] })
       await Missive.closeForm()
