@@ -6,13 +6,6 @@ import Logout from './components/Logout'
 import PrivateRoute from './components/PrivateRoute'
 import Home from './pages/Home'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import PropTypes from 'prop-types'
-
-const CenteredContainer = ({ children }) => <div className='flex h-screen items-center justify-center'>{children}</div>
-
-CenteredContainer.propTypes = {
-  children: PropTypes.node.isRequired
-}
 
 export default function App(): ReactElement {
   return (
@@ -22,9 +15,9 @@ export default function App(): ReactElement {
           <Route
             path={LOGIN_PATH}
             element={
-              <CenteredContainer>
+              <div className='flex h-screen items-center justify-center'>
                 <GoogleOauthPopup />
-              </CenteredContainer>
+              </div>
             }
           />
           <Route path={LOGOUT_PATH} element={<Logout />} />

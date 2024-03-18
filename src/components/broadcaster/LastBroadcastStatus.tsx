@@ -52,6 +52,7 @@ const LastBroadcastStatus = () => {
         failedDelivered: mostRecentBroadcastDetails.failedDelivered || renderMostRecentBroadcastDetails.failedDelivered,
         totalUnsubscribed: renderMostRecentBroadcastDetails.totalUnsubscribed
       }
+
       setRenderMostRecentBroadcastDetails(newMostRecent)
     }
   }, [mostRecentBroadcastDetails])
