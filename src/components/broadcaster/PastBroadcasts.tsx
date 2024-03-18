@@ -7,26 +7,23 @@ import DateUtils from 'utils/date'
 
 const PastBroadcasts = () => {
   const [selected, setSelected] = useState<number | undefined>()
-  const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
   const bottomRef = useRef<HTMLDivElement | null>(null)
-
   const queryClient = useQueryClient()
   const initialData = {
     pages: [queryClient.getQueryData(['broadcastDashboard'])],
     pageParams: [0]
   }
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePastBroadcastsQuery(initialData)
-  let btnText = 'Collapse'
+
+  const collapseBtnText = 'Collapse'
+  let showMoreBtnText = 'Show more'
   if (isFetchingNextPage) {
-    btnText = 'Loading more...'
-  } else if (hasNextPage || currentPage < totalPages) {
-    btnText = 'Show more'
+    showMoreBtnText = 'Loading more...'
   }
   useEffect(() => {
     // Run only once when hasNextPage go from true to false
     if (data?.pages.length) {
-      setTotalPages(data.pages.length)
       setCurrentPage(data.pages.length)
     }
   }, [data])
@@ -38,19 +35,21 @@ const PastBroadcasts = () => {
   const onLoadMore = () => {
     if (hasNextPage) {
       void fetchNextPage()
-    } else if (currentPage === totalPages) {
-      setCurrentPage(1)
-      setSelected(undefined)
     } else {
       setCurrentPage(currentPage + 1)
     }
+  }
+
+  const onCollapse = () => {
+    setCurrentPage(1)
+    setSelected(undefined)
   }
   const onSelect = (id: number) => (id === selected ? setSelected(undefined) : setSelected(id))
 
   return (
     <>
-      <h2 className='mb-6 mt-5 font-bold'>Past batches</h2>
-      <div className='dropdown'>
+      <h2 className='mb-2 mt-1.5 font-bold'>Past batches</h2>
+      <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (
             <Fragment key={broadcast.id}>
@@ -70,16 +69,19 @@ const PastBroadcasts = () => {
               {selected === broadcast.id && (
                 <div className='mx-3 my-5 text-sm'>
                   <p className='font-bold'>
-                    Total recipients: <span className='font-normal'>{broadcast.totalSent}</span>
+                    Total recipients: <span className='font-normal'>{broadcast.totalFirstSent}</span>
                   </p>
                   <p className='mt-2 font-bold'>
-                    Second messages sent: <span className='font-normal'>{broadcast.totalSent}</span>
+                    Follow-up messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
+                  </p>
+                  <p className='mt-2 font-bold'>
+                    Unsubscribes: <span className='font-normal'>{broadcast.totalUnsubscribed}</span>
                   </p>
                   <h3 className='mt-2 font-bold'>Conversation starter</h3>
                   <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
                     {broadcast.firstMessage}
                   </p>
-                  <h3 className='mt-2 font-bold'>Second message</h3>
+                  <h3 className='mt-2 font-bold'>Follow-up message</h3>
                   <p id='secondMessage' className='bg-missive-background-color px-3 py-4 italic'>
                     {broadcast.secondMessage}
                   </p>
@@ -88,12 +90,23 @@ const PastBroadcasts = () => {
             </Fragment>
           ))
         )}
-        <Button
-          text={btnText}
-          onClick={onLoadMore}
-          className='bg-missive-background-color py-3 disabled:cursor-not-allowed disabled:opacity-50'
-          disabled={isFetchingNextPage}
-        />
+        {selected ? (
+          <Button
+            text={collapseBtnText}
+            onClick={onCollapse}
+            className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+            disabled={isFetchingNextPage}
+          />
+        ) : (
+          hasNextPage && (
+            <Button
+              text={showMoreBtnText}
+              onClick={onLoadMore}
+              className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+              disabled={isFetchingNextPage}
+            />
+          )
+        )}
       </div>
       <div ref={bottomRef} />
     </>

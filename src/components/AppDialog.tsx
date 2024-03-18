@@ -38,7 +38,7 @@ const AppDialog: FC<AppDialogProps> = ({ children, isOpen, onClose, title, class
             <Dialog.Panel
               className={`${className} max-w-md transform overflow-hidden rounded-md bg-missive-conversation-list-background-color p-0 text-left align-middle shadow-xl transition-all`}
             >
-              <Dialog.Title as='h3' className='pt-2 text-center font-medium leading-6'>
+              <Dialog.Title as='h3' className='text-normal pt-2 text-center font-medium leading-6'>
                 {title}
               </Dialog.Title>
               {children}

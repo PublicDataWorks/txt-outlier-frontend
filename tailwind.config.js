@@ -13,7 +13,9 @@ const config = {
         'missive-blue-color': 'var(--missive-blue-color)',
         'missive-light-border-color': 'var(--missive-light-border-color)',
         'missive-border-radius': 'var(--missive-border-radius)',
-        'missive-conversation-list-background-color': 'var(--missive-conversation-list-background-color)'
+        'missive-conversation-list-background-color': 'var(--missive-conversation-list-background-color)',
+        'missive-text-color-d': 'var(--missive-text-color-d)',
+        'missive-text-color-e': 'var(--missive-text-color-e)'
       }
     }
   }

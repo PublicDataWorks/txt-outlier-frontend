@@ -1,7 +1,7 @@
 Install the dependencies:
 
 ```bash
-npm install
+yarn install
 ```
 
 ## Usage
@@ -9,7 +9,7 @@ npm install
 To start the project in dev mode:
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 Open the project in browser using this link:
@@ -18,7 +18,7 @@ Open the project in browser using this link:
 To build the project:
 
 ```bash
-npm run build
+yarn build
 ```
 
 ## Running Tests
@@ -34,26 +34,26 @@ cp cypress.env.json.sample cypress.env.json
 To run unit test:
 
 ```bash
-npm run test:unit
+yarn test:unit
 ```
 
 To run end-to-end tests interactively:
 
 ```bash
-npm run test:e2e:open
+yarn test:e2e:open
 ```
 
 To run end-to-end tests headless-ly:
 
 ```bash
-npm run test:e2e:run
+yarn test:e2e:run
 ```
 
 To run all tests (unit and e2e) and merge coverage reports (to run in CI
 workflows):
 
 ```bash
-npm run coverage
+yarn coverage
 ```
 
 ## Contributing
@@ -63,7 +63,7 @@ npm run coverage
 Install pre-commit hook:
 
 ```bash
-npm run prepare
+yarn prepare
 ```
 
 Toolings:
@@ -72,7 +72,7 @@ We are using `Prettier` to format the code, please add it to your editor/IDE and
 make sure that it picks up the right config of this project
 at `/.prettierrc.cjs`.
 
-The pre-commit hook will run `npm run lint` before every commit. You can also
+The pre-commit hook will run `yarn lint` before every commit. You can also
 install `eslint` plugin to your editor/IDE to see the visualized error while
 coding.
 
