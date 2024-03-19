@@ -25,6 +25,8 @@ declare class MissiveClass {
   }): Promise<never>
 
   public closeForm(): Promise<never>
+
+  public alert(options: { title: string; message: string; note: string }): Promise<never>
 }
 
 declare const Missive: InstanceType<typeof MissiveClass>
