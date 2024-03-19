@@ -24,8 +24,8 @@ const BroadcastDashboard = () => {
 
   const { upcoming } = data.data
 
-  const globalSendNowConfirm = async () => {
-    const note = `Conversation starters will be sent to ${upcoming.noRecipients} recipients. `
+  const sendNowButtonRenderAndConfirm = async () => {
+    const note = 'Conversation starters will be sent to all recipients. '
     const sendBtnText = 'Send now'
     const title = 'Send now'
 
@@ -70,8 +70,9 @@ const BroadcastDashboard = () => {
       } catch (err: unknown) {
         if (err instanceof AxiosError) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          if (err.response?.data && err.response.data.message !== undefined) {
-            const errorCode = err.response.data.message
+          if (err.response?.data?.message) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            const errorCode = err.response.data.message as string
             const errorMessage = getErrorMessage(errorCode)
             await Missive.alert({
               title: 'Error while sending broadcast',
@@ -89,7 +90,7 @@ const BroadcastDashboard = () => {
     }
   }
 
-  const globalEditMessageForm = async (isFirst: boolean) => {
+  const editMessageButtonRenderAndConfirm = async (isFirst: boolean) => {
     let warning = ''
     let note = ''
     let saveBtnText = 'Save changes'
@@ -178,8 +179,9 @@ const BroadcastDashboard = () => {
           <button
             type='button'
             className={`button button-async inline-block px-10 hover:!bg-rgba-missive-no-bg-color ${isSent ? 'button-async--loading' : ''}`}
+            disabled={isSent}
             onClick={() => {
-              void globalSendNowConfirm()
+              void sendNowButtonRenderAndConfirm()
             }}
           >
             <span>
@@ -202,7 +204,7 @@ const BroadcastDashboard = () => {
           type='button'
           className='ml-2 bg-transparent p-0'
           data-cy='edit-first-message'
-          onClick={() => void globalEditMessageForm(true)}
+          onClick={() => void editMessageButtonRenderAndConfirm(true)}
         >
           <img src={EditIcon} alt='Edit icon' />
         </button>
@@ -212,7 +214,7 @@ const BroadcastDashboard = () => {
 
       <h3 className='mt-4 flex'>
         Follow-up message{' '}
-        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void globalEditMessageForm(false)}>
+        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void editMessageButtonRenderAndConfirm(false)}>
           <img src={EditIcon} alt='Edit icon' />
         </button>
       </h3>
