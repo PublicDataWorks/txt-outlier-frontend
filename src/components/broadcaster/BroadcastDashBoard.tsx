@@ -214,7 +214,11 @@ const BroadcastDashboard = () => {
 
       <h3 className='mt-4 flex'>
         Follow-up message{' '}
-        <button type='button' className='ml-2 bg-transparent p-0' onClick={() => void editMessageButtonRenderAndConfirm(false)}>
+        <button
+          type='button'
+          className='ml-2 bg-transparent p-0'
+          onClick={() => void editMessageButtonRenderAndConfirm(false)}
+        >
           <img src={EditIcon} alt='Edit icon' />
         </button>
       </h3>

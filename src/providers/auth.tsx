@@ -43,7 +43,7 @@ function AuthProvider({ children }: AuthProviderProperties) {
       })
     }
   }, [])
-  // console.log(updateToken)
+
   const tokenContextValue = useMemo(() => ({ token }), [token])
 
   const tokenChangedContextValue = useMemo(() => ({ updateToken }), [updateToken])
