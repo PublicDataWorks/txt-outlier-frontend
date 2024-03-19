@@ -5,8 +5,10 @@ import PastBroadcasts from './PastBroadcasts'
 import RunAtPicker from './RunAtPicker'
 import { useQueryClient } from '@tanstack/react-query'
 import LastBroadcastStatus from './LastBroadcastStatus'
-import { makeBroadcast } from '../../apis/broadcastApi'
+import { sendNowBroadcast } from '../../apis/broadcastApi'
 import EditIcon from '../../assets/edit-icon.svg?react'
+import { AxiosError } from 'axios'
+import getErrorMessage from '../../utils/sendNowFeedback'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
@@ -64,9 +66,24 @@ const BroadcastDashboard = () => {
     if (result[title]) {
       setIsSent(true)
       try {
-        await makeBroadcast()
-      } catch (err) {
-        /* empty */
+        await sendNowBroadcast()
+      } catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (err.response?.data && err.response.data.message !== undefined) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+            const errorCode = err.response.data.message
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            const errorMessage = getErrorMessage(errorCode)
+            await Missive.alert({
+              title: 'Error while sending broadcast',
+              message: errorMessage,
+              note: ''
+            })
+          }
+        } else {
+          /* empty */
+        }
       } finally {
         setIsSent(false)
         await queryClient.invalidateQueries({ queryKey: ['broadcastDashboard'] })
