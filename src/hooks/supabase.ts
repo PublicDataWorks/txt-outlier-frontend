@@ -5,29 +5,11 @@ import { useAnonKey } from '../providers/ws'
 import type { InfiniteData } from '@tanstack/react-query'
 import { useQueryClient } from '@tanstack/react-query'
 
-type MessagePayload = Omit<PastBroadcast, 'id'>
 interface RealtimeMessage {
   event: string
   type: string
   payload: BroadcastSentDetail
 }
-
-// const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefined => {
-//   const [mostRecentBroadcastDetails, setMostRecentBroadcastDetails] = useState<BroadcastSentDetail | undefined>()
-//   const anonKey = useAnonKey()
-//   if (!anonKey.anonKey) {
-//     return undefined
-//   }
-//   console.log('creating client')
-//   const client = createClient(import.meta.env.VITE_SUPABASE_URL as string, anonKey.anonKey)
-//
-//   const channel = client.channel('most-recent-broadcast')
-//   channel
-//     .on('broadcast', { event: 'details' }, (message: RealtimeMessage) => setMostRecentBroadcastDetails(message.payload))
-//     .subscribe()
-//
-//   return mostRecentBroadcastDetails
-// }
 
 const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefined => {
   const [mostRecentBroadcastDetails, setMostRecentBroadcastDetails] = useState<BroadcastSentDetail | undefined>()
@@ -45,26 +27,18 @@ const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefine
           // eslint-disable-next-line consistent-return
           queryClient.setQueryData<InfiniteData<PastBroadcast[]>>(['pastBroadcasts'], oldData => {
             if (oldData?.pages && oldData.pages.length > 0) {
-              // Additional checks for pages
-              const { pages } = oldData
-              const firstPage = pages[0] as unknown as PastBroadcast[] // Access pages[0] directly
-              const payload = message.payload as MessagePayload
+              const clonedOldData = { ...oldData } // clone old data
+              const firstPage = clonedOldData.pages[0] as unknown as PastBroadcast[]
 
-              if (firstPage.length > 0) {
-                // Additional check for firstPage
-                const copiedFirstPage = [...firstPage] // Copy the first page
-                if (copiedFirstPage[0]) {
-                  copiedFirstPage[0] = {
-                    ...copiedFirstPage[0],
-                    ...payload // Assuming message.payload is of type MessagePayload
-                  }
-                }
-                const newData = [copiedFirstPage, ...pages.slice(1)]
+              if (firstPage.data.past.length > 0) {
+                const clonedFirstPage = { ...firstPage } // clone first page
+                const clonedPast = [...clonedFirstPage.data.past] // clone first page past
+                clonedPast[0] = { ...clonedPast[0], ...message.payload } // update first past element with new data
 
-                return {
-                  ...oldData,
-                  pages: newData
-                }
+                clonedFirstPage.data.past = clonedPast // Replace the new past in first page
+                clonedOldData.pages[0] = clonedFirstPage // Change the first page in the old data
+
+                return clonedOldData
               }
               return oldData
             }
