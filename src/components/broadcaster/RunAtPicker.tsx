@@ -49,14 +49,11 @@ const RunAtPicker: FC<RunAtPickerProps> = ({ isOpen, onClose, runAt, broadcastId
       </Button>
     </>
   )
-  const today = new Date()
-  const oneWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
   return (
     <AppDialog isOpen={isOpen} onClose={onCloseWrapper} className='w-fit p-0'>
       <DayPicker
         mode='single'
         fromDate={new Date()}
-        toDate={oneWeekLater}
         selected={selectedDate}
         onSelect={newDate => newDate && setSelectedDate(newDate)}
         footer={footer}

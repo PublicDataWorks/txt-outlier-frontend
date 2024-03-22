@@ -31,7 +31,7 @@ export default function App(): ReactElement {
           />
         </Routes>
       </Router>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools initialIsOpen />
     </>
   )
 }

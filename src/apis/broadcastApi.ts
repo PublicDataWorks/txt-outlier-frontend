@@ -14,6 +14,7 @@ interface UpcomingBroadcast {
   secondMessage: string
   runAt: number
   delay: string
+  noRecipients: number
 }
 
 interface BroadcastSentDetail {
@@ -48,7 +49,7 @@ const getPastBroadcasts = async ({ pageParam }: Params): Promise<AxiosResponse<B
   return axios.get(`${BROADCAST_PATH}?limit=${ITEMS_PER_PAGE}${cursor}`)
 }
 
-const makeBroadcast = async (): Promise<void> => axios.get(`${BROADCAST_PATH}/make`)
+const sendNowBroadcast = async (): Promise<void> => axios.get(`${BROADCAST_PATH}/send-now`)
 
 const getBroadcastDashboard = async (): Promise<AxiosResponse<BroadcastDashboard>> => axios.get(BROADCAST_PATH)
 
@@ -64,5 +65,5 @@ const updateBroadcast = async ({
     runAt
   })
 
-export { makeBroadcast, getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
+export { sendNowBroadcast, getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
 export type { UpdateBroadcast, UpcomingBroadcast, PastBroadcast, BroadcastDashboard, BroadcastSentDetail }

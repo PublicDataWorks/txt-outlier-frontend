@@ -1,8 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import Button from 'components/Button'
 import { usePastBroadcastsQuery } from 'hooks/broadcast'
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { LiaCaretDownSolid, LiaCaretUpSolid } from 'react-icons/lia'
+import { useEffect, useRef, useState } from 'react'
 import DateUtils from 'utils/date'
 
 const PastBroadcasts = () => {
@@ -36,7 +35,7 @@ const PastBroadcasts = () => {
     if (hasNextPage) {
       void fetchNextPage()
     } else {
-      setCurrentPage(currentPage + 1)
+      setCurrentPage(currentPage)
     }
   }
 
@@ -48,53 +47,63 @@ const PastBroadcasts = () => {
 
   return (
     <>
-      <h2 className='mb-2 mt-1.5 font-bold'>Past batches</h2>
+      <h2 className='mb-2 mt-7 text-lg'>Past batches</h2>
       <div className='dropdown mb-4'>
         {data?.pages.slice(0, hasNextPage ? data.pages.length : currentPage).map(group =>
           group.data.past.map(broadcast => (
-            <Fragment key={broadcast.id}>
-              <button
-                key={broadcast.id}
-                type='button'
-                className='flex w-full rounded-md border bg-missive-light-border-color py-2'
-                onClick={() => onSelect(broadcast.id)}
-              >
-                {selected === broadcast.id ? (
-                  <LiaCaretUpSolid size={20} className='mx-2' />
-                ) : (
-                  <LiaCaretDownSolid size={19} className='mx-2' />
-                )}
-                <div className='flex items-center'>{DateUtils.format(broadcast.runAt)}</div>
-              </button>
-              {selected === broadcast.id && (
-                <div className='mx-3 my-5 text-sm'>
-                  <p className='font-bold'>
-                    Total recipients: <span className='font-normal'>{broadcast.totalFirstSent}</span>
-                  </p>
-                  <p className='mt-2 font-bold'>
-                    Follow-up messages sent: <span className='font-normal'>{broadcast.totalSecondSent}</span>
-                  </p>
-                  <p className='mt-2 font-bold'>
-                    Unsubscribes: <span className='font-normal'>{broadcast.totalUnsubscribed}</span>
-                  </p>
-                  <h3 className='mt-2 font-bold'>Conversation starter</h3>
-                  <p id='firstMessage' className='bg-missive-background-color px-3 py-4 italic'>
-                    {broadcast.firstMessage}
-                  </p>
-                  <h3 className='mt-2 font-bold'>Follow-up message</h3>
-                  <p id='secondMessage' className='bg-missive-background-color px-3 py-4 italic'>
-                    {broadcast.secondMessage}
-                  </p>
+            <div
+              key={broadcast.id}
+              className={`box box-collapsable !mt-1 ${selected === broadcast.id ? 'box-collapsable--opened' : ''}`}
+              onClick={() => onSelect(broadcast.id)}
+            >
+              <div className='box-header columns-middle'>
+                <span className='margin-right-small'>
+                  <i className='icon icon-menu-right h-6 w-4'>
+                    <svg className='h-4 w-4'>
+                      <use xlinkHref='#menu-right' />
+                    </svg>
+                  </i>
+                </span>
+                <span className='column-grow ellipsis'>
+                  <div className='flex items-center'>{DateUtils.format(broadcast.runAt)}</div>
+                </span>
+              </div>
+              <div className='box-content'>
+                <div>
+                  {selected === broadcast.id && (
+                    <div className='mx-3 text-sm'>
+                      <p className='pt-3 font-medium'>
+                        {broadcast.totalFirstSent} <span className='font-normal'>Total recipients</span>
+                      </p>
+
+                      <p className='pt-3 font-medium'>
+                        {broadcast.totalSecondSent} <span className='font-normal'>Follow-up messages sent</span>
+                      </p>
+
+                      <p className='pt-3 font-medium'>
+                        {broadcast.totalUnsubscribed} <span className='font-normal'>Unsubscribes</span>
+                      </p>
+
+                      <h3 className='pt-3 font-bold'>Conversation starter</h3>
+                      <p id='firstMessage' className='bg-missive-light-border-color px-3 py-4 italic'>
+                        {broadcast.firstMessage}
+                      </p>
+                      <h3 className='pt-3 font-bold'>Follow-up message</h3>
+                      <p id='secondMessage' className='bg-missive-light-border-color px-3 py-4 italic'>
+                        {broadcast.secondMessage}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </Fragment>
+              </div>
+            </div>
           ))
         )}
         {selected ? (
           <Button
             text={collapseBtnText}
             onClick={onCollapse}
-            className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+            className='bg-missive-background-color py-1 text-missive-blue-color  hover:!bg-rgba-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
             disabled={isFetchingNextPage}
           />
         ) : (
@@ -102,7 +111,7 @@ const PastBroadcasts = () => {
             <Button
               text={showMoreBtnText}
               onClick={onLoadMore}
-              className='bg-missive-background-color py-1 text-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
+              className='bg-missive-background-color py-1 text-missive-blue-color hover:!bg-rgba-missive-blue-color disabled:cursor-not-allowed disabled:opacity-50'
               disabled={isFetchingNextPage}
             />
           )
