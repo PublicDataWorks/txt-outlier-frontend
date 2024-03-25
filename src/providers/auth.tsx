@@ -36,7 +36,7 @@ function AuthProvider({ children }: AuthProviderProperties) {
 
   useEffect(() => {
     if (import.meta.env.DEV) {
-      updateToken('test-token')
+      updateToken(import.meta.env.VITE_JWT_TOKEN as string)
     } else {
       void Missive.storeGet<string>('token').then((accessToken: string) => {
         updateToken(accessToken)
