@@ -32,7 +32,7 @@
 //   }
 // }
 
-#root {
+:root {
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -46,4 +46,5 @@
     Helvetica Neue,
     sans-serif;
   height: 100svh;
+  --blueColorRGB: 58, 130, 247;
 }

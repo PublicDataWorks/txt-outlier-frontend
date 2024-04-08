@@ -12,7 +12,7 @@ const Button: FC<ButtonProps> = ({ children, text, onClick, disabled, className,
   <button
     type='button'
     onClick={onClick}
-    className={`${className} w-full rounded-md py-3 disabled:cursor-not-allowed disabled:opacity-50`}
+    className={`${className} w-full rounded-md disabled:cursor-not-allowed disabled:opacity-50`}
     disabled={disabled}
     {...props}
   >

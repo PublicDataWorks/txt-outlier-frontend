@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'
 import './App.scss'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AuthProvider from './providers/auth'
+import WebsocketProvider from './providers/ws'
 
 async function importDevStylesheet() {
   if (import.meta.env.DEV) {
@@ -20,7 +21,9 @@ function createAndRenderApp(container: Element | null) {
       <StrictMode>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <App />
+            <WebsocketProvider>
+              <App />
+            </WebsocketProvider>
           </AuthProvider>
         </QueryClientProvider>
       </StrictMode>
