@@ -21,7 +21,7 @@ const PrivateRoute: FC<PrivateRouteProperties> = ({ children }) => {
       else {
         try {
           const decoded = jwtDecode(token)
-          if (decoded.exp * 1000 < Date.now()) {
+          if (decoded.exp * 1000 <= Date.now()) {
             Missive.storeSet('token', '')
             updateToken('')
             navigate(LOGIN_PATH)
