@@ -6,7 +6,6 @@ import RunAtPicker from './RunAtPicker'
 import { useQueryClient } from '@tanstack/react-query'
 import LastBroadcastStatus from './LastBroadcastStatus'
 import { sendNowBroadcast } from '../../apis/broadcastApi'
-import EditIcon from '../../assets/edit-icon.svg?react'
 import { AxiosError } from 'axios'
 import getErrorMessage from '../../utils/sendNowFeedback'
 
@@ -197,32 +196,25 @@ const BroadcastDashboard = () => {
         </span>
       </div>
 
-      <h3 className='mt-5 flex'>
-        Conversation starter{' '}
-        <button
-          type='button'
-          className='ml-2 bg-transparent p-0'
-          data-cy='edit-first-message'
-          onClick={() => void editMessageButtonRenderAndConfirm(true)}
-        >
-          <img src={EditIcon} alt='Edit icon' />
-        </button>
-      </h3>
+      <h3 className='mt-5 flex'>Conversation starter </h3>
 
-      <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.firstMessage}</p>
+      <button
+        type='button'
+        className='mt-3 cursor-pointer bg-missive-light-border-color px-3 py-4 text-left italic'
+        onClick={() => void editMessageButtonRenderAndConfirm(true)}
+      >
+        <span className='whitespace-pre-line'>{upcoming.firstMessage}</span>
+      </button>
 
-      <h3 className='mt-4 flex'>
-        Follow-up message{' '}
-        <button
-          type='button'
-          className='ml-2 bg-transparent p-0'
-          onClick={() => void editMessageButtonRenderAndConfirm(false)}
-        >
-          <img src={EditIcon} alt='Edit icon' />
-        </button>
-      </h3>
+      <h3 className='mt-4 flex'>Follow-up message </h3>
 
-      <p className='mt-3 bg-missive-light-border-color px-3 py-4 italic'>{upcoming.secondMessage}</p>
+      <button
+        type='button'
+        className='mt-3 cursor-pointer bg-missive-light-border-color px-3 py-4 text-left italic'
+        onClick={() => void editMessageButtonRenderAndConfirm(false)}
+      >
+        <span className='whitespace-pre-line'>{upcoming.secondMessage}</span>
+      </button>
 
       <div
         className={`fixed left-0 top-0 h-full w-full ${isRunAtPickerOpen ? 'block bg-missive-background-color opacity-80' : 'hidden'}`}
