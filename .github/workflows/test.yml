@@ -11,6 +11,7 @@ env:
   VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
   VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
   VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+  VITE_JWT_TOKEN: ${{ secrets.VITE_JWT_TOKEN }}
 
 jobs:
   e2e-test:
@@ -31,3 +32,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: cypress-coverage/lcov.info
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots

@@ -119,9 +119,8 @@ const BroadcastDashboard = () => {
         }
       },
       {
-        type: 'input',
+        type: 'textarea',
         data: {
-          type: 'textarea',
           focus: true,
           name: title,
           value: isFirst ? upcoming.firstMessage : upcoming.secondMessage,

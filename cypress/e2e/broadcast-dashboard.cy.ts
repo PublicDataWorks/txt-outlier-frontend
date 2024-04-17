@@ -1,11 +1,12 @@
 const BROADCAST_PATH = '**/broadcasts'
 describe('Broadcasts', () => {
-  beforeEach(() => {
-    cy.seed()
-  })
-
   it('visits the dashboard', () => {
-    cy.seed()
+    cy.intercept('GET', '**/broadcasts', {
+      fixture: 'broadcasts.json'
+    }).as('seed')
+    cy.visit('/')
+
+    cy.wait('@seed')
     cy.contains('Next batch')
     cy.contains('Scheduled for')
     cy.contains('Sun Oct 10, 4:16 PM UTC')
