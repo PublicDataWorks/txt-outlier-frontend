@@ -1,14 +1,17 @@
 type StorageValue = Record<string, unknown> | unknown[] | string
 
-interface FormData {
+interface Organization {
+  teams: Team[]
+}
+
+interface Team {
+  users: User[]
+  id: string
   name: string
-  fields: never[]
-  comments: never[]
-  notes: never[]
-  buttons: never[]
-  options: {
-    autoClose: boolean
-  }
+}
+
+interface User {
+  me: boolean
 }
 
 declare class MissiveClass {
@@ -27,6 +30,8 @@ declare class MissiveClass {
   public closeForm(): Promise<never>
 
   public alert(options: { title: string; message: string; note: string }): Promise<never>
+
+  public async fetchOrganizations(): Promise<Organization[]>
 }
 
 declare const Missive: InstanceType<typeof MissiveClass>

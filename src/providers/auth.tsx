@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import axios from '../lib/axios'
@@ -14,20 +15,36 @@ const TokenContext = createContext<TokenContextValue>({} as TokenContextValue)
 const TokenChangedContext = createContext<TokenChangedValue>({} as TokenChangedValue)
 
 interface AuthProviderProperties {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 function AuthProvider({ children }: AuthProviderProperties) {
-  const [token, setToken] = useState<string>() // TODO: Do we need this?
+  const [token, setToken] = useState<string>()
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>()
 
   const updateToken = useCallback((accessToken: string | null) => {
+    if (!token && accessToken) {
+      // Login
+      const newIntervalId = setInterval(() => {
+        Missive.fetchOrganizations().then(orgs => {
+          if (!orgs[0]) return
+          const teamIds =
+            orgs[0].teams.filter(team => team.users.find(user => user.me)).map(team => team.id)
+          axios.defaults.headers.common['X-Teams'] = teamIds.join(', ')
+          // eslint-disable-next-line no-console
+        }).catch(console.error)
+      }, 10000)
+      setIntervalId(newIntervalId)
+    } else if (token && !accessToken) {
+      // Logout
+      clearInterval(intervalId)
+      setIntervalId(undefined)
+      axios.defaults.headers.common['X-Teams'] = undefined
+    }
+
     let authHeader = ''
     if (accessToken) {
-      if (accessToken.startsWith('Bearer ')) {
-        authHeader = accessToken
-      } else {
-        authHeader = `Bearer ${accessToken}`
-      }
+      authHeader = accessToken.startsWith('Bearer ') ? accessToken : `Bearer ${accessToken}`
     }
     axios.defaults.headers.common.Authorization = authHeader
     Missive.storeSet('token', authHeader)
