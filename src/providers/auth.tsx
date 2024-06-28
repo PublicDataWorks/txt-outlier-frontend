@@ -30,6 +30,7 @@ function AuthProvider({ children }: AuthProviderProperties) {
           if (!orgs[0]) return
           const teamIds =
             orgs[0].teams.filter(team => team.users.find(user => user.me)).map(team => team.id)
+          // Authorized by the teams the user is in
           axios.defaults.headers.common['X-Teams'] = teamIds.join(', ')
           // eslint-disable-next-line no-console
         }).catch(console.error)
