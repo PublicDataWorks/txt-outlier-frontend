@@ -11,13 +11,16 @@ import getErrorMessage from '../../utils/sendNowFeedback'
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
-  const { data, isPending } = useBroadcastDashboardQuery(queryClient)
+  const { data, isPending, error } = useBroadcastDashboardQuery(queryClient)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isSent, setIsSent] = useState<boolean>(false)
 
   const { mutate } = useUpdateBroadcast(queryClient)
 
-  if (isPending || !data?.data) {
+  if (error) {
+    return <span>Error: {error.message}</span>
+  }
+  if (isPending) {
     return <span>Loading...</span>
   }
 
