@@ -24,7 +24,7 @@ const useSubscribeMostRecentBroadcastDetail = (): BroadcastSentDetail | undefine
       const channel = client.channel('most-recent-broadcast')
       channel
         .on('broadcast', { event: 'details' }, (message: RealtimeMessage) => {
-          setMostRecentBroadcastDetails(message.payload)
+          setMostRecentBroadcastDetails({ ...mostRecentBroadcastDetails, ...message.payload })
 
           queryClient.setQueryData<InfiniteData<AxiosResponse<{ past: Partial<PastBroadcast>[] }>>>(
             ['pastBroadcasts'],
