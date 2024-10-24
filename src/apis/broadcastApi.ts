@@ -65,5 +65,10 @@ const updateBroadcast = async ({
     runAt
   })
 
-export { sendNowBroadcast, getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE }
+const getLookupTemplateRecords = async (): Promise<AxiosResponse<any>> => axios.get('/lookup_template')
+
+const updateLookupTemplateRecord = async (id: number, content: string): Promise<AxiosResponse<any>> =>
+  axios.patch(`/lookup_template/${id}`, { content })
+
+export { sendNowBroadcast, getBroadcastDashboard, updateBroadcast, getPastBroadcasts, ITEMS_PER_PAGE, getLookupTemplateRecords, updateLookupTemplateRecord }
 export type { UpdateBroadcast, UpcomingBroadcast, PastBroadcast, BroadcastDashboard, BroadcastSentDetail }
