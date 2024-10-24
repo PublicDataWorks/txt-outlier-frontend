@@ -4,7 +4,9 @@ import {
   getBroadcastDashboard,
   getPastBroadcasts,
   updateBroadcast,
-  type BroadcastDashboard
+  type BroadcastDashboard,
+  getLookupTemplateRecords,
+  updateLookupTemplateRecord
 } from '../apis/broadcastApi'
 import { type QueryClient, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
 import type { AxiosResponse } from 'axios'
@@ -55,4 +57,20 @@ const useUpdateBroadcast = (queryClient: QueryClient) =>
     }
   })
 
-export { useBroadcastDashboardQuery, useUpdateBroadcast, usePastBroadcastsQuery }
+const useLookupTemplateRecords = () =>
+  useQuery({
+    queryKey: ['lookupTemplateRecords'],
+    queryFn: getLookupTemplateRecords
+  })
+
+const useUpdateLookupTemplateRecord = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: async ({ id, content }: { id: number; content: string }) => {
+      await updateLookupTemplateRecord(id, content)
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['lookupTemplateRecords'] })
+    }
+  })
+
+export { useBroadcastDashboardQuery, useUpdateBroadcast, usePastBroadcastsQuery, useLookupTemplateRecords, useUpdateLookupTemplateRecord }
