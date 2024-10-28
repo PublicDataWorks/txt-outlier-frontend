@@ -20,6 +20,7 @@ const useBroadcastDashboardQuery = (queryClient: QueryClient) =>
   useQuery({
     queryKey: ['broadcastDashboard'],
     queryFn: getBroadcastDashboard,
+    staleTime: 60 * 1000,
     structuralSharing: (
       oldData: AxiosResponse<BroadcastDashboard> | undefined,
       newData: AxiosResponse<BroadcastDashboard>
