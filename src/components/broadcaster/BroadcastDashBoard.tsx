@@ -8,12 +8,14 @@ import LastBroadcastStatus from './LastBroadcastStatus'
 import { sendNowBroadcast } from '../../apis/broadcastApi'
 import { AxiosError } from 'axios'
 import getErrorMessage from '../../utils/sendNowFeedback'
+import SettingsModal from './SettingsModal';
 
 const BroadcastDashboard = () => {
   const queryClient = useQueryClient()
   const { data, isPending, error } = useBroadcastDashboardQuery(queryClient)
   const [isRunAtPickerOpen, setIsRunAtPickerOpen] = useState(false)
   const [isSent, setIsSent] = useState<boolean>(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const { mutate } = useUpdateBroadcast(queryClient)
 
@@ -236,6 +238,15 @@ const BroadcastDashboard = () => {
       <hr className='mt-8 border-gray-500' />
 
       <PastBroadcasts />
+
+      <button
+        type='button'
+        className='fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded'
+        onClick={() => setShowSettingsModal(true)}
+      >
+        Settings
+      </button>
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
     </div>
   )
 }
