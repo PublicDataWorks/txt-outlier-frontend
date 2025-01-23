@@ -32,6 +32,33 @@ const NextBatchSection = () => {
             </Button>
           </div>
         </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground dark:text-neutral-300">
+              Conversation starter message
+            </label>
+            <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
+              This is Sarah from Outlier, Detroit's nonprofit newsroom. A
+              reminder that rec centers and libraries are open and warm. More
+              warming centers are listed here: https://bit.ly/3E0ntxV\n\nDTE
+              cannot shut off utility service today because temps average below
+              15 degrees for two days in a row.\n\nText STOP to unsubscribe or
+              HELP for customer support. Terms & privacy: https://bit.ly/3cmY8Lk
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground dark:text-neutral-300">
+              Follow-up message
+            </label>
+            <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer whitespace-pre-wrap hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
+              For other kinds of info, you can always text MENU for a list of
+              resources we have to offer. Or text REPORTER to talk directly with
+              a journalist. A reminder that if you lost a home in Detroit to tax
+              foreclosure in 2015-2020 Wayne County may owe you money from the
+              sale. Text REPAY for more info.
+            </div>
+          </div>
+        </div>
       </div>
     </BroadcastCard>
   );
