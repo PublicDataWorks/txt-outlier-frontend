@@ -2,9 +2,27 @@ import { CalendarClockIcon, Users } from 'lucide-react';
 
 import BroadcastCard from '@/components/BroadcastCard';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
 
 const NextBatchSection = () => {
+  const broadcastsQuery = useBroadcastsQuery();
+
+  if (broadcastsQuery.isLoading) {
+    return (
+      <BroadcastCard title="Next batch" icon={CalendarClockIcon}>
+        <div className="flex flex-col space-y-3 w-full">
+          <Skeleton className="h-4 w-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+          </div>
+        </div>
+      </BroadcastCard>
+    );
+  }
+
   return (
     <BroadcastCard title="Next batch" icon={CalendarClockIcon}>
       <div className="space-y-4">
@@ -12,13 +30,15 @@ const NextBatchSection = () => {
           <div className="text-sm text-muted-foreground dark:text-neutral-300">
             Scheduled for{' '}
             {formatDateTime(
-              new Date(),
+              new Date(broadcastsQuery.data!.upcoming.runAt * 1000),
               Intl.DateTimeFormat().resolvedOptions().timeZone,
             )}
           </div>
           <div className="flex items-center gap-2 p-2 rounded-md bg-[#1E1E1E] border border-neutral-700 cursor-pointer hover:bg-[#2C2C2C]">
             <Users className="h-4 w-4 text-neutral-400" />
-            <span className="text-sm text-neutral-300">5000 recipients</span>
+            <span className="text-sm text-neutral-300">
+              {broadcastsQuery.data?.upcoming.noRecipients} recipients
+            </span>
           </div>
           <div className="flex gap-2">
             <Button
@@ -37,13 +57,8 @@ const NextBatchSection = () => {
             <label className="text-sm text-muted-foreground dark:text-neutral-300">
               Conversation starter message
             </label>
-            <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
-              This is Sarah from Outlier, Detroit's nonprofit newsroom. A
-              reminder that rec centers and libraries are open and warm. More
-              warming centers are listed here: https://bit.ly/3E0ntxV\n\nDTE
-              cannot shut off utility service today because temps average below
-              15 degrees for two days in a row.\n\nText STOP to unsubscribe or
-              HELP for customer support. Terms & privacy: https://bit.ly/3cmY8Lk
+            <div className="w-full whitespace-pre-wrap rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
+              {broadcastsQuery.data?.upcoming.firstMessage}
             </div>
           </div>
           <div className="space-y-2">
@@ -51,11 +66,7 @@ const NextBatchSection = () => {
               Follow-up message
             </label>
             <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer whitespace-pre-wrap hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
-              For other kinds of info, you can always text MENU for a list of
-              resources we have to offer. Or text REPORTER to talk directly with
-              a journalist. A reminder that if you lost a home in Detroit to tax
-              foreclosure in 2015-2020 Wayne County may owe you money from the
-              sale. Text REPAY for more info.
+              {broadcastsQuery.data?.upcoming.secondMessage}
             </div>
           </div>
         </div>

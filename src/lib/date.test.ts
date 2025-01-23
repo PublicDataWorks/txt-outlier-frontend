@@ -42,4 +42,12 @@ describe('formatDateTime', () => {
     // In JST, 04:30 UTC = 13:30 JST
     expect(result).toBe('Mon Dec 25, 1:30 PM GMT+9');
   });
+
+  it('should format date correctly for Saigon timezone', () => {
+    const testDate = new Date('2023-12-25T15:30:00Z');
+    const result = formatDateTime(testDate, 'Asia/Saigon');
+
+    // In (UTC+7), 15:30 UTC = 22:30 GMT+7 (same day)
+    expect(result).toBe('Mon Dec 25, 10:30 PM GMT+7');
+  });
 });
