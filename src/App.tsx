@@ -1,18 +1,16 @@
-import { useState } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import NextBatchSection from '@/components/NextBatchSection';
 
 import './App.css';
-import { Button } from './components/ui/button';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <h1>Outlier</h1>
-      <Button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </Button>
-    </>
+    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800 dark">
+      <div className="space-y-6 p-4">
+        <NextBatchSection />
+      </div>
+    </ScrollArea>
   );
 }
 
