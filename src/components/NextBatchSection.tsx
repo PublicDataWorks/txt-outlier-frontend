@@ -2,7 +2,7 @@ import { CalendarClockIcon, Users } from 'lucide-react';
 
 import BroadcastCard from '@/components/BroadcastCard';
 import { Button } from '@/components/ui/button';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime } from '@/lib/date';
 
 const NextBatchSection = () => {
   return (

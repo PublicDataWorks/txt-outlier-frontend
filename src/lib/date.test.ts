@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { formatDateTime } from '../utils/date/date';
+import { formatDateTime } from '@/lib/date';
 
 describe('formatDateTime', () => {
   it('should format date correctly for EST timezone', () => {
