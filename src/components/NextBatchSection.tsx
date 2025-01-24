@@ -1,13 +1,19 @@
 import { CalendarClockIcon, Users } from 'lucide-react';
 
 import BroadcastCard from '@/components/BroadcastCard';
+import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
+import {
+  useBroadcastMutation,
+  useBroadcastsQuery,
+} from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
+import { UpcomingBroadcast } from '@/apis/broadcasts';
 
 const NextBatchSection = () => {
   const broadcastsQuery = useBroadcastsQuery();
+  const broadcastMutation = useBroadcastMutation();
 
   if (broadcastsQuery.isLoading) {
     return (
@@ -22,6 +28,16 @@ const NextBatchSection = () => {
       </BroadcastCard>
     );
   }
+
+  if (broadcastsQuery.isError) {
+    return null;
+  }
+
+  const updateBroadcast = async (
+    data: Partial<UpcomingBroadcast>,
+  ): Promise<void> => {
+    await broadcastMutation.mutateAsync(data);
+  };
 
   return (
     <BroadcastCard title="Next batch" icon={CalendarClockIcon}>
@@ -57,17 +73,31 @@ const NextBatchSection = () => {
             <label className="text-sm text-muted-foreground dark:text-neutral-300">
               Conversation starter message
             </label>
-            <div className="w-full whitespace-pre-wrap rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
-              {broadcastsQuery.data?.upcoming.firstMessage}
-            </div>
+            <EditConversationMessageDialog
+              message={broadcastsQuery.data!.upcoming.firstMessage}
+              title="Edit conversation starter"
+              onSave={(newMessage) =>
+                updateBroadcast({
+                  id: broadcastsQuery.data?.upcoming.id,
+                  firstMessage: newMessage,
+                })
+              }
+            />
           </div>
           <div className="space-y-2">
             <label className="text-sm text-muted-foreground dark:text-neutral-300">
               Follow-up message
             </label>
-            <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer whitespace-pre-wrap hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
-              {broadcastsQuery.data?.upcoming.secondMessage}
-            </div>
+            <EditConversationMessageDialog
+              message={broadcastsQuery.data!.upcoming.secondMessage}
+              title="Edit Follow-up message"
+              onSave={(newMessage) =>
+                updateBroadcast({
+                  id: broadcastsQuery.data?.upcoming.id,
+                  secondMessage: newMessage,
+                })
+              }
+            />
           </div>
         </div>
       </div>
