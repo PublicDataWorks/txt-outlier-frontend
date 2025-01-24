@@ -1,6 +1,6 @@
 import axios from '@/lib/axios';
 
-interface UpcomingBroadcast {
+export interface UpcomingBroadcast {
   id: number;
   firstMessage: string;
   secondMessage: string;
@@ -31,3 +31,15 @@ export const getBroadcasts = async (): Promise<BroadcastsResponse> => {
   const response = await axios.get<BroadcastsResponse>('/broadcasts');
   return response.data;
 };
+
+export const updateBroadcast = async ({
+  id,
+  firstMessage,
+  secondMessage,
+  runAt
+}: Partial<UpcomingBroadcast>): Promise<UpcomingBroadcast> =>
+  axios.patch(`broadcasts/${id}`, {
+    firstMessage,
+    secondMessage,
+    runAt
+  });
