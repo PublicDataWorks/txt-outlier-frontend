@@ -1,3 +1,8 @@
+import { AxiosError } from 'axios';
+import { useState } from 'react';
+
+import { LoadingSpinner } from './ui/loading-spinner';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -6,22 +11,58 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
-  DialogTrigger,
 } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { getSendNowError } from '@/lib/send-now-error';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
 interface SendConfirmationModalProps {
-  onConfirm: () => void;
+  sendNow: () => Promise<void>;
 }
 
-export function SendNowDialog({ onConfirm }: SendConfirmationModalProps) {
+export function SendNowDialog({ sendNow }: SendConfirmationModalProps) {
+  const [open, setOpen] = useState<boolean>(false);
+  const [sending, setSending] = useState<boolean>(false);
+
+  const { toast } = useToast();
+
+  const handleSend = async () => {
+    try {
+      setSending(true);
+      await sendNow();
+      toast({ title: 'Broadcast sent' });
+      setOpen(false);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.data?.message) {
+          const errorCode = error.response.data.message as string;
+          const errorMessage = getSendNowError(errorCode);
+          toast({
+            title: 'Error while sending broadcast',
+            description: errorMessage,
+          });
+        }
+      } else {
+        toast({
+          title: 'Error while sending broadcast',
+          description: 'An unexpected error occurred, please contact admin.',
+        });
+      }
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] dark:text-white">
           Send now
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] bg-[#2A2A2A] border-neutral-700 text-white">
+      <DialogContent
+        className="sm:max-w-[400px] bg-[#2A2A2A] border-neutral-700 text-white"
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Send now</DialogTitle>
         </DialogHeader>
@@ -40,10 +81,11 @@ export function SendNowDialog({ onConfirm }: SendConfirmationModalProps) {
             </Button>
           </DialogClose>
           <Button
-            onClick={onConfirm}
+            onClick={handleSend}
             className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] text-white"
+            disabled={sending}
           >
-            Send now
+            {sending ? <LoadingSpinner /> : 'Send now'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -43,3 +43,6 @@ export const updateBroadcast = async ({
     secondMessage,
     runAt
   });
+
+export const sendNowBroadcast = async (): Promise<void> => axios.get('/broadcasts/send-now');
+

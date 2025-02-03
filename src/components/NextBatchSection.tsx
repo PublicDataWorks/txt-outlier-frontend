@@ -1,6 +1,6 @@
 import { CalendarClockIcon, Users } from 'lucide-react';
 
-import { UpcomingBroadcast } from '@/apis/broadcasts';
+import { sendNowBroadcast, UpcomingBroadcast } from '@/apis/broadcasts';
 import BroadcastCard from '@/components/BroadcastCard';
 import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
 import PauseScheduleDialog from '@/components/PauseScheduleDialog';
@@ -62,14 +62,14 @@ const NextBatchSection = () => {
               onConfirm={(runAt) =>
                 updateBroadcast({
                   id: broadcastsQuery.data?.upcoming.id,
-                  runAt
+                  runAt,
                 })
-}
+              }
               currentDate={
                 new Date(broadcastsQuery.data!.upcoming.runAt * 1000)
               }
             />
-            <SendNowDialog onConfirm={() => {}} />
+            <SendNowDialog sendNow={sendNowBroadcast} />
           </div>
         </div>
         <div className="space-y-4">

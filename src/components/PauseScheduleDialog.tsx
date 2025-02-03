@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
 interface PauseScheduleModalProps {
   onConfirm: (runAt: number) => Promise<void> | void;
@@ -29,7 +30,6 @@ export default function PauseScheduleDialog({
   );
 
   const onClose = () => setOpen(false);
-  const onOpen = () => setOpen(true);
 
   const handleConfirm = async () => {
     try {
@@ -53,14 +53,15 @@ export default function PauseScheduleDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <Button
-        variant="secondary"
-        className="flex-1 gap-2 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600"
-        onClick={onOpen}
-      >
-        Pause schedule
-      </Button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="secondary"
+          className="flex-1 gap-2 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600"
+        >
+          Pause schedule
+        </Button>
+      </DialogTrigger>
       <DialogContent className="border-neutral-700 bg-[#2A2A2A] text-white sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
