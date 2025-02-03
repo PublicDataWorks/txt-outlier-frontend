@@ -25,9 +25,7 @@ export default function PauseScheduleDialog({
 }: PauseScheduleModalProps) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = React.useState<Date>(
-    new Date(currentDate.toDateString()),
-  );
+  const [selectedDate, setSelectedDate] = React.useState<Date>(currentDate);
 
   const onClose = () => setOpen(false);
 
@@ -117,9 +115,7 @@ export default function PauseScheduleDialog({
           <Button
             className="w-full bg-[#2F80ED] text-white hover:bg-[#2D7BE5]"
             onClick={handleConfirm}
-            disabled={
-              isLoading || selectedDate.getTime() === currentDate.getTime()
-            }
+            disabled={isLoading}
           >
             {isLoading ? <LoadingSpinner /> : 'Pause batch schedule'}
           </Button>
