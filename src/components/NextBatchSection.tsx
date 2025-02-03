@@ -1,7 +1,9 @@
 import { CalendarClockIcon, Users } from 'lucide-react';
 
+import { UpcomingBroadcast } from '@/apis/broadcasts';
 import BroadcastCard from '@/components/BroadcastCard';
 import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
+import { SendNowDialog } from '@/components/SendNowDialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -9,7 +11,6 @@ import {
   useBroadcastsQuery,
 } from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
-import { UpcomingBroadcast } from '@/apis/broadcasts';
 
 const NextBatchSection = () => {
   const broadcastsQuery = useBroadcastsQuery();
@@ -63,9 +64,7 @@ const NextBatchSection = () => {
             >
               Pause schedule
             </Button>
-            <Button className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] dark:text-white">
-              Send now
-            </Button>
+            <SendNowDialog onConfirm={() => {}} />
           </div>
         </div>
         <div className="space-y-4">
