@@ -1,3 +1,4 @@
+import { DialogTrigger } from '@radix-ui/react-dialog';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 
@@ -14,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { getSendNowError } from '@/lib/send-now-error';
-import { DialogTrigger } from '@radix-ui/react-dialog';
 
 interface SendConfirmationModalProps {
   sendNow: () => Promise<void>;
@@ -60,9 +60,7 @@ export function SendNowDialog({ sendNow }: SendConfirmationModalProps) {
           Send now
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className="sm:max-w-[400px] bg-[#2A2A2A] border-neutral-700 text-white"
-      >
+      <DialogContent className="sm:max-w-[400px] bg-[#2A2A2A] border-neutral-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Send now</DialogTitle>
         </DialogHeader>

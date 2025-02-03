@@ -1,3 +1,4 @@
+import { DialogTrigger } from '@radix-ui/react-dialog';
 import { format } from 'date-fns';
 import * as React from 'react';
 
@@ -12,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { DialogTrigger } from '@radix-ui/react-dialog';
 
 interface PauseScheduleModalProps {
   onConfirm: (runAt: number) => Promise<void> | void;
