@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import * as React from 'react';
 
+import { LoadingSpinner } from './ui/loading-spinner';
+
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -12,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 
 interface PauseScheduleModalProps {
-  onConfirm: (date: Date) => void;
+  onConfirm: (runAt: number) => Promise<void> | void;
   currentDate: Date;
 }
 
@@ -21,14 +23,33 @@ export default function PauseScheduleDialog({
   currentDate,
 }: PauseScheduleModalProps) {
   const [open, setOpen] = React.useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = React.useState<Date>(currentDate);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = React.useState<Date>(
+    new Date(currentDate.toDateString()),
+  );
 
   const onClose = () => setOpen(false);
   const onOpen = () => setOpen(true);
 
-  const handleConfirm = () => {
-    onConfirm(selectedDate);
-    onClose();
+  const handleConfirm = async () => {
+    try {
+      setIsLoading(true);
+      const timeUnix =
+        currentDate.getHours() * 60 * 60 +
+        currentDate.getMinutes() * 60 +
+        currentDate.getSeconds();
+
+      const newRunAt = Math.floor(
+        (selectedDate.getTime() + timeUnix * 1000) / 1000,
+      );
+
+      await onConfirm(newRunAt);
+      onClose();
+    } catch (error) {
+      console.error('Error while confirming:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,8 +116,11 @@ export default function PauseScheduleDialog({
           <Button
             className="w-full bg-[#2F80ED] text-white hover:bg-[#2D7BE5]"
             onClick={handleConfirm}
+            disabled={
+              isLoading || selectedDate.getTime() === currentDate.getTime()
+            }
           >
-            Pause batch schedule
+            {isLoading ? <LoadingSpinner /> : 'Pause batch schedule'}
           </Button>
         </DialogFooter>
       </DialogContent>

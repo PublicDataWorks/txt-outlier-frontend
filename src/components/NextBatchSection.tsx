@@ -59,7 +59,12 @@ const NextBatchSection = () => {
           </div>
           <div className="flex gap-2">
             <PauseScheduleDialog
-              onConfirm={() => {}}
+              onConfirm={(runAt) =>
+                updateBroadcast({
+                  id: broadcastsQuery.data?.upcoming.id,
+                  runAt
+                })
+}
               currentDate={
                 new Date(broadcastsQuery.data!.upcoming.runAt * 1000)
               }
