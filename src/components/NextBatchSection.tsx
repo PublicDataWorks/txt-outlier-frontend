@@ -3,8 +3,8 @@ import { CalendarClockIcon, Users } from 'lucide-react';
 import { UpcomingBroadcast } from '@/apis/broadcasts';
 import BroadcastCard from '@/components/BroadcastCard';
 import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
+import PauseScheduleDialog from '@/components/PauseScheduleDialog';
 import { SendNowDialog } from '@/components/SendNowDialog';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useBroadcastMutation,
@@ -58,12 +58,12 @@ const NextBatchSection = () => {
             </span>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1 gap-2 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600"
-            >
-              Pause schedule
-            </Button>
+            <PauseScheduleDialog
+              onConfirm={() => {}}
+              currentDate={
+                new Date(broadcastsQuery.data!.upcoming.runAt * 1000)
+              }
+            />
             <SendNowDialog onConfirm={() => {}} />
           </div>
         </div>
