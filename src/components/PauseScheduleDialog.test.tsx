@@ -44,7 +44,7 @@ describe('PauseScheduleDialog', () => {
   });
 
   it('shows loading state while confirming', async () => {
-    const onConfirmPromise = new Promise((resolve) => setTimeout(resolve, 100));
+    const onConfirmPromise = new Promise((resolve) => setTimeout(resolve, 3000));
     const mockOnConfirmWithLoading = vi
       .fn()
       .mockImplementation(() => onConfirmPromise);
