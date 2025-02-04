@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   message: z.string().min(1, 'Message is required'),
@@ -24,7 +25,7 @@ type FormData = z.infer<typeof formSchema>;
 interface EditConversationMessageDialogProps {
   title: string;
   message: string;
-  onSave: (message: string) => Promise<void> | void; 
+  onSave: (message: string) => Promise<void> | void;
 }
 
 const EditConversationMessageDialog = ({
@@ -34,6 +35,8 @@ const EditConversationMessageDialog = ({
 }: EditConversationMessageDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -48,6 +51,11 @@ const EditConversationMessageDialog = ({
       await onSave(data.message);
       form.reset({ message: data.message });
       setOpen(false);
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to save message. Please try again.',
+      });
     } finally {
       setIsSaving(false);
     }

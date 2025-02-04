@@ -44,7 +44,9 @@ describe('PauseScheduleDialog', () => {
   });
 
   it('shows loading state while confirming', async () => {
-    const onConfirmPromise = new Promise((resolve) => setTimeout(resolve, 3000));
+    const onConfirmPromise = new Promise((resolve) =>
+      setTimeout(resolve, 3000),
+    );
     const mockOnConfirmWithLoading = vi
       .fn()
       .mockImplementation(() => onConfirmPromise);
@@ -122,5 +124,25 @@ describe('PauseScheduleDialog', () => {
       const expectedTimestamp = Math.floor(targetDate.getTime() / 1000);
       expect(mockOnConfirm).toHaveBeenCalledWith(expectedTimestamp);
     });
+  });
+
+  it('handles errors gracefully', async () => {
+    const mockOnConfirmWithError = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to pause'));
+    render(
+      <PauseScheduleDialog
+        onConfirm={mockOnConfirmWithError}
+        currentDate={new Date()}
+      />,
+    );
+    fireEvent.click(screen.getByText('Pause schedule'));
+    fireEvent.click(
+      await within(await screen.findByRole('dialog')).findByRole('button', {
+        name: 'Pause batch schedule',
+      }),
+    );
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument(); // Dialog should remain open
   });
 });

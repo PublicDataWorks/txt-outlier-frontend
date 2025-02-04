@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface PauseScheduleModalProps {
   onConfirm: (runAt: number) => Promise<void> | void;
@@ -26,6 +27,8 @@ export default function PauseScheduleDialog({
   const [open, setOpen] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [selectedDate, setSelectedDate] = React.useState<Date>(currentDate);
+
+  const { toast } = useToast();
 
   const onClose = () => setOpen(false);
 
@@ -43,8 +46,11 @@ export default function PauseScheduleDialog({
 
       await onConfirm(newRunAt);
       onClose();
-    } catch (error) {
-      console.error('Error while confirming:', error);
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to update schedule. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }

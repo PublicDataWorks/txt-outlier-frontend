@@ -1,6 +1,6 @@
 # Outlier TXT Frontends
 
-## Set up localy
+## Set up locally
 
 Run this command to copy `.env` file from `.env.example`:
 ```sh

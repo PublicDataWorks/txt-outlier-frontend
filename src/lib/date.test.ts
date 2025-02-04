@@ -23,7 +23,7 @@ describe('formatDateTime', () => {
     const testDate = new Date('2023-12-25T15:30:00Z');
     const result = formatDateTime(testDate, 'Asia/Tokyo');
 
-    // In JST (UTC+9), 15:30 UTC = 00:30 JST (next day)
+    // In JST (UTC+9), 15:30 UTC = 12:30 AM GMT+9
     expect(result).toBe('Tue Dec 26, 12:30 AM GMT+9');
   });
 
