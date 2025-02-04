@@ -1,5 +1,8 @@
 import axios from '@/lib/axios';
 
+const BROADCAST_SIDEBAR = '/broadcast-sidebar/';
+const SEND_NOW = '/send-now/';
+
 export interface UpcomingBroadcast {
   id: number;
   firstMessage: string;
@@ -28,7 +31,7 @@ interface BroadcastsResponse {
 }
 
 export const getBroadcasts = async (): Promise<BroadcastsResponse> => {
-  const response = await axios.get<BroadcastsResponse>('/broadcasts');
+  const response = await axios.get<BroadcastsResponse>(BROADCAST_SIDEBAR);
   return response.data;
 };
 
@@ -38,11 +41,11 @@ export const updateBroadcast = async ({
   secondMessage,
   runAt
 }: Partial<UpcomingBroadcast>): Promise<UpcomingBroadcast> =>
-  axios.patch(`broadcasts/${id}`, {
+  axios.patch(BROADCAST_SIDEBAR, {
+    id,
     firstMessage,
     secondMessage,
     runAt
   });
 
-export const sendNowBroadcast = async (): Promise<void> => axios.get('/broadcasts/send-now');
-
+export const sendNowBroadcast = async (): Promise<void> => axios.get(SEND_NOW);
