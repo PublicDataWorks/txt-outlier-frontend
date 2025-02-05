@@ -7,12 +7,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { formatToLocalTime } from '@/lib/date';
 import { cn } from '@/lib/utils';
 
 interface BatchItemProps {
   broadcast: PastBroadcast;
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
 }
 
 export default function BatchItem({ broadcast }: BatchItemProps) {
@@ -26,7 +25,7 @@ export default function BatchItem({ broadcast }: BatchItemProps) {
     totalUnsubscribed,
   } = broadcast;
 
-  const formattedDate = new Date(runAt * 1000).toLocaleDateString();
+  const formattedDate = formatToLocalTime(new Date(runAt * 1000));
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>

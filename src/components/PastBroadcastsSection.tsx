@@ -1,14 +1,22 @@
 import { History } from 'lucide-react';
+import { Fragment } from 'react';
 
+import BatchItem from '@/components/BatchItem';
 import BroadcastCard from '@/components/BroadcastCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
-import BatchItem from './BatchItem';
+import { usePastBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
 
 const PastBroadcastsSection = () => {
-  const broadcastsQuery = useBroadcastsQuery();
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePastBroadcastsQuery();
 
-  if (broadcastsQuery.isLoading) {
+  if (isLoading) {
     return (
       <BroadcastCard title="Past broadcasts" icon={History}>
         <div className="flex flex-col space-y-3 w-full">
@@ -22,7 +30,7 @@ const PastBroadcastsSection = () => {
     );
   }
 
-  if (broadcastsQuery.isError) {
+  if (isError) {
     return null;
   }
 
@@ -32,7 +40,26 @@ const PastBroadcastsSection = () => {
         142 total broadcasts
       </p>
       <div className="space-y-4">
-        {broadcastsQuery.data?.past.map(broadcast => <BatchItem key={broadcast.id} broadcast={broadcast}  />)}
+        {data?.pages.map((page, pageIndex) => (
+          <Fragment key={pageIndex}>
+            {page.past.map((broadcast) => (
+              <BatchItem key={broadcast.id} broadcast={broadcast} />
+            ))}
+          </Fragment>
+        ))}
+      </div>
+      <div className="mt-4">
+        <button
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+          className="btn btn-primary"
+        >
+          {isFetchingNextPage
+            ? 'Loading more...'
+            : hasNextPage
+              ? 'Load More'
+              : 'No more broadcasts'}
+        </button>
       </div>
     </BroadcastCard>
   );
