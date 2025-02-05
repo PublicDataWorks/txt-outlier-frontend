@@ -5,6 +5,7 @@ import BatchItem from '@/components/BatchItem';
 import BroadcastCard from '@/components/BroadcastCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePastBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
+import { Button } from '@/components/ui/button';
 
 const PastBroadcastsSection = () => {
   const {
@@ -48,19 +49,18 @@ const PastBroadcastsSection = () => {
           </Fragment>
         ))}
       </div>
-      <div className="mt-4">
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={!hasNextPage || isFetchingNextPage}
-          className="btn btn-primary"
-        >
-          {isFetchingNextPage
-            ? 'Loading more...'
-            : hasNextPage
-              ? 'Load More'
-              : 'No more broadcasts'}
-        </button>
-      </div>
+      {hasNextPage && (
+        <div className="mt-4">
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            variant="link"
+            className="w-full dark:text-neutral-300 hover:dark:text-neutral-100"
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Show more'}
+          </Button>
+        </div>
+      )}
     </BroadcastCard>
   );
 };
