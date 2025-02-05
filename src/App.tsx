@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+import NextBatchSection from '@/components/NextBatchSection';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import './App.css';
-import { Button } from './components/ui/button';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 15 * 60 * 1000, // 15 minutes
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <h1>Outlier</h1>
-      <Button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </Button>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800 dark">
+        <div className="space-y-6 p-4">
+          <NextBatchSection />
+        </div>
+      </ScrollArea>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

@@ -60,4 +60,10 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
     },
   },
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 );
