@@ -5,10 +5,10 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import { act } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 
 import PauseScheduleDialog from './PauseScheduleDialog';
-import { act } from 'react';
 
 // Mock the loading spinner component
 vi.mock('./ui/loading-spinner', () => ({
