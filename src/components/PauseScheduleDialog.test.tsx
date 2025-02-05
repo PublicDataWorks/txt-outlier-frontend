@@ -8,6 +8,7 @@ import {
 import { describe, it, expect, vi } from 'vitest';
 
 import PauseScheduleDialog from './PauseScheduleDialog';
+import { act } from 'react';
 
 // Mock the loading spinner component
 vi.mock('./ui/loading-spinner', () => ({
@@ -137,10 +138,13 @@ describe('PauseScheduleDialog', () => {
       />,
     );
     fireEvent.click(screen.getByText('Pause schedule'));
-    fireEvent.click(
-      await within(await screen.findByRole('dialog')).findByRole('button', {
-        name: 'Pause batch schedule',
-      }),
+
+    await act(async () =>
+      fireEvent.click(
+        await within(await screen.findByRole('dialog')).findByRole('button', {
+          name: 'Pause batch schedule',
+        }),
+      ),
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument(); // Dialog should remain open
