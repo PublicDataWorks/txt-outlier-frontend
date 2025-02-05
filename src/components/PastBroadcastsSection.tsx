@@ -37,9 +37,9 @@ const PastBroadcastsSection = () => {
 
   return (
     <BroadcastCard title="Past broadcasts" icon={History}>
-      <p className="text-sm text-muted-foreground dark:text-neutral-300 mb-4">
+      {/* <p className="text-sm text-muted-foreground dark:text-neutral-300 mb-4">
         142 total broadcasts
-      </p>
+      </p> */}
       <div className="space-y-4">
         {data?.pages.map((page, pageIndex) => (
           <Fragment key={pageIndex}>
