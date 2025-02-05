@@ -12,7 +12,7 @@ export interface UpcomingBroadcast {
   noRecipients: number;
 }
 
-interface PastBroadcast {
+export interface PastBroadcast {
   id: number;
   firstMessage: string;
   secondMessage: string;

@@ -1,4 +1,4 @@
-import { CalendarClockIcon, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 import BroadcastCard from '@/components/BroadcastCard';
 import { Separator } from '@/components/ui/separator';
@@ -11,7 +11,7 @@ const LastBatchSection = () => {
 
   if (broadcastsQuery.isLoading) {
     return (
-      <BroadcastCard title="Next batch" icon={CalendarClockIcon}>
+      <BroadcastCard title="Last batch" icon={CheckCircle2}>
         <div className="flex flex-col space-y-3 w-full">
           <Skeleton className="h-4 w-full" />
           <div className="space-y-2">
@@ -30,7 +30,7 @@ const LastBatchSection = () => {
   const lastBatch = broadcastsQuery.data?.past[0];
 
   return (
-    <BroadcastCard title="Last Batch" icon={CheckCircle2}>
+    <BroadcastCard title="Last batch" icon={CheckCircle2}>
       <div className="text-sm text-muted-foreground dark:text-neutral-300 mb-4">
         Sent on{' '}
         {formatDateTime(

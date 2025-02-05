@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import LastBatchSection from '@/components/LastBatchSection';
 import NextBatchSection from '@/components/NextBatchSection';
+import PastBroadcastsSection from '@/components/PastBroadcastsSection';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 import './App.css';
@@ -24,6 +25,7 @@ function App() {
         <div className="space-y-6 p-4">
           <NextBatchSection />
           <LastBatchSection />
+          <PastBroadcastsSection />
         </div>
       </ScrollArea>
       <ReactQueryDevtools initialIsOpen={false} />
