@@ -54,7 +54,7 @@ const EditConversationMessageDialog = ({
     } catch {
       toast({
         title: 'Error',
-        description: 'Failed to save message. Please try again.',
+        description: 'Failed to save message. Please try again!',
       });
     } finally {
       setIsSaving(false);
@@ -68,18 +68,18 @@ const EditConversationMessageDialog = ({
           {message}
         </div>
       </DialogTrigger>
-      <DialogContent className="h-svh w-svw max-w-none overflow-y-scroll bg-[#2A2A2A] border-neutral-700 text-white">
+      <DialogContent className="h-svh w-svw max-w-none rounded-none overflow-y-scroll bg-background border border-input dark:bg-[#1E1E1E] dark:border-neutral-700">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
-            <DialogDescription className="text-neutral-400">
+            <DialogTitle className="text-base">{title}</DialogTitle>
+            <DialogDescription className="text-muted-foreground dark:text-neutral-400">
               Note: these updates will apply to all future batches.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <Textarea
               {...form.register('message')}
-              className="min-h-[300px] bg-[#1E1E1E] border-neutral-600 text-white"
+              className="min-h-[300px] bg-background dark:bg-[#1E1E1E] border-input"
               placeholder="Enter your message here..."
               disabled={isSaving}
             />
@@ -93,7 +93,7 @@ const EditConversationMessageDialog = ({
             <Button
               type="button"
               variant="outline"
-              className="bg-neutral-800 text-white hover:bg-neutral-700"
+              className="flex-1 bg-input hover:bg-input/50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
               onClick={() => {
                 form.reset({ message });
                 setOpen(false);
@@ -104,7 +104,7 @@ const EditConversationMessageDialog = ({
             </Button>
             <Button
               type="submit"
-              className="bg-[#2F80ED] hover:bg-[#2D7BE5] text-white min-w-[124px]"
+              className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] text-white"
               disabled={isSaving}
             >
               {isSaving ? 'Saving...' : 'Save changes'}

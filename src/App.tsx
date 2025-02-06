@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useEffect } from 'react';
 import { Route, Routes, HashRouter } from 'react-router-dom';
 
 import GoogleOauthPopup from './convo-sidebar/components/GoogleOauthPopup.tsx';
@@ -29,6 +30,20 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  useEffect(() => {
+    const root = window.document.documentElement;
+
+    root.classList.remove('light', 'dark');
+
+    const theme = root.getAttribute('data-theme');
+
+    if (theme === 'dark' || theme === 'light') {
+      root.classList.add(theme);
+    } else {
+      root.classList.add('light');
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -52,7 +67,7 @@ function App() {
                 path="*"
                 element={
                   <PrivateRoute>
-                    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800 dark">
+                    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800">
                       <div className="space-y-6 p-4">
                         <NextBatchSection />
                         <LastBatchSection />
