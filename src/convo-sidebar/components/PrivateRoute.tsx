@@ -1,16 +1,16 @@
 import { InvalidTokenError, jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
-import { type FC, type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { LOGIN_PATH } from '../constants/routes';
 import { useToken, useTokenChanged } from '../providers/auth';
 
-interface PrivateRouteProperties {
+interface PrivateRouteProps {
   children: ReactNode
 }
 
-const PrivateRoute: FC<PrivateRouteProperties> = ({ children }) => {
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { token } = useToken();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -18,8 +18,8 @@ const PrivateRoute: FC<PrivateRouteProperties> = ({ children }) => {
   const location = useLocation();
 
   const saveLocationAndNavigateToLogin = () => {
-    const queryParams = new URLSearchParams({next: location.pathname}).toString()
-    console.log(queryParams)
+    const queryParams = new URLSearchParams({ next: location.pathname }).toString();
+    console.log(queryParams);
 
     navigate(`${LOGIN_PATH}?${queryParams}`);
   };
