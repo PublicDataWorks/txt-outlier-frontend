@@ -1,52 +1,61 @@
-import { type FC, type ReactNode, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useToken, useTokenChanged } from '../providers/auth'
-import { LOGIN_PATH } from '../constants/routes'
-import PropTypes from 'prop-types'
-import { InvalidTokenError, jwtDecode } from 'jwt-decode'
+import { InvalidTokenError, jwtDecode } from 'jwt-decode';
+import PropTypes from 'prop-types';
+import { type FC, type ReactNode, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { LOGIN_PATH } from '../constants/routes';
+import { useToken, useTokenChanged } from '../providers/auth';
 
 interface PrivateRouteProperties {
   children: ReactNode
 }
 
 const PrivateRoute: FC<PrivateRouteProperties> = ({ children }) => {
-  const { token } = useToken()
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(true)
-  const { updateToken } = useTokenChanged()
+  const { token } = useToken();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const { updateToken } = useTokenChanged();
+  const location = useLocation();
+
+  const saveLocationAndNavigateToLogin = () => {
+    const queryParams = new URLSearchParams({next: location.pathname}).toString()
+    console.log(queryParams)
+
+    navigate(`${LOGIN_PATH}?${queryParams}`);
+  };
 
   useEffect(() => {
     if (typeof token !== 'undefined') {
-      if (!token) navigate(LOGIN_PATH)
+      if (!token) saveLocationAndNavigateToLogin();
       else {
         try {
-          const decoded = jwtDecode(token)
+          const decoded = jwtDecode(token);
           if (decoded.exp && decoded.exp * 1000 <= Date.now()) {
-            Missive.storeSet('token', '')
-            updateToken('')
-            navigate(LOGIN_PATH)
+            localStorage.setItem('token', '');
+            updateToken('');
+            saveLocationAndNavigateToLogin();
           } else {
-            setIsLoading(false)
+            setIsLoading(false);
           }
         } catch (error) {
           if (error instanceof InvalidTokenError) {
-            Missive.storeSet('token', '')
-            updateToken('')
-            navigate(LOGIN_PATH)
+            localStorage.setItem('token', '');
+            updateToken('');
+            saveLocationAndNavigateToLogin();
           }
         }
       }
     }
-  }, [token])
+  }, [token]);
 
   if (isLoading) {
-    return <b>Loading...</b>
+    return <b>Loading...</b>;
   }
-  return children
-}
+  return children;
+};
 
 PrivateRoute.propTypes = {
   children: PropTypes.node.isRequired
-}
+};
 
-export default PrivateRoute
+export default PrivateRoute;

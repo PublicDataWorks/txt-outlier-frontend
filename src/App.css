@@ -1,0 +1,42 @@
+.missive-scroll::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+}
+
+#floating-email {
+  border: 0;
+  border-bottom: 2px solid var(--missive-text-color-e);
+  border-radius: 0;
+  color: inherit;
+
+  &:focus {
+    box-shadow: none;
+    border-color: var(--missive-blue-color);
+  }
+}
+
+#floating-zipcode {
+  border: 0;
+  border-bottom: 2px solid var(--missive-text-color-e);
+  border-radius: 0;
+  padding: 0 4px;
+  background-color: inherit;
+  color: inherit;
+
+  &:focus {
+    box-shadow: none;
+    border-color: var(--missive-blue-color);
+  }
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
