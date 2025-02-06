@@ -1,9 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useEffect } from 'react';
 import { Route, Routes, HashRouter } from 'react-router-dom';
 
-import ConvoSidebar from './convo-sidebar/App.tsx';
 import GoogleOauthPopup from './convo-sidebar/components/GoogleOauthPopup.tsx';
 import Logout from './convo-sidebar/components/Logout.tsx';
 import PrivateRoute from './convo-sidebar/components/PrivateRoute.tsx';
@@ -16,7 +14,6 @@ import LastBatchSection from '@/components/LastBatchSection';
 import NextBatchSection from '@/components/NextBatchSection';
 import PastBroadcastsSection from '@/components/PastBroadcastsSection';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 
 import './App.css';
 
