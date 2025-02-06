@@ -2,17 +2,17 @@ import { DialogTrigger } from '@radix-ui/react-dialog';
 import { format } from 'date-fns';
 import * as React from 'react';
 
-import { LoadingSpinner } from './ui/loading-spinner';
-
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from '@/hooks/use-toast';
 
 interface PauseScheduleModalProps {
@@ -67,6 +67,7 @@ export default function PauseScheduleDialog({
         </Button>
       </DialogTrigger>
       <DialogContent className="border-neutral-700 bg-[#2A2A2A] text-white sm:max-w-[400px]">
+        <DialogDescription />
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Pause schedule

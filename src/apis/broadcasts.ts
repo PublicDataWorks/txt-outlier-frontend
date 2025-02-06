@@ -12,7 +12,7 @@ export interface UpcomingBroadcast {
   noRecipients: number;
 }
 
-interface PastBroadcast {
+export interface PastBroadcast {
   id: number;
   firstMessage: string;
   secondMessage: string;
@@ -24,14 +24,14 @@ interface PastBroadcast {
   totalUnsubscribed: number;
 }
 
-interface BroadcastsResponse {
+export interface BroadcastsResponse {
   upcoming: UpcomingBroadcast;
   past: PastBroadcast[];
   currentCursor: number;
 }
 
-export const getBroadcasts = async (): Promise<BroadcastsResponse> => {
-  const response = await axios.get<BroadcastsResponse>(BROADCAST_SIDEBAR);
+export const getBroadcasts = async (cursor?: number): Promise<BroadcastsResponse> => {
+  const response = await axios.get<BroadcastsResponse>(BROADCAST_SIDEBAR, { params: { cursor: cursor } });
   return response.data;
 };
 

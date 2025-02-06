@@ -54,7 +54,8 @@ const NextBatchSection = () => {
           <div className="flex items-center gap-2 p-2 rounded-md bg-[#1E1E1E] border border-neutral-700 cursor-pointer hover:bg-[#2C2C2C]">
             <Users className="h-4 w-4 text-neutral-400" />
             <span className="text-sm text-neutral-300">
-              {broadcastsQuery.data?.upcoming.noRecipients.toLocaleString()} recipients
+              {broadcastsQuery.data?.upcoming.noRecipients.toLocaleString()}{' '}
+              recipients
             </span>
           </div>
           <div className="flex gap-2">
