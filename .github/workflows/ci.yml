@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +28,22 @@ jobs:
 
     - name: Run Tests
       run: npm run test
+
+    - name: Build Project
+      env:
+        VITE_BACKEND_BASE_URL: ${{ secrets.VITE_BACKEND_BASE_URL }}
+        VITE_OUTLIER_PHONE_NUMBER: ${{ secrets.VITE_OUTLIER_PHONE_NUMBER }}
+        VITE_GOOGLE_OAUTH_URL: ${{ secrets.VITE_GOOGLE_OAUTH_URL }}
+        VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      run: npm run build
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy to S3
+      run: aws s3 sync ./dist s3://outlier-frontend-staging --delete
