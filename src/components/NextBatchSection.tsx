@@ -51,10 +51,11 @@ const NextBatchSection = () => {
               Intl.DateTimeFormat().resolvedOptions().timeZone,
             )}
           </div>
-          <div className="flex items-center gap-2 p-2 rounded-md bg-[#1E1E1E] border border-neutral-700 cursor-pointer hover:bg-[#2C2C2C]">
-            <Users className="h-4 w-4 text-neutral-400" />
-            <span className="text-sm text-neutral-300">
-              {broadcastsQuery.data?.upcoming.noRecipients.toLocaleString()} recipients
+          <div className="flex items-center gap-2 p-2 w-full whitespace-pre-wrap rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
+            <Users className="h-4 w-4" />
+            <span className="text-sm">
+              {broadcastsQuery.data?.upcoming.noRecipients.toLocaleString()}{' '}
+              recipients
             </span>
           </div>
           <div className="flex gap-2">

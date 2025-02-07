@@ -5,6 +5,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import { act } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 
 import PauseScheduleDialog from './PauseScheduleDialog';
@@ -137,10 +138,13 @@ describe('PauseScheduleDialog', () => {
       />,
     );
     fireEvent.click(screen.getByText('Pause schedule'));
-    fireEvent.click(
-      await within(await screen.findByRole('dialog')).findByRole('button', {
-        name: 'Pause batch schedule',
-      }),
+
+    await act(async () =>
+      fireEvent.click(
+        await within(await screen.findByRole('dialog')).findByRole('button', {
+          name: 'Pause batch schedule',
+        }),
+      ),
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument(); // Dialog should remain open

@@ -7,7 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'src/components/ui'] },
+  { ignores: ['dist', 'src/components/ui', 'src/convo-sidebar'] },
   {
     settings: { react: { version: '18.3' } },
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
