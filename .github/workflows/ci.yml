@@ -32,7 +32,7 @@ jobs:
       run: npm run test
 
     - name: Build Project
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       env:
         VITE_BACKEND_BASE_URL: ${{ secrets.VITE_BACKEND_BASE_URL }}
         VITE_OUTLIER_PHONE_NUMBER: ${{ secrets.VITE_OUTLIER_PHONE_NUMBER }}
@@ -42,7 +42,7 @@ jobs:
       run: npm run build
 
     - name: Upload build artifacts
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
