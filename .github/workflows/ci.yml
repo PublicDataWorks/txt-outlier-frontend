@@ -1,12 +1,16 @@
-name: CI
+name: CI/CD
+
+concurrency:
+  group: ${{ github.ref_name }}
+  cancel-in-progress: false
 
 on:
   push:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  test:
+  validate-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,8 +19,6 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22.13.1'
-        checklatest: true
         node-version-file: '.nvmrc'
         cache: 'npm'
 
@@ -28,3 +30,50 @@ jobs:
 
     - name: Run Tests
       run: npm run test
+
+    - name: Build Project
+      if: github.ref == 'refs/heads/main'
+      env:
+        VITE_BACKEND_BASE_URL: ${{ secrets.VITE_BACKEND_BASE_URL }}
+        VITE_OUTLIER_PHONE_NUMBER: ${{ secrets.VITE_OUTLIER_PHONE_NUMBER }}
+        VITE_GOOGLE_OAUTH_URL: ${{ secrets.VITE_GOOGLE_OAUTH_URL }}
+        VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      run: npm run build
+
+    - name: Upload build artifacts
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist/
+        retention-days: 1
+
+  deploy:
+    needs: validate-and-build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy to S3
+      run: |
+        aws s3 sync ./dist s3://outlier-frontend-staging \
+          --delete \
+          --cache-control "public, max-age=31536000" \
+          --exclude "index.html"
+        aws s3 cp ./dist/index.html s3://outlier-frontend-staging/index.html \
+          --cache-control "no-cache,no-store,must-revalidate"
