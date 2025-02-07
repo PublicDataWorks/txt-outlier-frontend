@@ -17,7 +17,15 @@ Start app in dev mode:
 npm run dev
 ```
 
+Test app:
+```sh
+npm run test
+```
+
 In order to have https to work with Missive, we need Caddy:
 ```sh
 caddy run
 ```
+
+## Deployment
+The app is auto-deployed to S3 with Github action. More detail could be found on `.github/` directory.
