@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useEffect } from 'react';
 import { Route, Routes, HashRouter } from 'react-router-dom';
 
 import GoogleOauthPopup from './convo-sidebar/components/GoogleOauthPopup.tsx';
@@ -30,20 +29,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    root.classList.remove('light', 'dark');
-
-    const theme = root.getAttribute('data-theme');
-
-    if (theme === 'dark' || theme === 'light') {
-      root.classList.add(theme);
-    } else {
-      root.classList.add('light');
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
