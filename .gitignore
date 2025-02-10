@@ -23,21 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# Coverage reports
-coverage
-cypress-coverage
-vitest-coverage
-.nyc_output
-reports
-
-cypress/videos
-cypress/screenshots
-cypress.env.json
-
-__pycache__
-i18n-script/.env
-i18n-script/docker-compose.yml
-.jwt
 .env
-.eslintcache
-.vscode

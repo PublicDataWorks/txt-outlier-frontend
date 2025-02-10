@@ -1,84 +1,31 @@
-Install the dependencies:
+# Outlier TXT Frontends
 
-```bash
-yarn install
+## Set up locally
+
+Run this command to copy `.env` file from `.env.example`:
+```sh
+cp ./.env.example ./.env
 ```
 
-## Usage
-
-To start the project in dev mode:
-
-```bash
-yarn dev
+Install dependencies:
+```sh
+npm i
 ```
 
-Open the project in browser using this link:
-[https://0.0.0.0:5173](https://0.0.0.0:5173)
-
-To build the project:
-
-```bash
-yarn build
+Start app in dev mode:
+```sh
+npm run dev
 ```
 
-## Running Tests
-
-### Setup E2E test
-
-```bash
-cp cypress.env.json.sample cypress.env.json
+Test app:
+```sh
+npm run test
 ```
 
-### Run tests
-
-To run unit test:
-
-```bash
-yarn test:unit
+In order to have https to work with Missive, we need Caddy:
+```sh
+caddy run
 ```
 
-To run end-to-end tests interactively:
-
-```bash
-yarn test:e2e:open
-```
-
-To run end-to-end tests headless-ly:
-
-```bash
-yarn test:e2e:run
-```
-
-To run all tests (unit and e2e) and merge coverage reports (to run in CI
-workflows):
-
-```bash
-yarn coverage
-```
-
-## Contributing
-
-### Coding style
-
-Install pre-commit hook:
-
-```bash
-yarn prepare
-```
-
-Toolings:
-
-We are using `Prettier` to format the code, please add it to your editor/IDE and
-make sure that it picks up the right config of this project
-at `/.prettierrc.cjs`.
-
-The pre-commit hook will run `yarn lint` before every commit. You can also
-install `eslint` plugin to your editor/IDE to see the visualized error while
-coding.
-
-Please note that the unassigned imports (i.e. `import './*.scss'`) are ignored
-by the linter, please put them together with the sibling import group.
-
-## Translation
-
-See detail [here](./i18n-script/README.md)
+## Deployment
+The app is auto-deployed to S3 with Github action. More detail could be found on `.github/` directory.
