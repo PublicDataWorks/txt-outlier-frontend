@@ -36,7 +36,7 @@ jobs:
       env:
         VITE_BACKEND_BASE_URL: ${{ secrets.VITE_BACKEND_BASE_URL }}
         VITE_OUTLIER_PHONE_NUMBER: ${{ secrets.VITE_OUTLIER_PHONE_NUMBER }}
-        VITE_GOOGLE_OAUTH_URL: ${{ secrets.VITE_GOOGLE_OAUTH_URL }}
+        VITE_GOOGLE_OAUTH_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_GOOGLE_OAUTH_URL_PROD || secrets.VITE_GOOGLE_OAUTH_URL }}
         VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
       run: npm run build
