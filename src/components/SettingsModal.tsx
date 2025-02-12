@@ -1,5 +1,4 @@
-'use client';
-
+import { DialogDescription } from '@radix-ui/react-dialog';
 import { Settings } from 'lucide-react';
 import * as React from 'react';
 
@@ -9,12 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { convertFromET, convertToET } from '@/lib/date.ts';
 import { cn } from '@/lib/utils';
 
 interface SettingsModalProps {
-  initialSettings: BroadcastSettings;
-  userTimeZone: string;
   onSave: (settings: BroadcastSettings) => Promise<void> | void;
 }
 
@@ -38,9 +34,22 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 });
 
-export function SettingsModal({ initialSettings, userTimeZone, onSave }: SettingsModalProps) {
+const sampleSettings: BroadcastSettings = {
+  schedule: {
+    'Su': { enabled: true, time: '09:00' },
+    'Mo': { enabled: true, time: '10:30' },
+    'Tu': { enabled: false, time: '14:00' },
+    'We': { enabled: true, time: '15:45' },
+    'Th': { enabled: false, time: '11:15' },
+    'Fr': { enabled: true, time: '16:00' },
+    'Sa': { enabled: false, time: '13:30' }
+  },
+  batchSize: 500
+};
+
+export function SettingsModal({ onSave }: SettingsModalProps) {
   const [open, setOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState<BroadcastSettings>(initialSettings);
+  const [settings, setSettings] = React.useState<BroadcastSettings>(sampleSettings);
   const [batchSizeError, setBatchSizeError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -64,7 +73,7 @@ export function SettingsModal({ initialSettings, userTimeZone, onSave }: Setting
         ...prev.schedule,
         [day]: {
           ...prev.schedule[day],
-          time: convertToET(time)
+          time: time
         }
       }
     }));
@@ -100,16 +109,19 @@ export function SettingsModal({ initialSettings, userTimeZone, onSave }: Setting
           <span className="sr-only">Settings</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-[#2A2A2A] border-neutral-700 text-white">
+      <DialogContent className="w-svw max-w-none rounded-none bg-background border border-input dark:bg-[#1E1E1E] dark:border-neutral-700">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Broadcast Settings</DialogTitle>
+          <DialogTitle className="text-base">Broadcast Settings</DialogTitle>
+          <DialogDescription className="text-muted-foreground dark:text-neutral-400">
+            Configure your broadcast schedule and batch size settings.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="schedule" className="text-white">
+            <Label className="text-foreground dark:text-white">
               Weekly Schedule
             </Label>
-            <p className="text-sm text-neutral-400">Select days and set times for each broadcast</p>
+            <p className="text-sm text-muted-foreground dark:text-neutral-400">Select days and set times for each broadcast</p>
             <ToggleGroup type="multiple" variant="outline" className="justify-start">
               {DAYS_OF_WEEK.map((day) => (
                 <ToggleGroupItem
@@ -129,23 +141,27 @@ export function SettingsModal({ initialSettings, userTimeZone, onSave }: Setting
                 (day) =>
                   settings.schedule[day].enabled && (
                     <div key={day} className="flex items-center gap-2">
-                      <Label htmlFor={`time-${day}`} className="w-8 text-white">
+                      <Label htmlFor={`time-${day}`} className="w-8 dark:text-white">
                         {day}
                       </Label>
                       <Select
-                        value={settings.schedule[day].time.split(' ')[0]}
+                        value={settings.schedule[day].time}
                         onValueChange={(value) => handleTimeChange(day, value)}
                       >
                         <SelectTrigger
                           id={`time-${day}`}
-                          className="w-[180px] bg-[#1E1E1E] border-neutral-600 text-white"
+                          className="w-[180px] bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-600"
                         >
                           <SelectValue placeholder="Select time" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#2A2A2A] border-neutral-700">
+                        <SelectContent className="bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-700">
                           {TIME_OPTIONS.map((time) => (
-                            <SelectItem key={time} value={time} className="text-white focus:bg-neutral-600">
-                              {convertFromET(time, userTimeZone)}
+                            <SelectItem
+                              key={time}
+                              value={time}
+                              className="dark:text-white dark:focus:bg-neutral-600"
+                            >
+                              {time}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -156,25 +172,29 @@ export function SettingsModal({ initialSettings, userTimeZone, onSave }: Setting
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="batchSize" className="text-white">
+            <Label htmlFor="batchSize" className="dark:text-white">
               Batch Size
             </Label>
-            <p className="text-sm text-neutral-400">Number of recipients per batch</p>
+            <p className="text-sm text-muted-foreground dark:text-neutral-400">Number of recipients per batch</p>
             <Input
               id="batchSize"
               type="number"
               value={settings.batchSize}
               onChange={(e) => handleBatchSizeChange(e.target.value)}
-              className={cn('bg-[#1E1E1E] border-neutral-600 text-white', batchSizeError && 'border-red-500')}
+              className={cn(
+                'bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-600',
+                batchSizeError && 'border-red-500'
+              )}
             />
             {batchSizeError && <p className="text-sm text-red-400">{batchSizeError}</p>}
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button
+            type="button"
             variant="outline"
             onClick={() => setOpen(false)}
-            className="bg-neutral-800 text-white hover:bg-neutral-700"
+            className="flex-1 bg-input hover:bg-input/50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
             disabled={isSaving}
           >
             Cancel
@@ -182,7 +202,7 @@ export function SettingsModal({ initialSettings, userTimeZone, onSave }: Setting
           <Button
             onClick={handleSave}
             disabled={!!batchSizeError || isSaving}
-            className="bg-[#2F80ED] hover:bg-[#2D7BE5] text-white"
+            className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] text-white"
           >
             {isSaving ? 'Saving...' : 'Save changes'}
           </Button>
