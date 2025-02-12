@@ -3,30 +3,67 @@ import { Settings } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
 
-interface SettingsModalProps {
-  onSave: (settings: BroadcastSettings) => Promise<void> | void;
-}
-
-export interface DaySchedule {
-  enabled: boolean;
-  time: string;
-}
-
-export interface BroadcastSettings {
+// Types and Interfaces
+interface BackendSchedule {
   schedule: {
-    [key: string]: DaySchedule
+    [key: string]: string | null;
   };
   batchSize: number;
 }
 
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+interface DaySchedule {
+  enabled: boolean;
+  time: string;
+}
+
+interface BroadcastSettings {
+  schedule: {
+    [key: string]: DaySchedule;
+  };
+  batchSize: number;
+}
+
+interface SettingsModalProps {
+  initialSettings?: BackendSchedule;
+  onSave: (settings: BackendSchedule) => Promise<void>;
+  onError?: (error: Error) => void;
+}
+
+// Constants
+const DAY_MAPPING = {
+  sun: 'Su',
+  mon: 'Mo',
+  tue: 'Tu',
+  wed: 'We',
+  thu: 'Th',
+  fri: 'Fr',
+  sat: 'Sa',
+} as const;
+
+const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
+const DEFAULT_TIME = '09:00';
+const MIN_BATCH_SIZE = 100;
+const MAX_BATCH_SIZE = 10000;
 
 const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
   const hour = Math.floor(i / 4);
@@ -34,70 +71,112 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 });
 
-const sampleSettings: BroadcastSettings = {
+// Default settings
+const DEFAULT_SETTINGS: BackendSchedule = {
   schedule: {
-    'Su': { enabled: true, time: '09:00' },
-    'Mo': { enabled: true, time: '10:30' },
-    'Tu': { enabled: false, time: '14:00' },
-    'We': { enabled: true, time: '15:45' },
-    'Th': { enabled: false, time: '11:15' },
-    'Fr': { enabled: true, time: '16:00' },
-    'Sa': { enabled: false, time: '13:30' }
+    mon: '10:30',
+    tue: null,
+    wed: '11:15',
+    thu: null,
+    fri: null,
+    sat: '09:00',
+    sun: '10:00',
   },
-  batchSize: 500
+  batchSize: 500,
 };
 
-export function SettingsModal({ onSave }: SettingsModalProps) {
+// Utility functions
+const convertBackendToFrontend = (backendData: BackendSchedule): BroadcastSettings => {
+  const schedule: { [key: string]: DaySchedule } = {};
+
+  Object.entries(DAY_MAPPING).forEach(([backendDay, frontendDay]) => {
+    const time = backendData.schedule[backendDay];
+    schedule[frontendDay] = {
+      enabled: time !== null,
+      time: time || DEFAULT_TIME,
+    };
+  });
+
+  return {
+    schedule,
+    batchSize: backendData.batchSize,
+  };
+};
+
+const convertFrontendToBackend = (frontendData: BroadcastSettings): BackendSchedule => {
+  const schedule: { [key: string]: string | null } = {};
+
+  Object.entries(DAY_MAPPING).forEach(([backendDay, frontendDay]) => {
+    const daySchedule = frontendData.schedule[frontendDay];
+    schedule[backendDay] = daySchedule.enabled ? daySchedule.time : null;
+  });
+
+  return {
+    schedule,
+    batchSize: frontendData.batchSize,
+  };
+};
+
+const validateBatchSize = (value: number): string | null => {
+  if (isNaN(value)) return 'Batch size must be a number';
+  if (value < MIN_BATCH_SIZE) return `Batch size must be at least ${MIN_BATCH_SIZE}`;
+  if (value > MAX_BATCH_SIZE) return `Batch size cannot exceed ${MAX_BATCH_SIZE}`;
+  return null;
+};
+
+export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onError }: SettingsModalProps) {
   const [open, setOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState<BroadcastSettings>(sampleSettings);
+  const [settings, setSettings] = React.useState<BroadcastSettings>(() =>
+    convertBackendToFrontend(initialSettings)
+  );
   const [batchSizeError, setBatchSizeError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleDayToggle = (day: string) => {
+  const handleDayToggle = React.useCallback((day: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
         [day]: {
           ...prev.schedule[day],
-          enabled: !prev.schedule[day].enabled
-        }
-      }
+          enabled: !prev.schedule[day].enabled,
+        },
+      },
     }));
-  };
+  }, []);
 
-  const handleTimeChange = (day: string, time: string) => {
+  const handleTimeChange = React.useCallback((day: string, time: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
         [day]: {
           ...prev.schedule[day],
-          time: time
-        }
-      }
+          time,
+        },
+      },
     }));
-  };
+  }, []);
 
-  const handleBatchSizeChange = (value: string) => {
+  const handleBatchSizeChange = React.useCallback((value: string) => {
     const batchSize = Number.parseInt(value, 10);
-    if (isNaN(batchSize) || batchSize < 100) {
-      setBatchSizeError('Batch size must be at least 100');
-    } else {
-      setBatchSizeError(null);
-    }
+    const error = validateBatchSize(batchSize);
+    setBatchSizeError(error);
     setSettings((prev) => ({ ...prev, batchSize }));
-  };
+  }, []);
 
   const handleSave = async () => {
-    if (!batchSizeError) {
-      try {
-        setIsSaving(true);
-        await onSave(settings);
-        setOpen(false);
-      } finally {
-        setIsSaving(false);
-      }
+    if (batchSizeError) return;
+
+    try {
+      setIsSaving(true);
+      const backendSettings = convertFrontendToBackend(settings);
+      await onSave(backendSettings);
+      setOpen(false);
+    } catch (error) {
+      onError?.(error instanceof Error ? error : new Error('Failed to save settings'));
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -118,10 +197,10 @@ export function SettingsModal({ onSave }: SettingsModalProps) {
         </DialogHeader>
         <div className="grid gap-6 py-4">
           <div className="grid gap-2">
-            <Label className="text-foreground dark:text-white">
-              Weekly Schedule
-            </Label>
-            <p className="text-sm text-muted-foreground dark:text-neutral-400">Select days and set times for each broadcast</p>
+            <Label className="text-foreground dark:text-white">Weekly Schedule</Label>
+            <p className="text-sm text-muted-foreground dark:text-neutral-400">
+              Select days and set times for each broadcast
+            </p>
             <ToggleGroup type="multiple" variant="outline" className="justify-start">
               {DAYS_OF_WEEK.map((day) => (
                 <ToggleGroupItem
@@ -157,7 +236,7 @@ export function SettingsModal({ onSave }: SettingsModalProps) {
                         <SelectContent className="bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-700">
                           {TIME_OPTIONS.map((time) => (
                             <SelectItem
-                              key={time}
+                              key={`${day}-${time}`}
                               value={time}
                               className="dark:text-white dark:focus:bg-neutral-600"
                             >
@@ -175,7 +254,9 @@ export function SettingsModal({ onSave }: SettingsModalProps) {
             <Label htmlFor="batchSize" className="dark:text-white">
               Batch Size
             </Label>
-            <p className="text-sm text-muted-foreground dark:text-neutral-400">Number of recipients per batch</p>
+            <p className="text-sm text-muted-foreground dark:text-neutral-400">
+              Number of recipients per batch ({MIN_BATCH_SIZE}-{MAX_BATCH_SIZE})
+            </p>
             <Input
               id="batchSize"
               type="number"
@@ -185,6 +266,8 @@ export function SettingsModal({ onSave }: SettingsModalProps) {
                 'bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-600',
                 batchSizeError && 'border-red-500'
               )}
+              min={MIN_BATCH_SIZE}
+              max={MAX_BATCH_SIZE}
             />
             {batchSizeError && <p className="text-sm text-red-400">{batchSizeError}</p>}
           </div>
