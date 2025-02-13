@@ -12,7 +12,7 @@ const LastBatchSection = () => {
   if (broadcastsQuery.isLoading) {
     return (
       <BroadcastCard title="Last batch" icon={CheckCircle2}>
-        <div className="flex flex-col space-y-3 w-full">
+        <div data-testid="skeleton"className="flex flex-col space-y-3 w-full">
           <Skeleton className="h-4 w-full" />
           <div className="space-y-2">
             <Skeleton className="h-[125px] w-full rounded-xl" />
@@ -34,7 +34,7 @@ const LastBatchSection = () => {
       <div className="text-sm text-muted-foreground dark:text-neutral-300 mb-4">
         Sent on{' '}
         {formatDateTime(
-          new Date(broadcastsQuery.data!.upcoming.runAt * 1000),
+          new Date(lastBatch!.runAt * 1000),
           Intl.DateTimeFormat().resolvedOptions().timeZone,
         )}
       </div>
