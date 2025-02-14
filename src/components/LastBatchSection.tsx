@@ -12,7 +12,7 @@ const LastBatchSection = () => {
   if (broadcastsQuery.isLoading) {
     return (
       <BroadcastCard title="Last batch" icon={CheckCircle2}>
-        <div data-testid="skeleton"className="flex flex-col space-y-3 w-full">
+        <div data-testid="skeleton" className="flex flex-col space-y-3 w-full">
           <Skeleton className="h-4 w-full" />
           <div className="space-y-2">
             <Skeleton className="h-[125px] w-full rounded-xl" />
@@ -28,6 +28,14 @@ const LastBatchSection = () => {
   }
 
   const lastBatch = broadcastsQuery.data?.past[0];
+
+  if (!lastBatch) {
+    return (
+      <BroadcastCard title="Last batch" icon={CheckCircle2}>
+      <div>Empty</div>
+    </BroadcastCard>
+    );
+  }
 
   return (
     <BroadcastCard title="Last batch" icon={CheckCircle2}>

@@ -22,21 +22,21 @@ import {
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
+import { convertScheduleSettingsToBackend, convertScheduleSettingsToFrontend } from '@/lib/broadcast-settings';
 
-// Types and Interfaces
-interface BackendSchedule {
+export interface BackendSchedule {
   schedule: {
     [key: string]: string | null;
   };
   batchSize: number;
 }
 
-interface DaySchedule {
+export interface DaySchedule {
   enabled: boolean;
   time: string;
 }
 
-interface BroadcastSettings {
+export interface BroadcastSettings {
   schedule: {
     [key: string]: DaySchedule;
   };
@@ -50,18 +50,8 @@ interface SettingsModalProps {
 }
 
 // Constants
-const DAY_MAPPING = {
-  sun: 'Su',
-  mon: 'Mo',
-  tue: 'Tu',
-  wed: 'We',
-  thu: 'Th',
-  fri: 'Fr',
-  sat: 'Sa',
-} as const;
 
 const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
-const DEFAULT_TIME = '09:00';
 const MIN_BATCH_SIZE = 100;
 const MAX_BATCH_SIZE = 10000;
 
@@ -85,38 +75,6 @@ const DEFAULT_SETTINGS: BackendSchedule = {
   batchSize: 500,
 };
 
-// Utility functions
-const convertBackendToFrontend = (backendData: BackendSchedule): BroadcastSettings => {
-  const schedule: { [key: string]: DaySchedule } = {};
-
-  Object.entries(DAY_MAPPING).forEach(([backendDay, frontendDay]) => {
-    const time = backendData.schedule[backendDay];
-    schedule[frontendDay] = {
-      enabled: time !== null,
-      time: time || DEFAULT_TIME,
-    };
-  });
-
-  return {
-    schedule,
-    batchSize: backendData.batchSize,
-  };
-};
-
-const convertFrontendToBackend = (frontendData: BroadcastSettings): BackendSchedule => {
-  const schedule: { [key: string]: string | null } = {};
-
-  Object.entries(DAY_MAPPING).forEach(([backendDay, frontendDay]) => {
-    const daySchedule = frontendData.schedule[frontendDay];
-    schedule[backendDay] = daySchedule.enabled ? daySchedule.time : null;
-  });
-
-  return {
-    schedule,
-    batchSize: frontendData.batchSize,
-  };
-};
-
 const validateBatchSize = (value: number): string | null => {
   if (isNaN(value)) return 'Batch size must be a number';
   if (value < MIN_BATCH_SIZE) return `Batch size must be at least ${MIN_BATCH_SIZE}`;
@@ -127,7 +85,7 @@ const validateBatchSize = (value: number): string | null => {
 export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onError }: SettingsModalProps) {
   const [open, setOpen] = React.useState(false);
   const [settings, setSettings] = React.useState<BroadcastSettings>(() =>
-    convertBackendToFrontend(initialSettings)
+    convertScheduleSettingsToFrontend(initialSettings)
   );
   const [batchSizeError, setBatchSizeError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -170,7 +128,7 @@ export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onEr
 
     try {
       setIsSaving(true);
-      const backendSettings = convertFrontendToBackend(settings);
+      const backendSettings = convertScheduleSettingsToBackend(settings);
       await onSave(backendSettings);
       setOpen(false);
     } catch (error) {
