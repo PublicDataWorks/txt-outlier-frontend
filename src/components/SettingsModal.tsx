@@ -23,7 +23,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
 
-export interface BackendSchedule {
+export interface BroadcastSchedule {
   schedule: {
     [key: string]: string | null;
   };
@@ -31,8 +31,8 @@ export interface BackendSchedule {
 }
 
 interface SettingsModalProps {
-  initialSettings?: BackendSchedule;
-  onSave: (settings: BackendSchedule) => Promise<void>;
+  initialSettings?: BroadcastSchedule;
+  onSave: (settings: BroadcastSchedule) => Promise<void>;
   onError?: (error: Error) => void;
 }
 
@@ -59,7 +59,7 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
 });
 
 // Default settings
-const DEFAULT_SETTINGS: BackendSchedule = {
+const DEFAULT_SETTINGS: BroadcastSchedule = {
   schedule: {
     mon: '10:30',
     tue: null,
@@ -81,26 +81,26 @@ const validateBatchSize = (value: number): string | null => {
 
 export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onError }: SettingsModalProps) {
   const [open, setOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState<BackendSchedule>(initialSettings);
+  const [settings, setSettings] = React.useState<BroadcastSchedule>(initialSettings);
   const [batchSizeError, setBatchSizeError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleDayToggle = React.useCallback((backendDay: string) => {
+  const handleDayToggle = React.useCallback((dayKey: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
-        [backendDay]: prev.schedule[backendDay] ? null : '09:00',
+        [dayKey]: prev.schedule[dayKey] ? null : '09:00',
       },
     }));
   }, []);
 
-  const handleTimeChange = React.useCallback((backendDay: string, time: string) => {
+  const handleTimeChange = React.useCallback((dayKey: string, time: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
-        [backendDay]: time,
+        [dayKey]: time,
       },
     }));
   }, []);
