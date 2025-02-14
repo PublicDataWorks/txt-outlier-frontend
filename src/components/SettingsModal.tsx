@@ -22,23 +22,10 @@ import {
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
-import { convertScheduleSettingsToBackend, convertScheduleSettingsToFrontend } from '@/lib/broadcast-settings';
 
 export interface BackendSchedule {
   schedule: {
     [key: string]: string | null;
-  };
-  batchSize: number;
-}
-
-export interface DaySchedule {
-  enabled: boolean;
-  time: string;
-}
-
-export interface BroadcastSettings {
-  schedule: {
-    [key: string]: DaySchedule;
   };
   batchSize: number;
 }
@@ -51,7 +38,17 @@ interface SettingsModalProps {
 
 // Constants
 
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
+const DAY_MAPPING = {
+  sun: 'Su',
+  mon: 'Mo',
+  tue: 'Tu',
+  wed: 'We',
+  thu: 'Th',
+  fri: 'Fr',
+  sat: 'Sa',
+} as const;
+
+const DAYS_OF_WEEK = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 const MIN_BATCH_SIZE = 100;
 const MAX_BATCH_SIZE = 10000;
 
@@ -84,34 +81,26 @@ const validateBatchSize = (value: number): string | null => {
 
 export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onError }: SettingsModalProps) {
   const [open, setOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState<BroadcastSettings>(() =>
-    convertScheduleSettingsToFrontend(initialSettings)
-  );
+  const [settings, setSettings] = React.useState<BackendSchedule>(initialSettings);
   const [batchSizeError, setBatchSizeError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleDayToggle = React.useCallback((day: string) => {
+  const handleDayToggle = React.useCallback((backendDay: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
-        [day]: {
-          ...prev.schedule[day],
-          enabled: !prev.schedule[day].enabled,
-        },
+        [backendDay]: prev.schedule[backendDay] ? null : '09:00',
       },
     }));
   }, []);
 
-  const handleTimeChange = React.useCallback((day: string, time: string) => {
+  const handleTimeChange = React.useCallback((backendDay: string, time: string) => {
     setSettings((prev) => ({
       ...prev,
       schedule: {
         ...prev.schedule,
-        [day]: {
-          ...prev.schedule[day],
-          time,
-        },
+        [backendDay]: time,
       },
     }));
   }, []);
@@ -128,8 +117,7 @@ export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onEr
 
     try {
       setIsSaving(true);
-      const backendSettings = convertScheduleSettingsToBackend(settings);
-      await onSave(backendSettings);
+      await onSave(settings);
       setOpen(false);
     } catch (error) {
       onError?.(error instanceof Error ? error : new Error('Failed to save settings'));
@@ -164,25 +152,25 @@ export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onEr
                 <ToggleGroupItem
                   key={day}
                   value={day}
-                  aria-label={day}
+                  aria-label={DAY_MAPPING[day]}
                   className="w-9 h-9 rounded-full data-[state=on]:bg-[#2F80ED] data-[state=on]:text-white"
-                  data-state={settings.schedule[day].enabled ? 'on' : 'off'}
+                  data-state={settings.schedule[day] ? 'on' : 'off'}
                   onClick={() => handleDayToggle(day)}
                 >
-                  {day}
+                  {DAY_MAPPING[day]}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
             <div className="grid gap-2 mt-2">
               {DAYS_OF_WEEK.map(
                 (day) =>
-                  settings.schedule[day].enabled && (
+                  settings.schedule[day] !== null && (
                     <div key={day} className="flex items-center gap-2">
                       <Label htmlFor={`time-${day}`} className="w-8 dark:text-white">
-                        {day}
+                        {DAY_MAPPING[day]}
                       </Label>
                       <Select
-                        value={settings.schedule[day].time}
+                        value={settings.schedule[day] || '09:00'}
                         onValueChange={(value) => handleTimeChange(day, value)}
                       >
                         <SelectTrigger
