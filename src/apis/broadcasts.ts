@@ -39,13 +39,15 @@ export const updateBroadcast = async ({
   id,
   firstMessage,
   secondMessage,
-  runAt
+  runAt,
+  noRecipients
 }: Partial<UpcomingBroadcast>): Promise<UpcomingBroadcast> =>
   axios.patch(BROADCAST_SIDEBAR, {
     id,
     firstMessage,
     secondMessage,
-    runAt
+    runAt,
+    noRecipients
   });
 
 export const sendNowBroadcast = async (): Promise<void> => axios.get(SEND_NOW);
