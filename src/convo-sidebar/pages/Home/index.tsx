@@ -216,11 +216,13 @@ function Home() {
             {(updateError as ApiResponseError).response?.data.type === 'zipcode' ? (updateError as ApiResponseError).response?.data.msg : ''}
           </div> : null}
 
-        <div className="pt-2">
-          Reporters contacted:{' '}
-          <span className="font-bold">{conversation.assignee_user_name.join(', ')}</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
+        {conversation.assignee_user_name.length > 0 && (
+          <div className="pt-2">
+            Reporters contacted:{' '}
+            <span className="font-bold">{conversation.assignee_user_name.join(', ')}</span>
+          </div>
+        )}
+        <div className="flex flex-wrap gap-2 pt-2">
           {keywordLabels.map(tag => (
             <div key={tag} className="rounded-missive-border-radius bg-missive-text-color-d px-2 py-2 font-bold">
               {tag}
