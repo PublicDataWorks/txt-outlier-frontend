@@ -5,6 +5,8 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import type { BroadcastSettings } from '@/apis/settings';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,6 +26,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useToast } from '@/hooks/use-toast';
+import { useSettingsQuery, useSettingsMutation } from '@/hooks/useSettings';
 import { cn } from '@/lib/utils';
 
 // Constants
@@ -47,48 +51,35 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 });
 
-// Zod Schema
-const scheduleSchema = z.record(z.string(), z.string().nullable());
-
-const settingsSchema = z.object({
-  schedule: scheduleSchema,
+// Form validation schema
+const formSchema = z.object({
+  schedule: z.record(z.string(), z.string().nullable()),
   batchSize: z.number()
     .min(MIN_BATCH_SIZE, `Batch size must be at least ${MIN_BATCH_SIZE}`)
     .max(MAX_BATCH_SIZE, `Batch size cannot exceed ${MAX_BATCH_SIZE}`),
 });
 
-type SettingsFormData = z.infer<typeof settingsSchema>;
-
-// Default settings
-const DEFAULT_SETTINGS: SettingsFormData = {
-  schedule: {
-    mon: '10:30',
-    tue: null,
-    wed: '11:15',
-    thu: null,
-    fri: null,
-    sat: '09:00',
-    sun: '10:00',
-  },
-  batchSize: 500,
-};
-
-interface SettingsModalProps {
-  initialSettings?: SettingsFormData;
-  onSave: (settings: SettingsFormData) => Promise<void>;
-  onError?: (error: Error) => void;
-}
-
-export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onError }: SettingsModalProps) {
+export function SettingsModal() {
   const [open, setOpen] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
 
-  const form = useForm<SettingsFormData>({
-    resolver: zodResolver(settingsSchema),
-    defaultValues: initialSettings,
+  const { data: settings, isLoading } = useSettingsQuery();
+  const { mutate: updateSettings, isPending: isSaving } = useSettingsMutation();
+
+  const { toast } = useToast();
+
+  const form = useForm<BroadcastSettings>({
+    resolver: zodResolver(formSchema),
+    defaultValues: settings,
   });
 
   const { handleSubmit, setValue, watch, formState: { errors } } = form;
+
+  React.useLayoutEffect(() => {
+    if (settings) {
+      form.reset(settings);
+    }
+  }, [settings, form]);
+
 
   const handleDayToggle = React.useCallback((dayKey: string) => {
     const currentSchedule = watch('schedule');
@@ -102,17 +93,21 @@ export function SettingsModal({ initialSettings = DEFAULT_SETTINGS, onSave, onEr
     setValue(`schedule.${dayKey}`, time);
   }, [setValue]);
 
-  const onSubmit = async (data: SettingsFormData) => {
-    try {
-      setIsSaving(true);
-      await onSave(data);
-      setOpen(false);
-    } catch (error) {
-      onError?.(error instanceof Error ? error : new Error('Failed to save settings'));
-    } finally {
-      setIsSaving(false);
-    }
+  const onSubmit = async (data: BroadcastSettings) => {
+    updateSettings(data, {
+      onSuccess: () => {
+        setOpen(false);
+        toast({ description: 'Settings updated successfully' });
+      },
+      onError: () => {
+        toast({ title: 'Error', description: 'Failed to save settings. Please try again later!' });
+      },
+    });
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
