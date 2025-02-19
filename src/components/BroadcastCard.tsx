@@ -1,5 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
+import SettingsModal from '@/components/SettingsModal.tsx';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface BroadcastCardProps {
@@ -19,6 +20,7 @@ const BroadcastCard = ({ title, icon: Icon, children }: BroadcastCardProps) => {
               {title}
             </CardTitle>
           </div>
+          {title === 'Next batch' && <SettingsModal />}
         </div>
       </CardHeader>
       <CardContent>{children}</CardContent>

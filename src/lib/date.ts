@@ -7,7 +7,6 @@ export function formatDateTime(date: Date, userTimeZone: string) {
 export function formatToLocalTime(date: Date) {
   return formatDateTime(
     date,
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    Intl.DateTimeFormat().resolvedOptions().timeZone
   );
 }
-
