@@ -25,29 +25,12 @@ export interface BroadcastSettings {
   batchSize: number;
 }
 
-
-// Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Mock storage to persist settings between calls
-let mockSettings = { ...DEFAULT_SETTINGS };
-
 export const getSettings = async (): Promise<BroadcastSettings> => {
-  // Simulate network delay (500-1500ms)
-  await delay(500 + Math.random() * 1000);
-  return { ...mockSettings };
+  const response = await axios.get<BroadcastSettings>(SETTINGS_ENDPOINT);
+  return response.data;
 };
 
 export const updateSettings = async (settings: BroadcastSettings): Promise<BroadcastSettings> => {
-  // Simulate network delay (500-1500ms)
-  await delay(500 + Math.random() * 1000);
-  
-  // Simulate random failure (10% chance)
-  if (Math.random() < 0.1) {
-    throw new Error('Failed to update settings');
-  }
-
-  // Update mock storage
-  mockSettings = { ...settings };
-  return { ...mockSettings };
+  const response = await axios.post<BroadcastSettings>(SETTINGS_ENDPOINT, settings);
+  return response.data;
 };
