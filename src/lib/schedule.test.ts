@@ -219,8 +219,8 @@ describe('Schedule Conversion Functions', () => {
             });
         });
 
-        describe("Collapsed data from the backend", () => {
-            describe("Data translated to the same day twice", () => {
+        describe('Collapsed data from the backend', () => {
+            describe('Data translated to the same day twice', () => {
                it('chooses the latter value', () => {
                    const schedule: Schedule = {
                        mon: '22:30', // translated into tuesday 5:30
@@ -246,8 +246,8 @@ describe('Schedule Conversion Functions', () => {
                    };
 
                    expect(localSchedule).toEqual(expectedLocalSchedule);
-               })
-            })
-        })
+               });
+            });
+        });
     });
 });

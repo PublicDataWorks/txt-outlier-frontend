@@ -20,7 +20,7 @@ const BroadcastCard = ({ title, icon: Icon, children }: BroadcastCardProps) => {
               {title}
             </CardTitle>
           </div>
-          {title === "Next batch" && <SettingsModal
+          {title === 'Next batch' && <SettingsModal
             onSave={async (newSettings) => {
               console.log('New settings:', newSettings);
             }}
