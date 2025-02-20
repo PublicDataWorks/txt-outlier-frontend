@@ -28,6 +28,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useToast } from '@/hooks/use-toast';
 import { useSettingsQuery, useSettingsMutation } from '@/hooks/useSettings';
+import { getESTorEDT } from '@/lib/date';
 import { cn } from '@/lib/utils';
 
 // Constants
@@ -58,6 +59,8 @@ const formSchema = z.object({
     .min(MIN_BATCH_SIZE, `Batch size must be at least ${MIN_BATCH_SIZE}`)
     .max(MAX_BATCH_SIZE, `Batch size cannot exceed ${MAX_BATCH_SIZE}`),
 });
+
+const currentTimeZone = getESTorEDT();
 
 export function SettingsModal() {
   const [open, setOpen] = React.useState(false);
@@ -121,9 +124,7 @@ export function SettingsModal() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle className="text-base">Broadcast Settings</DialogTitle>
-            <DialogDescription className="text-muted-foreground dark:text-neutral-400">
-              Configure your broadcast schedule and batch size settings.
-            </DialogDescription>
+            <DialogDescription />
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
@@ -170,7 +171,7 @@ export function SettingsModal() {
                                 value={time}
                                 className="dark:text-white dark:focus:bg-neutral-600"
                               >
-                                {time}
+                                {`${time} ${currentTimeZone}`}
                               </SelectItem>
                             ))}
                           </SelectContent>
