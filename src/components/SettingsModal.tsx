@@ -190,6 +190,7 @@ export function SettingsModal() {
               </p>
               <Input
                 {...form.register('batchSize', { valueAsNumber: true })}
+                id='batchSize'
                 type="number"
                 className={cn(
                   'bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-600',
