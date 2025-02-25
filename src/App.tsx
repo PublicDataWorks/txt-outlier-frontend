@@ -16,6 +16,7 @@ import PastBroadcastsSection from '@/components/PastBroadcastsSection';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 import './App.css';
+import CampaignPage from './pages/campaign/index.tsx';
 
 
 const queryClient = new QueryClient({
@@ -45,6 +46,18 @@ function App() {
                       className="h-screen overflow-y-scroll bg-missive-background-color text-missive-text-color-a missive-scroll">
                       <Home />
                     </div>
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="campaign"
+                element={
+                  <PrivateRoute>
+                    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800">
+                      <div className="space-y-6 p-4">
+                        <CampaignPage />
+                      </div>
+                    </ScrollArea>
                   </PrivateRoute>
                 }
               />
