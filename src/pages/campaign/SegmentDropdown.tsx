@@ -1,0 +1,97 @@
+import { Check, ChevronsUpDown } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { DatePicker } from '@/components/ui/date-picker';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+
+interface SegmentDropdownProps {
+  segment: string;
+  timeframe: Date | undefined;
+  onChange: (segment: string, timeframe: Date | undefined) => void;
+  segments: string[];
+  disabled?: boolean;
+}
+
+const formatTimeframe = (timeframe: Date | undefined) => {
+  if (!timeframe) return 'Any time';
+  return `Added to segment since ${timeframe.toLocaleDateString()}`;
+};
+
+export default function SegmentDropdown({
+  segment,
+  timeframe,
+  onChange,
+  segments,
+  disabled = false,
+}: SegmentDropdownProps) {
+  return (
+    <div className="space-y-2">
+      <div className="flex space-x-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              className="w-full justify-between"
+              disabled={disabled}
+            >
+              {segment
+                ? segments.find((s) => s === segment)
+                : 'Select segment...'}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandInput placeholder="Search segment..." />
+              <CommandList>
+                <CommandEmpty>No segment found.</CommandEmpty>
+                <CommandGroup>
+                  {segments.map((s) => (
+                    <CommandItem
+                      key={s}
+                      onSelect={() => {
+                        onChange(s, timeframe);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          segment === s ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {s}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        <DatePicker
+          value={timeframe}
+          onChange={(value) => onChange(segment, value)}
+          disabled={!segment || disabled}
+        />
+      </div>
+      {timeframe && (
+        <p className="text-sm text-muted-foreground ml-2">
+          {formatTimeframe(timeframe)}
+        </p>
+      )}
+    </div>
+  );
+}

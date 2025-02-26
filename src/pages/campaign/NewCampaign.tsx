@@ -1,6 +1,9 @@
 import { useState } from 'react';
+
 import { MessageInput } from './MessageInput';
+
 import { Input } from '@/components/ui/input';
+import RecipientsSelector from './RecipientsSelector';
 
 const NewCampaign = () => {
   const [campaignName, setCampaignName] = useState('');
@@ -22,6 +25,8 @@ const NewCampaign = () => {
           onChange={setMessage}
           onFollowUpChange={setFollowUpMessage}
         />
+
+        <RecipientsSelector />
       </div>
     </>
   );
