@@ -23,7 +23,7 @@ export function DatePicker({ value, onChange, disabled }: DatePickerProps) {
           variant="outline"
           size="sm"
           className={cn(
-            'flex justify-center text-left font-normal ',
+            'flex justify-center text-left font-normal h-10 max-w-[150px]',
             !value && 'text-muted-foreground',
             value ? 'w-[240px]' : 'w-9 px-0',
           )}
@@ -33,7 +33,7 @@ export function DatePicker({ value, onChange, disabled }: DatePickerProps) {
           {value && <span className="ml-2">{format(value, 'LLL dd, y')}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-full p-0" align="start">
         <Calendar
           initialFocus
           mode="single"

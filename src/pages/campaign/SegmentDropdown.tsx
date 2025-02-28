@@ -38,19 +38,21 @@ export default function SegmentDropdown({
   disabled = false,
 }: SegmentDropdownProps) {
   return (
-    <div className="space-y-2">
-      <div className="flex space-x-2">
+    <div className="space-y-2 w-full">
+      <div className="flex flex-row gap-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              className="w-full justify-between"
+              className="w-full justify-between overflow-auto"
               disabled={disabled}
             >
-              {segment
-                ? segments.find((s) => s === segment)
-                : 'Select segment...'}
+              <span className="truncate">
+                {segment
+                  ? segments.find((s) => s === segment)
+                  : 'Select segment...'}
+              </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
