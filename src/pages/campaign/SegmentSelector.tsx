@@ -19,6 +19,9 @@ interface SegmentSelectorProps {
   includeGroups: SegmentGroup[];
   onChange: (includeGroups: SegmentGroup[]) => void;
   estimatedRecipients: number;
+  addButtonLabel?: string;
+  addAnotherButtonLabel?: string;
+  allowEmptyGroups?: boolean; // New prop to allow removing all groups
 }
 
 const segments = [
@@ -48,6 +51,9 @@ export function SegmentSelector({
   includeGroups,
   onChange,
   estimatedRecipients,
+  addButtonLabel = 'Add Segment',
+  addAnotherButtonLabel = 'Add Another Segment',
+  allowEmptyGroups = false, // Default to false for backward compatibility
 }: SegmentSelectorProps) {
   const addSegmentGroup = () => {
     onChange([
@@ -83,15 +89,18 @@ export function SegmentSelector({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-medium">
-        Estimated recipients: {estimatedRecipients.toLocaleString()}
-      </p>
+      {estimatedRecipients > 0 && (
+        <p className="text-sm font-medium">
+          Estimated recipients: {estimatedRecipients.toLocaleString()}
+        </p>
+      )}
+      
       {includeGroups.map((group, groupIndex) => (
         <div
           key={groupIndex}
-          className={`space-y-2 border p-4 rounded-md relative ${groupIndex > 0 ? 'pt-10' : ''}`}
+          className={`space-y-2 border p-4 rounded-md relative ${(groupIndex > 0 || allowEmptyGroups) ? 'pt-10' : ''}`}
         >
-          {groupIndex > 0 && (
+          {(groupIndex > 0 || allowEmptyGroups) && (
             <Button
               variant="ghost"
               size="icon"
@@ -157,7 +166,7 @@ export function SegmentSelector({
       ))}
       <Button variant="outline" onClick={addSegmentGroup}>
         <PlusCircle className="mr-2 h-4 w-4" />
-        {includeGroups.length === 0 ? 'Add Segment' : 'Add Another Segment'}
+        {includeGroups.length === 0 ? addButtonLabel : addAnotherButtonLabel}
       </Button>
     </div>
   );
