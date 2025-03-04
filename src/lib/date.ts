@@ -31,3 +31,7 @@ export function getESTorEDT() {
 
   return 'EST';
 }
+
+export function unixTimestampInSecondToDate(timestamp: number) {
+    return formatToLocalTime(new Date(timestamp * 1000));
+}
