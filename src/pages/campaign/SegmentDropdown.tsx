@@ -17,11 +17,16 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
+interface SegmentOption {
+  id: string;
+  name: string;
+}
+
 interface SegmentDropdownProps {
   segment: string;
   timeframe: Date | undefined;
   onChange: (segment: string, timeframe: Date | undefined) => void;
-  segments: string[];
+  segments: SegmentOption[];
   disabled?: boolean;
 }
 
@@ -50,7 +55,7 @@ export default function SegmentDropdown({
             >
               <span className="truncate">
                 {segment
-                  ? segments.find((s) => s === segment)
+                  ? segments.find((s) => s.id === segment)?.name || 'Unknown segment'
                   : 'Select segment...'}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -64,18 +69,18 @@ export default function SegmentDropdown({
                 <CommandGroup>
                   {segments.map((s) => (
                     <CommandItem
-                      key={s}
+                      key={s.id}
                       onSelect={() => {
-                        onChange(s, timeframe);
+                        onChange(s.id, timeframe);
                       }}
                     >
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',
-                          segment === s ? 'opacity-100' : 'opacity-0',
+                          segment === s.id ? 'opacity-100' : 'opacity-0',
                         )}
                       />
-                      {s}
+                      {s.name}
                     </CommandItem>
                   ))}
                 </CommandGroup>
