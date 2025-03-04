@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 import { MessageInput } from './MessageInput';
+import RecipientsSelector from './RecipientsSelector';
 
 import { Input } from '@/components/ui/input';
-import RecipientsSelector from './RecipientsSelector';
 
 const NewCampaign = () => {
   const [campaignName, setCampaignName] = useState('');

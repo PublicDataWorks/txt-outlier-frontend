@@ -14,17 +14,16 @@ import LastBatchSection from '@/components/LastBatchSection';
 import NextBatchSection from '@/components/NextBatchSection';
 import PastBroadcastsSection from '@/components/PastBroadcastsSection';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import CampaignPage from '@/pages/campaign/index.tsx';
 
 import './App.css';
-import CampaignPage from './pages/campaign/index.tsx';
-
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
-      staleTime: 15 * 60 * 1000, // 15 minutes
+      staleTime: 2 * 60 * 1000, // 2 minutes
     },
   },
 });
@@ -42,8 +41,7 @@ function App() {
                 path="/convo-sidebar"
                 element={
                   <PrivateRoute>
-                    <div
-                      className="h-screen overflow-y-scroll bg-missive-background-color text-missive-text-color-a missive-scroll">
+                    <div className="h-screen overflow-y-scroll bg-missive-background-color text-missive-text-color-a missive-scroll">
                       <Home />
                     </div>
                   </PrivateRoute>

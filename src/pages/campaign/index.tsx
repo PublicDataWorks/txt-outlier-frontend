@@ -1,22 +1,25 @@
-import NewCampaign from './NewCampaign';
-import UpcomingCampaigns from './UpcomingCampaigns';
+import { Separator } from '@radix-ui/react-select';
 
-import { Tabs, TabsContent, TabsTrigger, TabsList } from '@/components/ui/tabs';
+import NewCampaign from './NewCampaign';
+import { ScheduleDialog } from './ScheduleDialog';
+import { SendNowDialog } from './SendNowDialog';
+import UpcomingCampaigns from './UpcomingCampaigns';
 
 const CampaignPage = () => {
   return (
     <>
       <UpcomingCampaigns />
-      <Tabs defaultValue="new-campaign" className="w-full max-w-none">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
-          <TabsTrigger value="new-campaign"> New Campaing </TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-        </TabsList>
-        <TabsContent value="new-campaign">
-          <NewCampaign />
-        </TabsContent>
-        <TabsContent value="history">History</TabsContent>
-      </Tabs>
+      <NewCampaign />
+      <Separator className="shrink-0 bg-border h-[1px] w-full" />
+      <div className="flex gap-2">
+        <ScheduleDialog onSchedule={() => {}} />
+        <SendNowDialog
+          onSend={() => {}}
+          recipientCount={200}
+          segmentDescription="aa"
+          messagePreview="aa"
+        />
+      </div>
     </>
   );
 };
