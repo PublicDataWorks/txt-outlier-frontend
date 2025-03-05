@@ -1,11 +1,12 @@
 import { ChevronDown, ChevronUp, Users } from 'lucide-react';
 import { useState } from 'react';
 
-import { Segment } from '@/apis/campaigns';
+import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUpcomingCampaigns } from '@/hooks/useCampaign';
+import { useSegments } from '@/hooks/useSegments';
 import { unixTimestampInSecondToDate } from '@/lib/date';
 
 export default function UpcomingCampaigns() {
@@ -17,23 +18,53 @@ export default function UpcomingCampaigns() {
     error,
   } = useUpcomingCampaigns();
 
+  // Use the existing useSegments hook
+  const { data: segmentsData = [] } = useSegments();
+
+  // Create a map of segment IDs to segment names for quick lookup
+  const segmentMap = new Map<string, string>();
+  segmentsData.forEach((segment) => {
+    segmentMap.set(segment.id, segment.name);
+  });
+
   const toggleExpand = () => setExpanded(!expanded);
 
   const displayedCampaigns = expanded ? campaigns : campaigns.slice(0, 3);
 
-  const truncateSegments = (segments: {
-    included: Segment | Segment[];
-    excluded?: Segment | null;
-  }) => {
+  // Properly typed function to extract segment names
+  const getSegmentNames = (segments: Campaign['segments']) => {
     if (!segments || !segments.included) return '';
 
-    // Extract segment IDs from the included segments
-    // TODO: Get the segment names
-    const segmentIds = Array.isArray(segments.included)
-      ? segments.included.map((seg) => seg.id)
-      : [segments.included.id];
+    // Extract segment IDs safely handling all possible data shapes
+    const segmentIds: string[] = [];
 
-    const joinedSegments = segmentIds.join(', ');
+    // Handle all possible shapes of segments.included
+    const processSegment = (segment: CampaignSegment) => {
+      if (segment && typeof segment === 'object' && 'id' in segment) {
+        segmentIds.push(segment.id);
+      }
+    };
+
+    // Process the included segments based on their structure
+    if (Array.isArray(segments.included)) {
+      segments.included.forEach((item) => {
+        if (Array.isArray(item)) {
+          // It's an array of segments
+          item.forEach(processSegment);
+        } else {
+          // It's a single segment
+          processSegment(item);
+        }
+      });
+    } else if (segments.included && typeof segments.included === 'object') {
+      // It's a single segment object (not in an array)
+      processSegment(segments.included as CampaignSegment);
+    }
+
+    // Map IDs to names
+    const segmentNames = segmentIds.map((id) => segmentMap.get(id) || id);
+
+    const joinedSegments = segmentNames.join(', ');
     return joinedSegments.length > 30
       ? joinedSegments.slice(0, 30) + '...'
       : joinedSegments;
@@ -100,7 +131,7 @@ export default function UpcomingCampaigns() {
                         {unixTimestampInSecondToDate(campaign.runAt)}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {truncateSegments(campaign.segments)}
+                        {getSegmentNames(campaign.segments)}
                       </p>
                     </div>
                     <div className="flex items-center ml-2 text-muted-foreground">
