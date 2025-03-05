@@ -20,7 +20,6 @@ export interface SegmentGroup {
 interface SegmentSelectorProps {
   includeGroups: SegmentGroup[];
   onChange: (includeGroups: SegmentGroup[]) => void;
-  estimatedRecipients: number;
   addButtonLabel?: string;
   addAnotherButtonLabel?: string;
   allowEmptyGroups?: boolean;
@@ -29,7 +28,6 @@ interface SegmentSelectorProps {
 export function SegmentSelector({
   includeGroups,
   onChange,
-  estimatedRecipients,
   addButtonLabel = 'Add Segment',
   addAnotherButtonLabel = 'Add Another Segment',
   allowEmptyGroups = false,
@@ -76,12 +74,6 @@ export function SegmentSelector({
 
   return (
     <div className="space-y-4">
-      {estimatedRecipients > 0 && (
-        <p className="text-sm font-medium">
-          Estimated recipients: {estimatedRecipients.toLocaleString()}
-        </p>
-      )}
-
       {isLoading ? (
         <div className="w-[150px] h-[40px] rounded-md border flex px-4 justify-center items-center">
           <Skeleton className="h-3 w-full" />

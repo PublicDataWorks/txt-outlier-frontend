@@ -2,7 +2,8 @@ import { forwardRef, useImperativeHandle, useState } from 'react';
 
 import { SegmentGroup, SegmentSelector } from './SegmentSelector';
 
-import { Segment } from '@/apis/campaigns';
+import { Segment, RecipientCountPayload } from '@/apis/campaigns';
+import { useRecipientCount } from '@/hooks/useCampaign';
 
 interface RecipientsSelectorProps {
   onSegmentsChange: (segments: {
@@ -24,15 +25,26 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       SegmentGroup[]
     >([]);
 
+    // Use the recipient count mutation
+    const {
+      mutate: countRecipients,
+      data: recipientCountData,
+      isPending: isCountingRecipients,
+      reset: resetRecipientCount,
+    } = useRecipientCount();
+
     useImperativeHandle(ref, () => ({
       reset: () => {
         setIncludeSegmentGroups([]);
         setExcludeSegmentGroups([]);
+        resetRecipientCount();
+
+        onSegmentsChange({ included: [], excluded: [] });
       },
     }));
 
-    // Calculate estimated recipients
-    const estimatedRecipients = 250;
+    // Get the estimated recipients value from the API response
+    const estimatedRecipients = recipientCountData?.recipient_count;
 
     // Convert segment groups to API format whenever they change
     const handleSegmentsChange = (
@@ -108,10 +120,21 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
               })
           : [];
 
-      onSegmentsChange({
+      const segments = {
         included,
         excluded,
-      });
+      };
+
+      // Call the parent callback
+      onSegmentsChange(segments);
+
+      // Fetch recipient count if there are included segments
+      if (included.length > 0) {
+        const payload: RecipientCountPayload = {
+          segments: segments,
+        };
+        countRecipients(payload);
+      }
     };
 
     const handleIncludeGroupsChange = (groups: SegmentGroup[]) => {
@@ -128,10 +151,16 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       <div className="my-4 space-y-6">
         <div>
           <h3 className="font-semibold">Recipients</h3>
+          <p className="text-sm font-medium my-4">
+            {isCountingRecipients
+              ? 'Calculating recipient count...'
+              : estimatedRecipients !== undefined
+                ? `Estimated recipients: ${estimatedRecipients.toLocaleString()}`
+                : 'Select segments to see estimated recipient count'}
+          </p>
           <SegmentSelector
             includeGroups={includeSegmentGroups}
             onChange={handleIncludeGroupsChange}
-            estimatedRecipients={estimatedRecipients}
             addButtonLabel="Add a segment"
             addAnotherButtonLabel="Add another segment"
           />
@@ -146,7 +175,6 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
           <SegmentSelector
             includeGroups={excludeSegmentGroups}
             onChange={handleExcludeGroupsChange}
-            estimatedRecipients={0}
             addButtonLabel="Add an exclusion"
             addAnotherButtonLabel="Add another exclusion"
             allowEmptyGroups={true} // Allow removing all exclusion groups

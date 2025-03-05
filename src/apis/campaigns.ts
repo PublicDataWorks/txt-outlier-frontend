@@ -74,3 +74,24 @@ export const createCampaign = async (campaignData: CreateCampaignPayload): Promi
     throw error;
   }
 };
+
+export interface RecipientCountPayload {
+  segments: {
+    included: Array<Segment | Segment[]>;
+    excluded?: Array<Segment | Segment[]> | null;
+  };
+}
+
+export interface RecipientCountResponse {
+  recipient_count: number;
+}
+
+export const getRecipientCount = async (payload: RecipientCountPayload): Promise<RecipientCountResponse> => {
+  try {
+    const response = await axios.post<RecipientCountResponse>(`${CAMPAIGNS_URL}recipient-count/`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching recipient count:', error);
+    throw error;
+  }
+};

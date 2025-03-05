@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { createCampaign, CreateCampaignPayload, getCampaigns } from '@/apis/campaigns';
+import { createCampaign, CreateCampaignPayload, getCampaigns, getRecipientCount, RecipientCountPayload } from '@/apis/campaigns';
 
 export function useUpcomingCampaigns() {
   return useQuery({
@@ -54,5 +54,14 @@ export function useCreateCampaign() {
       queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
       queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });
     },
+  });
+}
+
+export function useRecipientCount() {
+  return useMutation({
+    mutationFn: (payload: RecipientCountPayload) => getRecipientCount(payload),
+    onError: (error) => {
+      console.error('Error counting recipients:', error);
+    }
   });
 }

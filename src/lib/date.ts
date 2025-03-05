@@ -33,5 +33,5 @@ export function getESTorEDT() {
 }
 
 export function unixTimestampInSecondToDate(timestamp: number) {
-    return formatToLocalTime(new Date(timestamp * 1000));
+  return formatToLocalTime(new Date(timestamp * 1000));
 }
