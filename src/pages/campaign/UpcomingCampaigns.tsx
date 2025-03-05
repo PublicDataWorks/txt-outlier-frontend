@@ -1,13 +1,13 @@
-import { Calendar, ChevronDown, ChevronUp, Clock, Users } from 'lucide-react';
-import { useState } from 'react';
 import { format } from 'date-fns';
+import { Calendar, ChevronDown, ChevronUp, Users } from 'lucide-react';
+import { useState } from 'react';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { useUpcomingCampaigns } from '@/hooks/useCampaign';
 import { useSegments } from '@/hooks/useSegments';
 import { unixTimestampInSecondToDate } from '@/lib/date';
