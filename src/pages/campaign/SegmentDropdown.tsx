@@ -55,7 +55,8 @@ export default function SegmentDropdown({
             >
               <span className="truncate">
                 {segment
-                  ? segments.find((s) => s.id === segment)?.name || 'Unknown segment'
+                  ? segments.find((s) => s.id === segment)?.name ||
+                    'Unknown segment'
                   : 'Select segment...'}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
