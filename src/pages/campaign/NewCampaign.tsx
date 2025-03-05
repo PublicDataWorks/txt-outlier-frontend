@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import { MessageInput } from './MessageInput';
-import RecipientsSelector from './RecipientsSelector';
+import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
 import { ScheduleDialog } from './ScheduleDialog';
 import { SendNowDialog } from './SendNowDialog';
 
@@ -14,6 +14,7 @@ import { useCreateCampaign } from '@/hooks/useCampaign';
 const NewCampaign = () => {
   const { toast } = useToast();
   const createCampaignMutation = useCreateCampaign();
+  const recipientsSelectorRef = useRef<RecipientsRef>(null);
 
   const [campaignName, setCampaignName] = useState('');
   const [message, setMessage] = useState('');
@@ -97,6 +98,11 @@ const NewCampaign = () => {
     setFollowUpMessage('');
     setSegments({ included: [] });
     setDelay(undefined);
+
+    // Call the reset method on the RecipientsSelector component
+    if (recipientsSelectorRef.current) {
+      recipientsSelectorRef.current.reset();
+    }
   };
 
   // Format segments for display in the SendNowDialog
@@ -122,7 +128,10 @@ const NewCampaign = () => {
           onDelayChange={setDelay}
         />
 
-        <RecipientsSelector onSegmentsChange={setSegments} />
+        <RecipientsSelector
+          ref={recipientsSelectorRef}
+          onSegmentsChange={setSegments}
+        />
       </div>
 
       <Separator className="my-6" />
