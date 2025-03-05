@@ -1,3 +1,4 @@
+// src/pages/campaign/SendNowDialog.tsx
 import { Send } from 'lucide-react';
 import { useState } from 'react';
 
@@ -17,6 +18,7 @@ interface SendNowDialogProps {
   onSend: () => void;
   recipientCount: number | undefined;
   messagePreview: string;
+  followUpMessagePreview?: string; // Add follow-up message prop
   segmentDescription: string;
   disabled?: boolean;
 }
@@ -25,6 +27,7 @@ export function SendNowDialog({
   onSend,
   recipientCount,
   messagePreview,
+  followUpMessagePreview, // Include follow-up message in props
   segmentDescription,
   disabled = false,
 }: SendNowDialogProps) {
@@ -63,9 +66,20 @@ export function SendNowDialog({
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <p className="text-sm font-medium">Message Preview:</p>
+            <p className="text-sm font-medium">First Message:</p>
             <p className="text-sm text-muted-foreground">{messagePreview}</p>
           </div>
+
+          {/* Show follow-up message if it exists */}
+          {followUpMessagePreview && (
+            <div className="grid gap-2">
+              <p className="text-sm font-medium">Follow-up Message:</p>
+              <p className="text-sm text-muted-foreground">
+                {followUpMessagePreview}
+              </p>
+            </div>
+          )}
+
           <div className="grid gap-2">
             <p className="text-sm font-medium">Sending to:</p>
             <p className="text-sm text-muted-foreground">
@@ -73,7 +87,7 @@ export function SendNowDialog({
             </p>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>

@@ -10,11 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useCreateCampaign } from '@/hooks/useCampaign';
+import { useSegments } from '@/hooks/useSegments';
 
 const NewCampaign = () => {
   const { toast } = useToast();
   const createCampaignMutation = useCreateCampaign();
   const recipientsSelectorRef = useRef<RecipientsRef>(null);
+  const { data: segmentsData = [] } = useSegments();
 
   const [campaignName, setCampaignName] = useState('');
   const [message, setMessage] = useState('');
@@ -28,7 +30,45 @@ const NewCampaign = () => {
     number | undefined
   >(undefined);
 
+  // Create a map of segment IDs to segment names for quick lookup
+  const segmentMap = new Map<string, string>();
+  segmentsData.forEach((segment) => {
+    segmentMap.set(segment.id, segment.name);
+  });
+
   const isFormValid = message.trim().length > 0 && segments.included.length > 0;
+
+  // Function to format segment description by listing all segment names
+  const formatSegmentDescription = () => {
+    if (segments.included.length === 0) {
+      return 'No segments selected';
+    }
+
+    // Extract segment IDs safely handling all possible data shapes
+    const segmentIds: string[] = [];
+
+    // Process the included segments based on their structure
+    const processSegment = (segment: Segment) => {
+      if (segment && typeof segment === 'object' && 'id' in segment) {
+        segmentIds.push(segment.id);
+      }
+    };
+
+    segments.included.forEach((item) => {
+      if (Array.isArray(item)) {
+        // It's an array of segments
+        item.forEach(processSegment);
+      } else {
+        // It's a single segment
+        processSegment(item);
+      }
+    });
+
+    // Map IDs to names
+    const segmentNames = segmentIds.map((id) => segmentMap.get(id) || id);
+
+    return segmentNames.join(', ');
+  };
 
   const handleSegmentsChange = (
     newSegments: {
@@ -150,14 +190,14 @@ const NewCampaign = () => {
           onSchedule={handleSchedule}
           disabled={!isFormValid || createCampaignMutation.isPending}
         />
-        <SendNowDialog
-          onSend={handleSendNow}
-          recipientCount={estimatedRecipients}
-          segmentDescription={`${segments.included.length} segments selected`}
-          messagePreview={message}
-          disabled={!isFormValid || createCampaignMutation.isPending}
-        />
-
+ <SendNowDialog
+        onSend={handleSendNow}
+        recipientCount={estimatedRecipients}
+        messagePreview={message}
+        followUpMessagePreview={followUpMessage || undefined} // Only pass if not empty
+        segmentDescription={formatSegmentDescription()}
+        disabled={!isFormValid || createCampaignMutation.isPending}
+      />
         {createCampaignMutation.isPending && (
           <p className="text-sm text-muted-foreground ml-2 self-center">
             Creating campaign...
