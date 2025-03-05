@@ -1,11 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getCampaigns } from '@/apis/campaigns';
+import { createCampaign, CreateCampaignPayload, getCampaigns } from '@/apis/campaigns';
 
-/**
- * Hook to fetch upcoming campaigns
- */
 export function useUpcomingCampaigns() {
   return useQuery({
     queryKey: ['upcomingCampaigns'],
@@ -16,9 +13,6 @@ export function useUpcomingCampaigns() {
   });
 }
 
-/**
- * Hook to fetch past campaigns with pagination support
- */
 export function usePastCampaigns(pageSize: number = 10) {
   const [page, setPage] = useState(1);
 
@@ -30,7 +24,6 @@ export function usePastCampaigns(pageSize: number = 10) {
     },
   });
 
-  // In v5, we can destructure the data directly
   const { data } = query;
   const pagination = data?.pagination;
   const campaigns = data?.items || [];
@@ -50,4 +43,16 @@ export function usePastCampaigns(pageSize: number = 10) {
     hasNextPage: page < (pagination?.totalPages || 0),
     hasPrevPage: page > 1,
   };
+}
+
+export function useCreateCampaign() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newCampaign: CreateCampaignPayload) => createCampaign(newCampaign),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });
+    },
+  });
 }

@@ -3,8 +3,8 @@ import { PlusCircle, Filter, X } from 'lucide-react';
 import SegmentDropdown from './SegmentDropdown';
 
 import { Button } from '@/components/ui/button';
-import { useSegments } from '@/hooks/useSegments';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSegments } from '@/hooks/useSegments';
 
 export interface SegmentGroup {
   base: {

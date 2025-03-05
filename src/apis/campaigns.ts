@@ -13,8 +13,8 @@ export interface Campaign {
   firstMessage: string;
   secondMessage: string | null;
   segments: {
-    included: Segment | Segment[];
-    excluded?: Segment | null;
+    included: Array<Segment | Segment[]>;
+    excluded?: Array<Segment | Segment[]> | null;
   };
   delay: number;
   recipientCount: number;
@@ -38,6 +38,18 @@ export interface CampaignsResponse {
   past: PastCampaigns;
 }
 
+export interface CreateCampaignPayload {
+  title?: string;
+  firstMessage: string;
+  secondMessage?: string;
+  segments: {
+    included: Array<Segment | Segment[]>;
+    excluded?: Array<Segment | Segment[]> | null;
+  };
+  delay?: number;
+  runAt: number;
+}
+
 export const getCampaigns = async (pageSize: number = 10, page: number = 1): Promise<CampaignsResponse> => {
   try {
     const response = await axios.get<CampaignsResponse>(CAMPAIGNS_URL, {
@@ -49,6 +61,16 @@ export const getCampaigns = async (pageSize: number = 10, page: number = 1): Pro
     return response.data;
   } catch (error) {
     console.error('Error fetching campaigns:', error);
+    throw error;
+  }
+};
+
+export const createCampaign = async (campaignData: CreateCampaignPayload): Promise<Campaign> => {
+  try {
+    const response = await axios.post<Campaign>(CAMPAIGNS_URL, campaignData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating campaign:', error);
     throw error;
   }
 };
