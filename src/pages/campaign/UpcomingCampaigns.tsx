@@ -1,9 +1,12 @@
-import { ChevronDown, ChevronUp, Users } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, Clock, Users } from 'lucide-react';
 import { useState } from 'react';
+import { format } from 'date-fns';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUpcomingCampaigns } from '@/hooks/useCampaign';
 import { useSegments } from '@/hooks/useSegments';
@@ -83,8 +86,11 @@ export default function UpcomingCampaigns() {
         <h3 className="font-semibold">Upcoming Campaigns</h3>
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="hover:bg-muted/50 transition-colors">
-              <CardContent className="p-2">
+            <Card
+              key={i}
+              className="bg-primary/5 border-primary/20 hover:bg-primary/10 transition-colors"
+            >
+              <CardContent className="p-3">
                 <Skeleton className="h-4 w-3/4 mb-2" />
                 <Skeleton className="h-3 w-1/2 mb-2" />
                 <Skeleton className="h-3 w-2/3" />
@@ -121,68 +127,179 @@ export default function UpcomingCampaigns() {
       ) : (
         <>
           <div className="space-y-2">
-            {displayedCampaigns.map((campaign) => (
-              <Card
-                key={campaign.id}
-                className="overflow-hidden cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <CardContent className="p-4">
-                  <div
-                    className="grid grid-cols-[1fr_auto] gap-4"
-                    onClick={() => toggleExpandCard(campaign.id)}
-                  >
-                    {/* Left side with campaign details - will truncate as needed */}
-                    <div className="overflow-hidden">
-                      <h4 className="text-sm font-medium text-ellipsis overflow-hidden whitespace-nowrap">
-                        {campaign.title || 'Untitled Campaign'}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {unixTimestampInSecondToDate(campaign.runAt)}
-                      </p>
-                      <p className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">
-                        {getSegmentNames(campaign.segments)}
-                      </p>
-                    </div>
+            {displayedCampaigns.map((campaign) => {
+              const campaignDate = unixTimestampInSecondToDate(campaign.runAt);
 
-                    {/* Right side with stats and chevron - fixed width */}
-                    <div className="flex items-start space-x-2 whitespace-nowrap">
-                      <p className="text-sm text-muted-foreground">
-                        ~{campaign.recipientCount.toLocaleString()}{' '}
-                        <Users className="inline h-4 w-4" />
-                      </p>
-                      {expandedCampaignId === campaign.id ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </div>
-                  </div>
+              // Convert delay from seconds to minutes
+              const delayInMinutes = Math.round(campaign.delay / 60);
 
-                  {expandedCampaignId === campaign.id && (
-                    <div className="mt-4 space-y-4">
-                      <div className="bg-muted p-3 rounded-md">
-                        <h4 className="text-sm font-medium mb-2">Message:</h4>
-                        <p className="break-words">{campaign.firstMessage}</p>
-                      </div>
-                      {campaign.secondMessage && (
-                        <div className="bg-muted p-3 rounded-md">
-                          <h4 className="text-sm font-medium mb-2">
-                            Follow-up Message:
-                          </h4>
-                          <p className="break-words">
-                            {campaign.secondMessage}
-                          </p>
+              return (
+                <Card
+                  key={campaign.id}
+                  className="bg-primary/5 border-primary/20 transition-all duration-200 ease-in-out "
+                >
+                  <CardContent className="p-3">
+                    {/* Header section - clickable to toggle expansion */}
+                    <div
+                      className="flex justify-between items-start cursor-pointer"
+                      onClick={() => toggleExpandCard(campaign.id)}
+                    >
+                      <div className="flex-grow">
+                        <h4 className="font-medium text-primary text-sm">
+                          {campaign.title || 'Untitled Campaign'}
+                        </h4>
+                        <div className="flex items-center text-xs text-muted-foreground mt-1">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {campaignDate}
                         </div>
-                      )}
+                        <p className="text-xs mt-1">
+                          {getSegmentNames(campaign.segments)}
+                        </p>
+                      </div>
+                      <div className="text-right flex flex-col items-end">
+                        <p className="text-xs text-muted-foreground flex items-center">
+                          <Users className="h-3 w-3 mr-1" />
+                          {campaign.recipientCount.toLocaleString()}
+                        </p>
+                        {expandedCampaignId === campaign.id ? (
+                          <ChevronUp className="h-4 w-4 mt-1" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 mt-1" />
+                        )}
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+
+                    {/* Expanded content - not clickable for collapse */}
+                    {expandedCampaignId === campaign.id && (
+                      <div
+                        className="mt-3 space-y-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div>
+                          <label
+                            htmlFor={`title-${campaign.id}`}
+                            className="text-xs font-medium"
+                          >
+                            Campaign Title
+                          </label>
+                          <Input
+                            id={`title-${campaign.id}`}
+                            value={campaign.title || 'Untitled Campaign'}
+                            readOnly
+                            className="mt-1 text-sm bg-muted/40"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`date-${campaign.id}`}
+                            className="text-xs font-medium"
+                          >
+                            Campaign Date and Time
+                          </label>
+                          <Input
+                            id={`date-${campaign.id}`}
+                            type="datetime-local"
+                            value={format(campaignDate, "yyyy-MM-dd'T'HH:mm")}
+                            readOnly
+                            className="mt-1 text-sm bg-muted/40"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`message-${campaign.id}`}
+                            className="text-xs font-medium"
+                          >
+                            Message
+                          </label>
+                          <Textarea
+                            id={`message-${campaign.id}`}
+                            value={campaign.firstMessage}
+                            readOnly
+                            rows={2}
+                            className="mt-1 text-sm bg-muted/40"
+                          />
+                        </div>
+
+                        {campaign.secondMessage && (
+                          <>
+                            <div>
+                              <label
+                                htmlFor={`followup-${campaign.id}`}
+                                className="text-xs font-medium"
+                              >
+                                Follow-up Message
+                              </label>
+                              <Textarea
+                                id={`followup-${campaign.id}`}
+                                value={campaign.secondMessage}
+                                readOnly
+                                rows={2}
+                                className="mt-1 text-sm bg-muted/40"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`delay-${campaign.id}`}
+                                className="text-xs font-medium"
+                              >
+                                Follow-up Delay (minutes)
+                              </label>
+                              <Input
+                                id={`delay-${campaign.id}`}
+                                type="number"
+                                value={delayInMinutes}
+                                readOnly
+                                className="mt-1 text-sm bg-muted/40"
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        <div>
+                          <label
+                            htmlFor={`segments-${campaign.id}`}
+                            className="text-xs font-medium"
+                          >
+                            Segments
+                          </label>
+                          <Input
+                            id={`segments-${campaign.id}`}
+                            value={
+                              getSegmentNames(campaign.segments) ||
+                              'No segments specified'
+                            }
+                            readOnly
+                            className="mt-1 text-sm bg-muted/40"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`recipients-${campaign.id}`}
+                            className="text-xs font-medium"
+                          >
+                            Estimated Recipients
+                          </label>
+                          <Input
+                            id={`recipients-${campaign.id}`}
+                            value={`${campaign.recipientCount.toLocaleString()} users`}
+                            readOnly
+                            className="mt-1 text-sm bg-muted/40"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
           {campaigns.length > 3 && (
             <Button
-              variant="ghost"
+              variant="link"
               size="sm"
               onClick={toggleExpandView}
               className="w-full"
@@ -195,7 +312,7 @@ export default function UpcomingCampaigns() {
               ) : (
                 <>
                   <ChevronDown className="mr-2 h-4 w-4" />
-                  Show More
+                  Show {campaigns.length - 3} More
                 </>
               )}
             </Button>
