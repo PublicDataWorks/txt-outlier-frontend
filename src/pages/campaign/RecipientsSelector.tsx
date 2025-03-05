@@ -40,56 +40,72 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       excludeGroups: SegmentGroup[],
     ) => {
       // Process include groups with their nested structure
-      const included = includeGroups.map((group) => {
-        // Convert the base segment to a Segment object
-        const baseSegment = {
-          id: group.base.segment,
-          since: group.base.timeframe
-            ? Math.floor(group.base.timeframe.getTime() / 1000)
-            : 0,
-        };
-
-        // If there are filters, create a nested array with the base segment and filters
-        if (group.filters.length > 0) {
-          const filterSegments = group.filters.map((filter) => ({
-            id: filter.segment,
-            since: filter.timeframe
-              ? Math.floor(filter.timeframe.getTime() / 1000)
+      const included = includeGroups
+        .filter((group) => group.base.segment !== '') // Filter out groups with empty base segment
+        .map((group) => {
+          // Convert the base segment to a Segment object
+          const baseSegment = {
+            id: group.base.segment,
+            since: group.base.timeframe
+              ? Math.floor(group.base.timeframe.getTime() / 1000)
               : 0,
-          }));
+          };
 
-          // Return an array with the base segment and all filter segments
-          return [baseSegment, ...filterSegments] as Segment[];
-        }
+          // If there are filters, create a nested array with the base segment and filters
+          if (group.filters.length > 0) {
+            // Only include filters with non-empty segment IDs
+            const filterSegments = group.filters
+              .filter((filter) => filter.segment !== '')
+              .map((filter) => ({
+                id: filter.segment,
+                since: filter.timeframe
+                  ? Math.floor(filter.timeframe.getTime() / 1000)
+                  : 0,
+              }));
 
-        // If no filters, just return the base segment
-        return baseSegment;
-      });
+            // Return an array with the base segment and all filter segments
+            // Only create a nested array if there are valid filters
+            return filterSegments.length > 0
+              ? ([baseSegment, ...filterSegments] as Segment[])
+              : baseSegment;
+          }
+
+          // If no filters, just return the base segment
+          return baseSegment;
+        });
 
       // Process exclude groups, similar to include groups
       const excluded =
         excludeGroups.length > 0
-          ? excludeGroups.map((group) => {
-              const baseSegment = {
-                id: group.base.segment,
-                since: group.base.timeframe
-                  ? Math.floor(group.base.timeframe.getTime() / 1000)
-                  : 0,
-              };
-
-              if (group.filters.length > 0) {
-                const filterSegments = group.filters.map((filter) => ({
-                  id: filter.segment,
-                  since: filter.timeframe
-                    ? Math.floor(filter.timeframe.getTime() / 1000)
+          ? excludeGroups
+              .filter((group) => group.base.segment !== '') // Filter out groups with empty base segment
+              .map((group) => {
+                const baseSegment = {
+                  id: group.base.segment,
+                  since: group.base.timeframe
+                    ? Math.floor(group.base.timeframe.getTime() / 1000)
                     : 0,
-                }));
+                };
 
-                return [baseSegment, ...filterSegments] as Segment[];
-              }
+                if (group.filters.length > 0) {
+                  // Only include filters with non-empty segment IDs
+                  const filterSegments = group.filters
+                    .filter((filter) => filter.segment !== '')
+                    .map((filter) => ({
+                      id: filter.segment,
+                      since: filter.timeframe
+                        ? Math.floor(filter.timeframe.getTime() / 1000)
+                        : 0,
+                    }));
 
-              return baseSegment;
-            })
+                  // Only create a nested array if there are valid filters
+                  return filterSegments.length > 0
+                    ? ([baseSegment, ...filterSegments] as Segment[])
+                    : baseSegment;
+                }
+
+                return baseSegment;
+              })
           : [];
 
       onSegmentsChange({
