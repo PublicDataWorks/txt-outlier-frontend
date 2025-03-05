@@ -125,7 +125,7 @@ const CampaignHistory = () => {
             {campaigns.map((campaign) => (
               <Card
                 key={campaign.id}
-                className="overflow-hidden cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="overflow-hidden cursor-pointer  hover:bg-accent hover:text-accent-foreground transition-colors"
               >
                 <CardContent className="p-4">
                   <div
@@ -134,7 +134,7 @@ const CampaignHistory = () => {
                   >
                     {/* Left side with campaign details - will truncate as needed */}
                     <div className="overflow-hidden">
-                      <h4 className="font-medium text-ellipsis overflow-hidden whitespace-nowrap">
+                      <h4 className="text-sm font-medium text-ellipsis overflow-hidden whitespace-nowrap">
                         {campaign.title || 'Untitled Campaign'}
                       </h4>
                       <p className="text-sm text-muted-foreground">
@@ -162,12 +162,12 @@ const CampaignHistory = () => {
                   {expandedCampaignId === campaign.id && (
                     <div className="mt-4 space-y-4">
                       <div className="bg-muted p-3 rounded-md">
-                        <h4 className="font-medium mb-2">Message:</h4>
+                        <h4 className="text-sm font-medium mb-2">Message:</h4>
                         <p className="break-words">{campaign.firstMessage}</p>
                       </div>
                       {campaign.secondMessage && (
                         <div className="bg-muted p-3 rounded-md">
-                          <h4 className="font-medium mb-2">
+                          <h4 className="text-sm font-medium mb-2">
                             Follow-up Message:
                           </h4>
                           <p className="break-words">

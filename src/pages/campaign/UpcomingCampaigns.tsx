@@ -10,7 +10,11 @@ import { useSegments } from '@/hooks/useSegments';
 import { unixTimestampInSecondToDate } from '@/lib/date';
 
 export default function UpcomingCampaigns() {
-  const [expanded, setExpanded] = useState(false);
+  const [expandedView, setExpandedView] = useState(false);
+  const [expandedCampaignId, setExpandedCampaignId] = useState<number | null>(
+    null,
+  );
+
   const {
     data: campaigns = [],
     isPending,
@@ -27,9 +31,15 @@ export default function UpcomingCampaigns() {
     segmentMap.set(segment.id, segment.name);
   });
 
-  const toggleExpand = () => setExpanded(!expanded);
+  const toggleExpandView = () => setExpandedView(!expandedView);
 
-  const displayedCampaigns = expanded ? campaigns : campaigns.slice(0, 3);
+  const toggleExpandCard = (campaignId: number) => {
+    setExpandedCampaignId(
+      expandedCampaignId === campaignId ? null : campaignId,
+    );
+  };
+
+  const displayedCampaigns = expandedView ? campaigns : campaigns.slice(0, 3);
 
   // Properly typed function to extract segment names
   const getSegmentNames = (segments: Campaign['segments']) => {
@@ -64,10 +74,7 @@ export default function UpcomingCampaigns() {
     // Map IDs to names
     const segmentNames = segmentIds.map((id) => segmentMap.get(id) || id);
 
-    const joinedSegments = segmentNames.join(', ');
-    return joinedSegments.length > 30
-      ? joinedSegments.slice(0, 30) + '...'
-      : joinedSegments;
+    return segmentNames.join(', ');
   };
 
   if (isPending) {
@@ -104,9 +111,7 @@ export default function UpcomingCampaigns() {
 
   return (
     <div className="space-y-2">
-      <h3 className="font-semibold">
-        Upcoming Campaigns ({campaigns.length})
-      </h3>
+      <h3 className="font-semibold">Upcoming Campaigns ({campaigns.length})</h3>
       {campaigns.length === 0 ? (
         <Card>
           <CardContent className="p-4 text-center text-muted-foreground">
@@ -119,28 +124,58 @@ export default function UpcomingCampaigns() {
             {displayedCampaigns.map((campaign) => (
               <Card
                 key={campaign.id}
-                className="hover:bg-muted/50 transition-colors cursor-pointer"
+                className="overflow-hidden cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
               >
-                <CardContent className="p-2">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-grow">
-                      <p className="font-medium text-sm">
+                <CardContent className="p-4">
+                  <div
+                    className="grid grid-cols-[1fr_auto] gap-4"
+                    onClick={() => toggleExpandCard(campaign.id)}
+                  >
+                    {/* Left side with campaign details - will truncate as needed */}
+                    <div className="overflow-hidden">
+                      <h4 className="text-sm font-medium text-ellipsis overflow-hidden whitespace-nowrap">
                         {campaign.title || 'Untitled Campaign'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">
                         {getSegmentNames(campaign.segments)}
                       </p>
                     </div>
-                    <div className="flex items-center ml-2 text-muted-foreground">
-                      <p className="text-xs mr-1">
-                        ~{campaign.recipientCount.toLocaleString()}
+
+                    {/* Right side with stats and chevron - fixed width */}
+                    <div className="flex items-start space-x-2 whitespace-nowrap">
+                      <p className="text-sm text-muted-foreground">
+                        ~{campaign.recipientCount.toLocaleString()}{' '}
+                        <Users className="inline h-4 w-4" />
                       </p>
-                      <Users className="h-3 w-3" />
+                      {expandedCampaignId === campaign.id ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
                     </div>
                   </div>
+
+                  {expandedCampaignId === campaign.id && (
+                    <div className="mt-4 space-y-4">
+                      <div className="bg-muted p-3 rounded-md">
+                        <h4 className="text-sm font-medium mb-2">Message:</h4>
+                        <p className="break-words">{campaign.firstMessage}</p>
+                      </div>
+                      {campaign.secondMessage && (
+                        <div className="bg-muted p-3 rounded-md">
+                          <h4 className="text-sm font-medium mb-2">
+                            Follow-up Message:
+                          </h4>
+                          <p className="break-words">
+                            {campaign.secondMessage}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -149,10 +184,10 @@ export default function UpcomingCampaigns() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={toggleExpand}
+              onClick={toggleExpandView}
               className="w-full"
             >
-              {expanded ? (
+              {expandedView ? (
                 <>
                   <ChevronUp className="mr-2 h-4 w-4" />
                   Show Less
