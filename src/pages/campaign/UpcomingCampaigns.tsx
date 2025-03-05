@@ -73,7 +73,7 @@ export default function UpcomingCampaigns() {
   if (isPending) {
     return (
       <div className="space-y-2">
-        <h3 className="text-sm font-medium">Upcoming Campaigns</h3>
+        <h3 className="font-semibold">Upcoming Campaigns</h3>
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="hover:bg-muted/50 transition-colors">
@@ -92,7 +92,7 @@ export default function UpcomingCampaigns() {
   if (isError) {
     return (
       <div className="space-y-2">
-        <h3 className="text-sm font-medium">Upcoming Campaigns</h3>
+        <h3 className="font-semibold">Upcoming Campaigns</h3>
         <Card className="bg-red-50">
           <CardContent className="text-sm p-4 text-red-500">
             Error loading campaigns: {error.message}
@@ -104,7 +104,7 @@ export default function UpcomingCampaigns() {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium">
+      <h3 className="font-semibold">
         Upcoming Campaigns ({campaigns.length})
       </h3>
       {campaigns.length === 0 ? (

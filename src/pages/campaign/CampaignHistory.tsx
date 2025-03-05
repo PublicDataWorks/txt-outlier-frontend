@@ -79,7 +79,7 @@ const CampaignHistory = () => {
   if (isLoading && campaigns.length === 0) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold mb-4">Past Campaigns</h3>
+        <h3 className="font-semibold mb-4">Past Campaigns</h3>
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
             <Card key={i} className="overflow-hidden">
@@ -98,7 +98,7 @@ const CampaignHistory = () => {
   if (isError) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold mb-4">Past Campaigns</h3>
+        <h3 className="font-semibold mb-4">Past Campaigns</h3>
         <Card className="bg-red-50">
           <CardContent className="p-4 text-red-500">
             Error loading campaigns: {error.message}
@@ -110,7 +110,7 @@ const CampaignHistory = () => {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="font-semibold mb-4">
         Past Campaigns {pagination && `(${pagination.totalItems})`}
       </h3>
       {campaigns.length === 0 ? (
