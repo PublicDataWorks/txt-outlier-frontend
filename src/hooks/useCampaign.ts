@@ -1,5 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { createCampaign, CreateCampaignPayload, getCampaigns, getRecipientCount, RecipientCountPayload } from '@/apis/campaigns';
 
@@ -14,34 +13,32 @@ export function useUpcomingCampaigns() {
 }
 
 export function usePastCampaigns(pageSize: number = 10) {
-  const [page, setPage] = useState(1);
-
-  const query = useQuery({
-    queryKey: ['pastCampaigns', page, pageSize],
-    queryFn: async () => {
-      const response = await getCampaigns(pageSize, page);
+  const infiniteQuery = useInfiniteQuery({
+    queryKey: ['pastCampaigns', pageSize],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await getCampaigns(pageSize, pageParam);
       return response.past;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      return lastPageParam < lastPage.pagination.totalPages
+        ? lastPageParam + 1
+        : undefined;
     },
   });
 
-  const { data } = query;
-  const pagination = data?.pagination;
-  const campaigns = data?.items || [];
+  // Flatten the pages of campaigns into a single array
+  const campaigns = infiniteQuery.data?.pages.flatMap(page => page.items) || [];
+
+  // Get the pagination data from the latest page
+  const pagination = infiniteQuery.data?.pages[infiniteQuery.data.pages.length - 1]?.pagination;
 
   return {
-    ...query,
-    // Pagination state and data
-    page,
-    setPage,
-    pagination,
+    ...infiniteQuery,
     campaigns,
-
-    // Helper functions for pagination
-    nextPage: () => setPage(old => Math.min(old + 1, pagination?.totalPages || old)),
-    prevPage: () => setPage(old => Math.max(old - 1, 1)),
-    goToPage: (pageNumber: number) => setPage(pageNumber),
-    hasNextPage: page < (pagination?.totalPages || 0),
-    hasPrevPage: page > 1,
+    pagination,
+    hasNextPage: infiniteQuery.hasNextPage,
+    loadMore: infiniteQuery.fetchNextPage,
   };
 }
 
