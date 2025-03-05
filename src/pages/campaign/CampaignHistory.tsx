@@ -1,4 +1,5 @@
-import { Users } from 'lucide-react';
+import { Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,10 @@ import { useSegments } from '@/hooks/useSegments';
 import { unixTimestampInSecondToDate } from '@/lib/date';
 
 const CampaignHistory = () => {
+  const [expandedCampaignId, setExpandedCampaignId] = useState<number | null>(
+    null,
+  );
+
   const {
     campaigns,
     isLoading,
@@ -28,6 +33,12 @@ const CampaignHistory = () => {
   segmentsData.forEach((segment) => {
     segmentMap.set(segment.id, segment.name);
   });
+
+  const toggleExpand = (campaignId: number) => {
+    setExpandedCampaignId(
+      expandedCampaignId === campaignId ? null : campaignId,
+    );
+  };
 
   // Properly typed function to extract segment names
   const getSegmentNames = (segments: Campaign['segments']) => {
@@ -62,23 +73,20 @@ const CampaignHistory = () => {
     // Map IDs to names
     const segmentNames = segmentIds.map((id) => segmentMap.get(id) || id);
 
-    const joinedSegments = segmentNames.join(', ');
-    return joinedSegments.length > 30
-      ? joinedSegments.slice(0, 30) + '...'
-      : joinedSegments;
+    return segmentNames.join(', ');
   };
 
   if (isLoading && campaigns.length === 0) {
     return (
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Campaign History</h3>
-        <div className="space-y-2">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold mb-4">Past Campaigns</h3>
+        <div className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Card key={i} className="hover:bg-muted/50 transition-colors">
-              <CardContent className="p-2">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-3 w-1/2 mb-2" />
-                <Skeleton className="h-3 w-2/3" />
+            <Card key={i} className="overflow-hidden">
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-2/3" />
               </CardContent>
             </Card>
           ))}
@@ -89,10 +97,10 @@ const CampaignHistory = () => {
 
   if (isError) {
     return (
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Campaign History</h3>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold mb-4">Past Campaigns</h3>
         <Card className="bg-red-50">
-          <CardContent className="text-sm p-4 text-red-500">
+          <CardContent className="p-4 text-red-500">
             Error loading campaigns: {error.message}
           </CardContent>
         </Card>
@@ -101,9 +109,9 @@ const CampaignHistory = () => {
   }
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium">
-        Campaign History {pagination && `(${pagination.totalItems})`}
+    <div>
+      <h3 className="text-lg font-semibold mb-4">
+        Past Campaigns {pagination && `(${pagination.totalItems})`}
       </h3>
       {campaigns.length === 0 ? (
         <Card>
@@ -113,32 +121,62 @@ const CampaignHistory = () => {
         </Card>
       ) : (
         <>
-          <div className="space-y-2">
+          <div className="space-y-4">
             {campaigns.map((campaign) => (
               <Card
                 key={campaign.id}
-                className="hover:bg-muted/50 transition-colors cursor-pointer"
+                className="overflow-hidden cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
               >
-                <CardContent className="p-2">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-grow">
-                      <p className="font-medium text-sm">
+                <CardContent className="p-4">
+                  <div
+                    className="grid grid-cols-[1fr_auto] gap-4"
+                    onClick={() => toggleExpand(campaign.id)}
+                  >
+                    {/* Left side with campaign details - will truncate as needed */}
+                    <div className="overflow-hidden">
+                      <h4 className="font-medium text-ellipsis overflow-hidden whitespace-nowrap">
                         {campaign.title || 'Untitled Campaign'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">
                         {getSegmentNames(campaign.segments)}
                       </p>
                     </div>
-                    <div className="flex items-center ml-2 text-muted-foreground">
-                      <p className="text-xs mr-1">
-                        ~{campaign.recipientCount.toLocaleString()}
+
+                    {/* Right side with stats and chevron - fixed width */}
+                    <div className="flex items-start space-x-2 whitespace-nowrap">
+                      <p className="text-sm text-muted-foreground">
+                        ~{campaign.recipientCount.toLocaleString()}{' '}
+                        <Users className="inline h-4 w-4" />
                       </p>
-                      <Users className="h-3 w-3" />
+                      {expandedCampaignId === campaign.id ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
                     </div>
                   </div>
+
+                  {expandedCampaignId === campaign.id && (
+                    <div className="mt-4 space-y-4">
+                      <div className="bg-muted p-3 rounded-md">
+                        <h4 className="font-medium mb-2">Message:</h4>
+                        <p className="break-words">{campaign.firstMessage}</p>
+                      </div>
+                      {campaign.secondMessage && (
+                        <div className="bg-muted p-3 rounded-md">
+                          <h4 className="font-medium mb-2">
+                            Follow-up Message:
+                          </h4>
+                          <p className="break-words">
+                            {campaign.secondMessage}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -147,12 +185,11 @@ const CampaignHistory = () => {
           {hasNextPage && (
             <Button
               variant="outline"
-              size="sm"
               onClick={() => loadMore()}
               disabled={isFetchingNextPage}
-              className="w-full"
+              className="w-full mt-4"
             >
-              {isFetchingNextPage ? 'Loading...' : 'Load More'}
+              {isFetchingNextPage ? 'Loading more...' : 'Load More'}
             </Button>
           )}
         </>
