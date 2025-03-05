@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface SendNowDialogProps {
   onSend: () => void;
-  recipientCount: number;
+  recipientCount: number | undefined;
   messagePreview: string;
   segmentDescription: string;
   disabled?: boolean;
@@ -36,9 +36,14 @@ export function SendNowDialog({
     setOpen(false);
     toast({
       title: 'Broadcast Sent',
-      description: `Your message has been sent to ${recipientCount.toLocaleString()} recipients.`,
+      description: `Your message has been sent to ${recipientCount?.toLocaleString() || 'your'} recipients.`,
     });
   };
+
+  const formattedRecipientCount =
+    recipientCount !== undefined
+      ? recipientCount.toLocaleString()
+      : 'calculating...';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,8 +57,8 @@ export function SendNowDialog({
         <DialogHeader>
           <DialogTitle>Confirm Broadcast</DialogTitle>
           <DialogDescription>
-            You are about to send this message to{' '}
-            {recipientCount.toLocaleString()} recipients:
+            You are about to send this message to {formattedRecipientCount}{' '}
+            recipients:
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

@@ -6,10 +6,13 @@ import { Segment, RecipientCountPayload } from '@/apis/campaigns';
 import { useRecipientCount } from '@/hooks/useCampaign';
 
 interface RecipientsSelectorProps {
-  onSegmentsChange: (segments: {
-    included: Array<Segment | Segment[]>;
-    excluded?: Array<Segment | Segment[]> | null;
-  }) => void;
+  onSegmentsChange: (
+    segments: {
+      included: Array<Segment | Segment[]>;
+      excluded?: Array<Segment | Segment[]> | null;
+    },
+    recipientCount?: number,
+  ) => void;
 }
 
 export interface RecipientsRef {
@@ -125,15 +128,20 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
         excluded,
       };
 
-      // Call the parent callback
-      onSegmentsChange(segments);
+      // Call the parent callback with the segments and current recipient count
+      onSegmentsChange(segments, estimatedRecipients);
 
       // Fetch recipient count if there are included segments
       if (included.length > 0) {
         const payload: RecipientCountPayload = {
           segments: segments,
         };
-        countRecipients(payload);
+        countRecipients(payload, {
+          onSuccess: (data) => {
+            // When the count is updated, call onSegmentsChange again with the new count
+            onSegmentsChange(segments, data.recipient_count);
+          },
+        });
       }
     };
 

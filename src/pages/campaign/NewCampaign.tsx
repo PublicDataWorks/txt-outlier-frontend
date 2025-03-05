@@ -24,11 +24,24 @@ const NewCampaign = () => {
     excluded?: Array<Segment | Segment[]> | null;
   }>({ included: [] });
   const [delay, setDelay] = useState<number | undefined>(undefined);
-
-  // Calculate estimated recipients based on segments
-  const estimatedRecipients = 250; // This would be calculated based on segments
+  const [estimatedRecipients, setEstimatedRecipients] = useState<
+    number | undefined
+  >(undefined);
 
   const isFormValid = message.trim().length > 0 && segments.included.length > 0;
+
+  const handleSegmentsChange = (
+    newSegments: {
+      included: Array<Segment | Segment[]>;
+      excluded?: Array<Segment | Segment[]> | null;
+    },
+    recipientCount?: number,
+  ) => {
+    setSegments(newSegments);
+    if (recipientCount !== undefined) {
+      setEstimatedRecipients(recipientCount);
+    }
+  };
 
   const handleSendNow = () => {
     if (!isFormValid) return;
@@ -98,16 +111,12 @@ const NewCampaign = () => {
     setFollowUpMessage('');
     setSegments({ included: [] });
     setDelay(undefined);
+    setEstimatedRecipients(undefined);
 
     // Call the reset method on the RecipientsSelector component
     if (recipientsSelectorRef.current) {
       recipientsSelectorRef.current.reset();
     }
-  };
-
-  // Format segments for display in the SendNowDialog
-  const formatSegmentsDescription = () => {
-    return `${segments.included.length} segments selected`;
   };
 
   return (
@@ -130,7 +139,7 @@ const NewCampaign = () => {
 
         <RecipientsSelector
           ref={recipientsSelectorRef}
-          onSegmentsChange={setSegments}
+          onSegmentsChange={handleSegmentsChange}
         />
       </div>
 
@@ -144,7 +153,7 @@ const NewCampaign = () => {
         <SendNowDialog
           onSend={handleSendNow}
           recipientCount={estimatedRecipients}
-          segmentDescription={formatSegmentsDescription()}
+          segmentDescription={`${segments.included.length} segments selected`}
           messagePreview={message}
           disabled={!isFormValid || createCampaignMutation.isPending}
         />
