@@ -1,4 +1,5 @@
-import { format, isBefore } from 'date-fns';
+// src/pages/campaign/ScheduleDialog.tsx
+import { format, isBefore, set } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { FutureDatePicker } from '@/components/ui/future-date-picker';
 
 interface ScheduleDialogProps {
   onSchedule: (date: Date) => void;
@@ -34,45 +35,49 @@ export function ScheduleDialog({
 }: ScheduleDialogProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
   const [period, setPeriod] = useState<'AM' | 'PM'>('AM');
   const [error, setError] = useState<string | null>(null);
 
   const handleSchedule = () => {
+    if (!selectedDate) {
+      setError('Please select a date');
+      return;
+    }
+
     const now = new Date();
-    const selectedDate = new Date(date);
     const hourNum = Number.parseInt(hour);
     const minuteNum = Number.parseInt(minute);
 
-    selectedDate.setHours(
-      period === 'PM'
-        ? hourNum === 12
-          ? 12
-          : hourNum + 12
-        : hourNum === 12
-          ? 0
-          : hourNum,
-      minuteNum,
-    );
+    // Create a new date with the selected time
+    const scheduledDate = set(selectedDate, {
+      hours:
+        period === 'PM'
+          ? hourNum === 12
+            ? 12
+            : hourNum + 12
+          : hourNum === 12
+            ? 0
+            : hourNum,
+      minutes: minuteNum,
+      seconds: 0,
+      milliseconds: 0,
+    });
 
-    // Only check if the selected time is in the future
-    if (isBefore(selectedDate, now)) {
+    // Check if the selected time is in the future
+    if (isBefore(scheduledDate, now)) {
       setError('Please select a time in the future');
       return;
     }
 
-    onSchedule(selectedDate);
+    onSchedule(scheduledDate);
     setOpen(false);
-    toast({
-      title: 'Broadcast Scheduled',
-      description: `Your broadcast has been scheduled for ${format(selectedDate, 'PPpp')}`,
-    });
   };
 
   const resetForm = () => {
-    setDate('');
+    setSelectedDate(undefined);
     setHour('');
     setMinute('');
     setPeriod('AM');
@@ -107,13 +112,7 @@ export function ScheduleDialog({
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={format(new Date(), 'yyyy-MM-dd')}
-            />
+            <FutureDatePicker value={selectedDate} onChange={setSelectedDate} />
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div className="grid gap-2">
@@ -168,7 +167,10 @@ export function ScheduleDialog({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSchedule} disabled={!date || !hour || !minute}>
+          <Button
+            onClick={handleSchedule}
+            disabled={!selectedDate || !hour || !minute}
+          >
             Schedule
           </Button>
         </DialogFooter>
