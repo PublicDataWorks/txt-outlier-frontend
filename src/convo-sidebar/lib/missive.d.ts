@@ -58,6 +58,8 @@ declare class MissiveClass {
   public async fetchConversations(ids: string[]): Promise<Conversation[]>
 
   public async fetchLabels(): Promise<Label[]>
+
+  public reload(): void;
 }
 
 declare const Missive: InstanceType<typeof MissiveClass>
