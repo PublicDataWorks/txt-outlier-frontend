@@ -51,7 +51,7 @@ function App() {
                 path="campaign"
                 element={
                   <PrivateRoute>
-                    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800">
+                    <ScrollArea className="h-screen w-full border-l bg-background dark:border-l-neutral-800">
                       <div className="space-y-6 p-4">
                         <CampaignPage />
                       </div>
@@ -63,7 +63,7 @@ function App() {
                 path="*"
                 element={
                   <PrivateRoute>
-                    <ScrollArea className="h-screen w-full border-l bg-background dark:bg-[#242424] dark:border-l-neutral-800">
+                    <ScrollArea className="h-screen w-full border-l bg-background dark:border-l-neutral-800">
                       <div className="space-y-6 p-4">
                         <NextBatchSection />
                         <LastBatchSection />
