@@ -7,7 +7,7 @@ import { LOGIN_PATH } from '../constants/routes';
 import { useToken, useTokenChanged } from '../providers/auth';
 
 interface PrivateRouteProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
@@ -18,8 +18,9 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
 
   const saveLocationAndNavigateToLogin = () => {
-    const queryParams = new URLSearchParams({ next: location.pathname }).toString();
-    console.log(queryParams);
+    const queryParams = new URLSearchParams({
+      next: location.pathname,
+  }).toString();
 
     navigate(`${LOGIN_PATH}?${queryParams}`);
   };
@@ -55,7 +56,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 };
 
 PrivateRoute.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default PrivateRoute;
