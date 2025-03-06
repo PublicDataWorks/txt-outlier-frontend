@@ -11,7 +11,7 @@ axios.interceptors.response.use(
       console.log('===== Error 401, reloading');
       localStorage.removeItem('token');
       Missive.reload();
-}
+    }
     return Promise.reject(error);
   }
 );
