@@ -1,5 +1,4 @@
-// src/pages/campaign/ScheduleDialog.tsx
-import { format, isBefore, set } from 'date-fns';
+import { isBefore, set } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { FutureDatePicker } from '@/components/ui/future-date-picker';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -21,8 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { FutureDatePicker } from '@/components/ui/future-date-picker';
 
 interface ScheduleDialogProps {
   onSchedule: (date: Date) => void;
@@ -33,7 +31,6 @@ export function ScheduleDialog({
   onSchedule,
   disabled = false,
 }: ScheduleDialogProps) {
-  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState('');
