@@ -1,4 +1,4 @@
-import { format, addMinutes, isBefore } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -57,8 +57,9 @@ export function ScheduleDialog({
       minuteNum,
     );
 
-    if (isBefore(selectedDate, addMinutes(now, 30))) {
-      setError('Please select a time at least 30 minutes from now');
+    // Only check if the selected time is in the future
+    if (isBefore(selectedDate, now)) {
+      setError('Please select a time in the future');
       return;
     }
 
