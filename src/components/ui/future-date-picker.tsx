@@ -51,7 +51,11 @@ export function FutureDatePicker({
           defaultMonth={value || today}
           selected={value}
           onSelect={onChange}
-          disabled={(date) => date < today}
+          disabled={(date) => {
+  const dateWithoutTime = new Date(date.setHours(0, 0, 0, 0));
+  const todayWithoutTime = new Date(today.setHours(0, 0, 0, 0));
+  return dateWithoutTime < todayWithoutTime;
+}}
           numberOfMonths={1}
         />
         {value && (
