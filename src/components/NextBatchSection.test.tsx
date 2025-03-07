@@ -55,7 +55,7 @@ describe('NextBatchSection', () => {
     expect(screen.getByText('100 recipients')).toBeInTheDocument();
 
     // Check if buttons are rendered
-    expect(screen.getByText('Pause schedule')).toBeInTheDocument();
+    expect(screen.getByText('Reschedule')).toBeInTheDocument();
     expect(screen.getByText('Send now')).toBeInTheDocument();
 
     // Check if messages are rendered

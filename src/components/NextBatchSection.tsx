@@ -4,12 +4,12 @@ import { sendNowBroadcast, UpcomingBroadcast } from '@/apis/broadcasts';
 import BroadcastCard from '@/components/BroadcastCard';
 import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
 import EditNumberOfRecipientsDialog from '@/components/EditNumberOfRecipientsDialog.tsx';
-import PauseScheduleDialog from '@/components/PauseScheduleDialog';
+import ReScheduleDialog from '@/components/ReScheduleDialog';
 import { SendNowDialog } from '@/components/SendNowDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useBroadcastMutation,
-  useBroadcastsQuery
+  useBroadcastsQuery,
 } from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
 
@@ -36,7 +36,7 @@ const NextBatchSection = () => {
   }
 
   const updateBroadcast = async (
-    data: Partial<UpcomingBroadcast>
+    data: Partial<UpcomingBroadcast>,
   ): Promise<void> => {
     await broadcastMutation.mutateAsync(data);
   };
@@ -49,7 +49,7 @@ const NextBatchSection = () => {
             Scheduled for{' '}
             {formatDateTime(
               new Date(broadcastsQuery.data!.upcoming.runAt * 1000),
-              Intl.DateTimeFormat().resolvedOptions().timeZone
+              Intl.DateTimeFormat().resolvedOptions().timeZone,
             )}
           </div>
           <EditNumberOfRecipientsDialog
@@ -58,16 +58,16 @@ const NextBatchSection = () => {
             onSave={(newNoRecipients) =>
               updateBroadcast({
                 id: broadcastsQuery.data?.upcoming.id,
-                noRecipients: newNoRecipients
+                noRecipients: newNoRecipients,
               })
             }
           />
           <div className="flex gap-2">
-            <PauseScheduleDialog
+            <ReScheduleDialog
               onConfirm={(runAt) =>
                 updateBroadcast({
                   id: broadcastsQuery.data?.upcoming.id,
-                  runAt
+                  runAt,
                 })
               }
               currentDate={
@@ -88,7 +88,7 @@ const NextBatchSection = () => {
               onSave={(newMessage) =>
                 updateBroadcast({
                   id: broadcastsQuery.data?.upcoming.id,
-                  firstMessage: newMessage
+                  firstMessage: newMessage,
                 })
               }
             />
@@ -103,7 +103,7 @@ const NextBatchSection = () => {
               onSave={(newMessage) =>
                 updateBroadcast({
                   id: broadcastsQuery.data?.upcoming.id,
-                  secondMessage: newMessage
+                  secondMessage: newMessage,
                 })
               }
             />
