@@ -1,4 +1,3 @@
-// src/pages/campaign/MessageInput.tsx
 import { Plus, Minus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
