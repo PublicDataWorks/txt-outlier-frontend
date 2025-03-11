@@ -1,6 +1,14 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createCampaign, CreateCampaignPayload, getCampaigns, getRecipientCount, RecipientCountPayload } from '@/apis/campaigns';
+import { 
+  createCampaign, 
+  createCampaignWithFile,
+  CreateCampaignPayload, 
+  CreateCampaignFormData,
+  getCampaigns, 
+  getRecipientCount, 
+  RecipientCountPayload 
+} from '@/apis/campaigns';
 
 export function useUpcomingCampaigns() {
   return useQuery({
@@ -47,6 +55,18 @@ export function useCreateCampaign() {
 
   return useMutation({
     mutationFn: (newCampaign: CreateCampaignPayload) => createCampaign(newCampaign),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });
+    },
+  });
+}
+
+export function useCreateCampaignWithFile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (formData: CreateCampaignFormData) => createCampaignWithFile(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
       queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });

@@ -5,15 +5,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
 interface CsvUploaderProps {
-  onUpload: (recipients: string[]) => void;
-  recipientCount: number;
+  onUpload: (file: File, recipientCount: number) => void;
+  currentFile: File | null;
 }
 
-export function CsvUploader({ onUpload }: CsvUploaderProps) {
-  const [file, setFile] = useState<File | null>(null);
+export function CsvUploader({ onUpload, currentFile }: CsvUploaderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [recipientCount, setRecipientCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFile = async (selectedFile: File) => {
@@ -26,12 +26,11 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
       // Check if it's a CSV file
       if (!selectedFile.name.endsWith('.csv')) {
         setError('Please upload a CSV file');
-        setFile(null);
         setIsProcessing(false);
         return;
       }
 
-      // Read the CSV file
+      // Read the CSV file to count recipients
       const text = await selectedFile.text();
 
       // Split by new line and filter out empty lines
@@ -44,8 +43,8 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
         setError('No recipients found in the CSV file');
         setUploadSuccess(false);
       } else {
-        setFile(selectedFile);
-        onUpload(lines);
+        setRecipientCount(lines.length);
+        onUpload(selectedFile, lines.length);
         setUploadSuccess(true);
       }
     } catch (err) {
@@ -78,10 +77,10 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
   };
 
   const clearFile = () => {
-    setFile(null);
     setError(null);
     setUploadSuccess(false);
-    onUpload([]);
+    setRecipientCount(0);
+    onUpload(null as any, 0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -112,11 +111,11 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
         <div className="flex flex-col items-center justify-center space-y-2">
           {isProcessing ? (
             <div className="text-sm text-gray-600">Processing file...</div>
-          ) : file ? (
+          ) : currentFile ? (
             <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2">
                 <File className="h-5 w-5" />
-                <span className="text-sm font-medium">{file.name}</span>
+                <span className="text-sm font-medium">{currentFile.name}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -128,6 +127,11 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
+              {recipientCount > 0 && (
+                <p className="text-xs text-gray-600">
+                  {recipientCount.toLocaleString()} recipients
+                </p>
+              )}
             </div>
           ) : (
             <>

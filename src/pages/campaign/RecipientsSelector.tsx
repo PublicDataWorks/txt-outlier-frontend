@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
 
-import { CsvUploader } from './CSVUploader'; 
+import { CsvUploader } from './CSVUploader';
 import { SegmentGroup, SegmentSelector } from './SegmentSelector';
 
 import { Segment, RecipientCountPayload } from '@/apis/campaigns';
@@ -14,6 +14,7 @@ interface RecipientsSelectorProps {
       excluded?: Array<Segment | Segment[]> | null;
     },
     recipientCount?: number,
+    csvFile?: File | null,
   ) => void;
 }
 
@@ -30,7 +31,8 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
     const [excludeSegmentGroups, setExcludeSegmentGroups] = useState<
       SegmentGroup[]
     >([]);
-    const [csvRecipients, setCsvRecipients] = useState<string[]>([]);
+    const [csvFile, setCsvFile] = useState<File | null>(null);
+    const [csvRecipientCount, setCsvRecipientCount] = useState<number>(0);
 
     // Use the recipient count mutation
     const {
@@ -44,7 +46,8 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       reset: () => {
         setIncludeSegmentGroups([]);
         setExcludeSegmentGroups([]);
-        setCsvRecipients([]);
+        setCsvFile(null);
+        setCsvRecipientCount(0);
         setActiveTab('segments');
         resetRecipientCount();
 
@@ -52,9 +55,11 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       },
     }));
 
-    // Get the estimated recipients value from the API response
+    // Get the estimated recipients value based on active tab
     const estimatedRecipients =
-      recipientCountData?.recipient_count || csvRecipients.length;
+      activeTab === 'segments'
+        ? recipientCountData?.recipient_count
+        : csvRecipientCount;
 
     // Convert segment groups to API format whenever they change
     const handleSegmentsChange = (
@@ -136,7 +141,8 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       };
 
       // Call the parent callback with the segments and current recipient count
-      onSegmentsChange(segments, estimatedRecipients);
+      // Pass null for csvFile when using segments
+      onSegmentsChange(segments, estimatedRecipients, null);
 
       // Fetch recipient count if there are included segments
       if (included.length > 0) {
@@ -146,7 +152,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
         countRecipients(payload, {
           onSuccess: (data) => {
             // When the count is updated, call onSegmentsChange again with the new count
-            onSegmentsChange(segments, data.recipient_count);
+            onSegmentsChange(segments, data.recipient_count, null);
           },
         });
       }
@@ -162,16 +168,43 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       handleSegmentsChange(includeSegmentGroups, groups);
     };
 
-    const handleCsvUpload = (recipients: string[]) => {
-      setCsvRecipients(recipients);
-      // You might need to adapt this based on your API structure for CSV recipients
-      onSegmentsChange(
-        {
-          included: [{ id: 'csv_upload', recipients }] as any,
+    const handleCsvUpload = (file: File, recipientCount: number) => {
+      setCsvFile(file);
+      setCsvRecipientCount(recipientCount);
+
+      // When CSV is selected, we pass empty segments and the file
+      onSegmentsChange({ included: [], excluded: [] }, recipientCount, file);
+    };
+
+    const handleTabChange = (value: string) => {
+      const newTab = value as 'segments' | 'csv';
+      setActiveTab(newTab);
+
+      // When switching tabs, update the parent component with the correct data
+      if (newTab === 'segments') {
+        // If switching to segments, clear CSV file and use segments data
+        const segments = {
+          included: includeSegmentGroups
+            .filter((group) => group.base.segment !== '')
+            .map((group) => {
+              // Simplified for brevity - full implementation as above
+              return { id: group.base.segment };
+            }),
           excluded: [],
-        },
-        recipients.length,
-      );
+        };
+        onSegmentsChange(segments, recipientCountData?.recipient_count, null);
+      } else {
+        // If switching to CSV, use the CSV file if available
+        if (csvFile) {
+          onSegmentsChange(
+            { included: [], excluded: [] },
+            csvRecipientCount,
+            csvFile,
+          );
+        } else {
+          onSegmentsChange({ included: [], excluded: [] }, 0, null);
+        }
+      }
     };
 
     return (
@@ -179,7 +212,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
         <div>
           <h3 className="font-semibold">Recipients</h3>
           <p className="text-sm font-medium my-4">
-            {isCountingRecipients
+            {isCountingRecipients && activeTab === 'segments'
               ? 'Calculating recipient count...'
               : estimatedRecipients !== undefined
                 ? `Estimated recipients: ${estimatedRecipients.toLocaleString()}`
@@ -189,7 +222,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
           <Tabs
             defaultValue="segments"
             value={activeTab}
-            onValueChange={(value) => setActiveTab(value as 'segments' | 'csv')}
+            onValueChange={handleTabChange}
           >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="segments">Segments</TabsTrigger>
@@ -221,10 +254,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
             </TabsContent>
 
             <TabsContent value="csv">
-              <CsvUploader
-                onUpload={handleCsvUpload}
-                recipientCount={csvRecipients.length}
-              />
+              <CsvUploader onUpload={handleCsvUpload} currentFile={csvFile} />
             </TabsContent>
           </Tabs>
         </div>

@@ -42,12 +42,17 @@ export interface CreateCampaignPayload {
   title?: string;
   firstMessage: string;
   secondMessage?: string;
-  segments: {
+  segments?: {
     included: Array<Segment | Segment[]>;
     excluded?: Array<Segment | Segment[]> | null;
   };
   delay?: number;
   runAt: number;
+}
+
+export interface CreateCampaignFormData extends FormData {
+  // This is just for TypeScript to understand what fields might be in the FormData
+  append(name: 'file' | 'title' | 'firstMessage' | 'secondMessage' | 'delay' | 'runAt', value: string | Blob): void;
 }
 
 export const getCampaigns = async (pageSize: number = 10, page: number = 1): Promise<CampaignsResponse> => {
@@ -71,6 +76,20 @@ export const createCampaign = async (campaignData: CreateCampaignPayload): Promi
     return response.data;
   } catch (error) {
     console.error('Error creating campaign:', error);
+    throw error;
+  }
+};
+
+export const createCampaignWithFile = async (formData: CreateCampaignFormData): Promise<Campaign> => {
+  try {
+    const response = await axios.post<Campaign>(CAMPAIGNS_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating campaign with file:', error);
     throw error;
   }
 };
