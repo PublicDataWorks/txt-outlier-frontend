@@ -1,7 +1,8 @@
+// src/pages/campaign/RecipientsSelector.tsx
 import { forwardRef, useImperativeHandle, useState } from 'react';
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SegmentGroup, SegmentSelector } from './SegmentSelector';
-
+import { CsvUploader } from './CSVUploader'; // We'll create this component
 import { Segment, RecipientCountPayload } from '@/apis/campaigns';
 import { useRecipientCount } from '@/hooks/useCampaign';
 
@@ -21,12 +22,14 @@ export interface RecipientsRef {
 
 const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
   ({ onSegmentsChange }, ref) => {
+    const [activeTab, setActiveTab] = useState<'segments' | 'csv'>('segments');
     const [includeSegmentGroups, setIncludeSegmentGroups] = useState<
       SegmentGroup[]
     >([]);
     const [excludeSegmentGroups, setExcludeSegmentGroups] = useState<
       SegmentGroup[]
     >([]);
+    const [csvRecipients, setCsvRecipients] = useState<string[]>([]);
 
     // Use the recipient count mutation
     const {
@@ -40,6 +43,8 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       reset: () => {
         setIncludeSegmentGroups([]);
         setExcludeSegmentGroups([]);
+        setCsvRecipients([]);
+        setActiveTab('segments');
         resetRecipientCount();
 
         onSegmentsChange({ included: [], excluded: [] });
@@ -47,7 +52,8 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
     }));
 
     // Get the estimated recipients value from the API response
-    const estimatedRecipients = recipientCountData?.recipient_count;
+    const estimatedRecipients =
+      recipientCountData?.recipient_count || csvRecipients.length;
 
     // Convert segment groups to API format whenever they change
     const handleSegmentsChange = (
@@ -155,6 +161,18 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       handleSegmentsChange(includeSegmentGroups, groups);
     };
 
+    const handleCsvUpload = (recipients: string[]) => {
+      setCsvRecipients(recipients);
+      // You might need to adapt this based on your API structure for CSV recipients
+      onSegmentsChange(
+        {
+          included: [{ id: 'csv_upload', recipients }] as any,
+          excluded: [],
+        },
+        recipients.length,
+      );
+    };
+
     return (
       <div className="my-4 space-y-6">
         <div>
@@ -164,29 +182,50 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
               ? 'Calculating recipient count...'
               : estimatedRecipients !== undefined
                 ? `Estimated recipients: ${estimatedRecipients.toLocaleString()}`
-                : 'Select segments to see estimated recipient count'}
+                : 'Select segments or upload a CSV to see estimated recipient count'}
           </p>
-          <SegmentSelector
-            includeGroups={includeSegmentGroups}
-            onChange={handleIncludeGroupsChange}
-            addButtonLabel="Add a segment"
-            addAnotherButtonLabel="Add another segment"
-          />
-        </div>
 
-        <div>
-          <h3 className="font-semibold">Exclusions</h3>
-          <p className="text-sm text-muted-foreground mb-2">
-            Recipients matching these segments will be excluded from the
-            campaign
-          </p>
-          <SegmentSelector
-            includeGroups={excludeSegmentGroups}
-            onChange={handleExcludeGroupsChange}
-            addButtonLabel="Add an exclusion"
-            addAnotherButtonLabel="Add another exclusion"
-            allowEmptyGroups={true} // Allow removing all exclusion groups
-          />
+          <Tabs
+            defaultValue="segments"
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as 'segments' | 'csv')}
+          >
+        <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="segments">Segments</TabsTrigger>
+              <TabsTrigger value="csv">CSV Upload</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="segments">
+              <SegmentSelector
+                includeGroups={includeSegmentGroups}
+                onChange={handleIncludeGroupsChange}
+                addButtonLabel="Add a segment"
+                addAnotherButtonLabel="Add another segment"
+              />
+
+              <div className="mt-6">
+                <h3 className="font-semibold">Exclusions</h3>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Recipients matching these segments will be excluded from the
+                  campaign
+                </p>
+                <SegmentSelector
+                  includeGroups={excludeSegmentGroups}
+                  onChange={handleExcludeGroupsChange}
+                  addButtonLabel="Add an exclusion"
+                  addAnotherButtonLabel="Add another exclusion"
+                  allowEmptyGroups={true} // Allow removing all exclusion groups
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="csv">
+              <CsvUploader
+                onUpload={handleCsvUpload}
+                recipientCount={csvRecipients.length}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     );
