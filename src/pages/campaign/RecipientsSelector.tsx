@@ -1,9 +1,10 @@
-// src/pages/campaign/RecipientsSelector.tsx
 import { forwardRef, useImperativeHandle, useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { CsvUploader } from './CSVUploader'; 
 import { SegmentGroup, SegmentSelector } from './SegmentSelector';
-import { CsvUploader } from './CSVUploader'; // We'll create this component
+
 import { Segment, RecipientCountPayload } from '@/apis/campaigns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRecipientCount } from '@/hooks/useCampaign';
 
 interface RecipientsSelectorProps {
@@ -190,7 +191,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as 'segments' | 'csv')}
           >
-        <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="segments">Segments</TabsTrigger>
               <TabsTrigger value="csv">CSV Upload</TabsTrigger>
             </TabsList>
