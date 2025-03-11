@@ -1,8 +1,7 @@
-// src/components/ScheduleDialog.test.tsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 import { set } from 'date-fns';
+import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 
 import { ScheduleDialog } from './ScheduleDialog';
 
@@ -23,25 +22,12 @@ vi.mock('@/components/ui/future-date-picker', () => ({
   ),
 }));
 
-// Mock browser APIs not available in JSDOM
-beforeAll(() => {
-  // Mock ResizeObserver
-  global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
-
-  // Mock scrollIntoView
-  Element.prototype.scrollIntoView = vi.fn();
-});
-
 // Mock date-fns isBefore function
 vi.mock('date-fns', async () => {
   const actual = await vi.importActual('date-fns');
   return {
     ...actual,
-    isBefore: vi.fn().mockImplementation((date1, date2) => {
+    isBefore: vi.fn().mockImplementation((date1) => {
       // For testing, we'll consider dates before 2025-01-01 as "before now"
       return date1 < new Date('2025-01-01');
     }),
