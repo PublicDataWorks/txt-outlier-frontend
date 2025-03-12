@@ -200,7 +200,7 @@ export default function UpcomingCampaigns() {
                           <Input
                             id={`date-${campaign.id}`}
                             type="datetime-local"
-                            value={format(campaignDate, "yyyy-MM-dd'T'HH:mm")}
+                            value={format(new Date(campaign.runAt * 1000), "yyyy-MM-dd'T'HH:mm")}
                             readOnly
                             className="mt-1 text-sm bg-muted/40"
                           />
