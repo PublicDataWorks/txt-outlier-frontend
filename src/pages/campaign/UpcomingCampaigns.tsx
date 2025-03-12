@@ -9,10 +9,12 @@ import {
   Trash2,
   Plus,
   X,
+  Filter,
 } from 'lucide-react';
 import { useState, useCallback, useEffect } from 'react';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -223,41 +225,91 @@ export default function UpcomingCampaigns() {
     ],
   );
 
-  // Properly typed function to extract segment names
-  const getSegmentNames = (segments: Campaign['segments']) => {
-    if (!segments || !segments.included) return '';
+  // Function to render a segment badge with proper styling
+  const renderSegmentBadge = useCallback(
+    (segment: CampaignSegment, isExclusion = false) => {
+      const segmentName = segmentMap.get(segment.id) || segment.id;
+      const hasSince = segment.since && segment.since > 0;
 
-    // Extract segment IDs safely handling all possible data shapes
-    const segmentIds: string[] = [];
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            'mr-1 mb-1 text-xs inline-flex items-center',
+            isExclusion && 'border-destructive text-destructive',
+          )}
+        >
+          {segmentName}
+          {hasSince && (
+            <span className="ml-1 text-muted-foreground text-[10px]">
+              since {format(new Date(segment.since * 1000), 'MMM d, yyyy')}
+            </span>
+          )}
+        </Badge>
+      );
+    },
+    [segmentMap],
+  );
 
-    // Handle all possible shapes of segments.included
-    const processSegment = (segment: CampaignSegment) => {
-      if (segment && typeof segment === 'object' && 'id' in segment) {
-        segmentIds.push(segment.id);
-      }
-    };
-
-    // Process the included segments based on their structure
-    if (Array.isArray(segments.included)) {
-      segments.included.forEach((item) => {
+  // Function to process segment groups (for nested segments with filters)
+  const renderSegmentGroup = useCallback(
+    (
+      segments: Array<CampaignSegment | CampaignSegment[]>,
+      isExclusion = false,
+    ) => {
+      return segments.map((item, index) => {
         if (Array.isArray(item)) {
-          // It's an array of segments
-          item.forEach(processSegment);
+          // This is a group with filters
+          const baseSegment = item[0];
+          const filters = item.slice(1);
+
+          return (
+            <Badge
+              key={`group-${index}`}
+              variant="outline"
+              className={cn(
+                'mr-1 mb-1 text-xs inline-flex items-center',
+                isExclusion && 'border-destructive text-destructive',
+              )}
+            >
+              {segmentMap.get(baseSegment.id) || baseSegment.id}
+              {baseSegment.since && baseSegment.since > 0 && (
+                <span className="ml-1 text-muted-foreground text-[10px]">
+                  since{' '}
+                  {format(new Date(baseSegment.since * 1000), 'MMM d, yyyy')}
+                </span>
+              )}
+              {filters.length > 0 && (
+                <>
+                  <Filter className="h-3 w-3 mx-1" />
+                  {filters.map((filter, idx) => (
+                    <span key={idx} className="mr-1">
+                      {segmentMap.get(filter.id) || filter.id}
+                      {filter.since && filter.since > 0 && (
+                        <span className="ml-1 text-muted-foreground text-[10px]">
+                          since{' '}
+                          {format(new Date(filter.since * 1000), 'MMM d, yyyy')}
+                        </span>
+                      )}
+                      {idx < filters.length - 1 && ', '}
+                    </span>
+                  ))}
+                </>
+              )}
+            </Badge>
+          );
         } else {
-          // It's a single segment
-          processSegment(item);
+          // This is a single segment
+          return (
+            <span key={`segment-${index}`}>
+              {renderSegmentBadge(item, isExclusion)}
+            </span>
+          );
         }
       });
-    } else if (segments.included && typeof segments.included === 'object') {
-      // It's a single segment object (not in an array)
-      processSegment(segments.included as CampaignSegment);
-    }
-
-    // Map IDs to names
-    const segmentNames = segmentIds.map((id) => segmentMap.get(id) || id);
-
-    return segmentNames.join(', ');
-  };
+    },
+    [renderSegmentBadge, segmentMap],
+  );
 
   // Function to count SMS messages
   const countSmsMessages = (text: string) => {
@@ -314,7 +366,6 @@ export default function UpcomingCampaigns() {
             {displayedCampaigns.map((campaign) => {
               const editedCampaign = editedCampaigns[campaign.id] || campaign;
               const hasChanged = hasChanges[campaign.id] || false;
-              const campaignDate = unixTimestampInSecondToDate(campaign.runAt);
 
               // Convert delay from seconds to minutes for display
               const delayInMinutes = Math.round(
@@ -347,16 +398,22 @@ export default function UpcomingCampaigns() {
                           </h4>
                           <div className="flex items-center text-xs text-muted-foreground mt-1">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {unixTimestampInSecondToDate(editedCampaign.runAt)}
+                            {format(
+                              new Date(editedCampaign.runAt * 1000),
+                              'MMM d, yyyy',
+                            )}
                             <Clock className="h-3 w-3 ml-2 mr-1" />
                             {format(
                               new Date(editedCampaign.runAt * 1000),
                               'h:mm a',
                             )}
                           </div>
-                          <p className="text-xs mt-1">
-                            {getSegmentNames(editedCampaign.segments)}
-                          </p>
+                          <div className="mt-1 flex flex-wrap">
+                            {editedCampaign.segments.included &&
+                              renderSegmentGroup(
+                                editedCampaign.segments.included,
+                              )}
+                          </div>
                         </div>
                         <div className="text-right flex flex-col items-end">
                           <p className="text-xs text-muted-foreground flex items-center">
@@ -375,7 +432,7 @@ export default function UpcomingCampaigns() {
                     {/* Expanded content - not clickable for collapse */}
                     {expandedCampaignId === campaign.id && (
                       <div
-                        className="p-3 border-t space-y-4"
+                        className="p-3 border-t space-y-4 bg-background"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="space-y-3">
@@ -401,6 +458,7 @@ export default function UpcomingCampaigns() {
                               className="mt-1 text-sm"
                             />
                           </div>
+
                           <div>
                             <label
                               htmlFor={`date-${campaign.id}`}
@@ -542,22 +600,36 @@ export default function UpcomingCampaigns() {
                             </Button>
                           )}
 
-                          <div>
-                            <label
-                              htmlFor={`segments-${campaign.id}`}
-                              className="text-xs font-medium"
-                            >
-                              Segments
-                            </label>
-                            <Input
-                              id={`segments-${campaign.id}`}
-                              value={
-                                getSegmentNames(editedCampaign.segments) ||
-                                'No segments specified'
-                              }
-                              readOnly
-                              className="mt-1 text-sm bg-muted/40"
-                            />
+                          {/* Segments and Filters Section */}
+                          <div className="space-y-3">
+                            {/* Target Segments */}
+                            <div>
+                              <h5 className="text-xs font-medium mb-1">
+                                Target Segments
+                              </h5>
+                              <div className="flex flex-wrap">
+                                {editedCampaign.segments.included &&
+                                  renderSegmentGroup(
+                                    editedCampaign.segments.included,
+                                  )}
+                              </div>
+                            </div>
+
+                            {/* Exclusions */}
+                            {editedCampaign.segments.excluded &&
+                              editedCampaign.segments.excluded.length > 0 && (
+                                <div>
+                                  <h5 className="text-xs font-medium mb-1">
+                                    Exclusions
+                                  </h5>
+                                  <div className="flex flex-wrap">
+                                    {renderSegmentGroup(
+                                      editedCampaign.segments.excluded,
+                                      true,
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                           </div>
 
                           <div>
