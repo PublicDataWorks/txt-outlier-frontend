@@ -11,7 +11,9 @@ import {
   X,
   Filter,
 } from 'lucide-react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+
+import { ConfirmationModal } from './ConfirmationModal';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +28,7 @@ import {
   useDeleteCampaign,
 } from '@/hooks/useCampaign';
 import { useSegments } from '@/hooks/useSegments';
-import { unixTimestampInSecondToDate } from '@/lib/date';
 import { cn } from '@/lib/utils';
-import { ConfirmationModal } from './ConfirmationModal';
 
 export default function UpcomingCampaigns() {
   const [expandedView, setExpandedView] = useState(false);
@@ -66,11 +66,13 @@ export default function UpcomingCampaigns() {
   // Use the existing useSegments hook
   const { data: segmentsData = [] } = useSegments();
 
-  // Create a map of segment IDs to segment names for quick lookup
-  const segmentMap = new Map<string, string>();
-  segmentsData.forEach((segment) => {
-    segmentMap.set(segment.id, segment.name);
-  });
+  const segmentMap = useMemo(() => {
+    const map = new Map<string, string>();
+    segmentsData.forEach((segment) => {
+      map.set(segment.id, segment.name);
+    });
+    return map;
+  }, [segmentsData]);
 
   // Initialize edited campaigns
   useEffect(() => {
@@ -130,7 +132,7 @@ export default function UpcomingCampaigns() {
       [campaignId]: {
         ...prev[campaignId],
         secondMessage: '',
-        delay: 3600, // Default delay of 60 minutes in seconds
+        delay: 600,
       },
     }));
     setHasChanges((prev) => ({
@@ -151,7 +153,7 @@ export default function UpcomingCampaigns() {
         [campaignToRemoveFollowUp]: {
           ...prev[campaignToRemoveFollowUp],
           secondMessage: null,
-          delay: 0,
+          delay: 600,
         },
       }));
       setHasChanges((prev) => ({
@@ -518,7 +520,8 @@ export default function UpcomingCampaigns() {
                             </p>
                           </div>
 
-                          {editedCampaign.secondMessage ? (
+                          {editedCampaign.secondMessage !== null &&
+                          editedCampaign.secondMessage !== undefined ? (
                             <div>
                               <div className="flex justify-between items-center">
                                 <label

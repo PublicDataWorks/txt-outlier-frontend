@@ -81,7 +81,7 @@ export const createCampaign = async (campaignData: CreateCampaignPayload): Promi
 
 export const updateCampaign = async (id: number, campaignData: UpdateCampaignPayload): Promise<Campaign> => {
   try {
-    const response = await axios.put<Campaign>(`${CAMPAIGNS_URL}${id}/`, campaignData);
+    const response = await axios.patch<Campaign>(`${CAMPAIGNS_URL}${id}/`, campaignData);
     return response.data;
   } catch (error) {
     console.error('Error updating campaign:', error);

@@ -7,8 +7,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 interface ConfirmationModalProps {
   open: boolean;
@@ -18,7 +18,7 @@ interface ConfirmationModalProps {
   confirmText: string;
   cancelText: string;
   onConfirm: () => void;
-  variant?: "default" | "destructive";
+  variant?: 'default' | 'destructive';
   showDiscardOption?: boolean;
   onDiscard?: () => void;
 }
@@ -31,7 +31,7 @@ export function ConfirmationModal({
   confirmText,
   cancelText,
   onConfirm,
-  variant = "default",
+  variant = 'default',
   showDiscardOption = false,
   onDiscard,
 }: ConfirmationModalProps) {
@@ -42,8 +42,16 @@ export function ConfirmationModal({
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className={showDiscardOption ? "flex-col space-y-2 sm:space-y-0 sm:flex-row" : ""}>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>{cancelText}</AlertDialogCancel>
+        <AlertDialogFooter
+          className={
+            showDiscardOption
+              ? 'flex-col space-y-2 sm:space-y-0 sm:flex-row'
+              : ''
+          }
+        >
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>
+            {cancelText}
+          </AlertDialogCancel>
           {showDiscardOption && onDiscard && (
             <Button
               variant="outline"
@@ -61,7 +69,11 @@ export function ConfirmationModal({
               onConfirm();
               onOpenChange(false);
             }}
-            className={variant === "destructive" ? "bg-destructive hover:bg-destructive/90" : ""}
+            className={
+              variant === 'destructive'
+                ? 'bg-destructive hover:bg-destructive/90'
+                : ''
+            }
           >
             {confirmText}
           </AlertDialogAction>
