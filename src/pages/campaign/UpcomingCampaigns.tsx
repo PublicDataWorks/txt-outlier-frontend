@@ -683,7 +683,7 @@ export default function UpcomingCampaigns() {
           </div>
           {campaigns.length > 3 && (
             <Button
-              variant="link"
+              variant="outline"
               size="sm"
               onClick={toggleExpandView}
               className="w-full"
@@ -696,7 +696,7 @@ export default function UpcomingCampaigns() {
               ) : (
                 <>
                   <ChevronDown className="mr-2 h-4 w-4" />
-                  Show {campaigns.length - 3} More
+                  Show more ({campaigns.length - 3})
                 </>
               )}
             </Button>
