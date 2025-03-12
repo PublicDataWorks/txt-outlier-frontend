@@ -434,7 +434,7 @@ export default function UpcomingCampaigns() {
                     {/* Expanded content - not clickable for collapse */}
                     {expandedCampaignId === campaign.id && (
                       <div
-                        className="p-3 border-t space-y-4 bg-background"
+                        className="p-3 border-t space-y-4 bg-background rounded-b-md"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="space-y-3">
