@@ -460,7 +460,6 @@ export default function UpcomingCampaigns() {
                               className="mt-1 text-sm"
                             />
                           </div>
-
                           <div>
                             <label
                               htmlFor={`date-${campaign.id}`}
@@ -489,7 +488,6 @@ export default function UpcomingCampaigns() {
                               className="mt-1 text-sm"
                             />
                           </div>
-
                           <div>
                             <label
                               htmlFor={`message-${campaign.id}`}
