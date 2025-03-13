@@ -110,7 +110,7 @@ export default function UpcomingCampaigns() {
   const displayedCampaigns = expandedView ? campaigns : campaigns.slice(0, 3);
 
   const handleInputChange = useCallback(
-    (campaignId: number, field: keyof Campaign, value: any) => {
+    (campaignId: number, field: keyof Campaign, value: unknown) => {
       setEditedCampaigns((prev) => ({
         ...prev,
         [campaignId]: {
@@ -231,7 +231,6 @@ export default function UpcomingCampaigns() {
   const renderSegmentBadge = useCallback(
     (segment: CampaignSegment, isExclusion = false) => {
       const segmentName = segmentMap.get(segment.id) || segment.id;
-      const hasSince = segment.since && segment.since > 0;
 
       return (
         <Badge
@@ -242,9 +241,9 @@ export default function UpcomingCampaigns() {
           )}
         >
           {segmentName}
-          {hasSince && (
+          {segment.since && segment.since > 0 && (
             <span className="ml-1 text-muted-foreground text-[10px]">
-              since {format(new Date(segment.since * 1000), 'MMM d, yyyy')}
+              since {format(new Date(segment!.since * 1000), 'MMM d, yyyy')}
             </span>
           )}
         </Badge>
