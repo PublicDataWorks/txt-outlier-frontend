@@ -9,7 +9,9 @@ import {
   RecipientCountPayload,
   updateCampaign,
   UpdateCampaignPayload,
-  Campaign
+  Campaign,
+  createCampaignWithFile,
+  CreateCampaignFormData,
 } from '@/apis/campaigns';
 
 export function useUpcomingCampaigns() {
@@ -110,6 +112,18 @@ export function useDeleteCampaign() {
     onError: (error) => {
       console.error('Error deleting campaign:', error);
     }
+  });
+}
+
+export function useCreateCampaignWithFile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (formData: CreateCampaignFormData) => createCampaignWithFile(formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });
+    },
   });
 }
 

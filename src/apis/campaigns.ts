@@ -42,7 +42,7 @@ export interface CampaignPayload {
   title?: string;
   firstMessage: string;
   secondMessage?: string | null;
-  segments: {
+  segments?: {
     included: Array<Segment | Segment[]>;
     excluded?: Array<Segment | Segment[]> | null;
   };
@@ -53,6 +53,10 @@ export interface CampaignPayload {
 // Renamed to be more generic since it's now used for both create and update
 export type CreateCampaignPayload = CampaignPayload;
 export type UpdateCampaignPayload = CampaignPayload;
+export interface CreateCampaignFormData extends FormData {
+  // This is just for TypeScript to understand what fields might be in the FormData
+  append(name: 'file' | 'title' | 'firstMessage' | 'secondMessage' | 'delay' | 'runAt', value: string | Blob): void;
+}
 
 export const getCampaigns = async (pageSize: number = 10, page: number = 1): Promise<CampaignsResponse> => {
   try {
@@ -94,6 +98,19 @@ export const deleteCampaign = async (id: number): Promise<void> => {
     await axios.delete(`${CAMPAIGNS_URL}${id}/`);
   } catch (error) {
     console.error('Error deleting campaign:', error);
+  }
+};
+
+export const createCampaignWithFile = async (formData: CreateCampaignFormData): Promise<Campaign> => {
+  try {
+    const response = await axios.post<Campaign>(CAMPAIGNS_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating campaign with file:', error);
     throw error;
   }
 };
