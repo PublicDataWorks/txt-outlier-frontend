@@ -5,16 +5,20 @@ import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
 import { ScheduleDialog } from './ScheduleDialog';
 import { SendNowDialog } from './SendNowDialog';
 
-import { Segment } from '@/apis/campaigns';
+import { Segment, CreateCampaignFormData } from '@/apis/campaigns';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateCampaign } from '@/hooks/useCampaign';
+import {
+  useCreateCampaign,
+  useCreateCampaignWithFile,
+} from '@/hooks/useCampaign';
 import { useSegments } from '@/hooks/useSegments';
 
 const NewCampaign = () => {
   const { toast } = useToast();
   const createCampaignMutation = useCreateCampaign();
+  const createCampaignWithFileMutation = useCreateCampaignWithFile();
   const recipientsSelectorRef = useRef<RecipientsRef>(null);
   const { data: segmentsData = [] } = useSegments();
 
@@ -25,6 +29,7 @@ const NewCampaign = () => {
     included: Array<Segment | Segment[]>;
     excluded?: Array<Segment | Segment[]> | null;
   }>({ included: [] });
+  const [csvFile, setCsvFile] = useState<File | null>(null);
   const [delay, setDelay] = useState<number | undefined>(undefined);
   const [estimatedRecipients, setEstimatedRecipients] = useState<
     number | undefined
@@ -36,10 +41,20 @@ const NewCampaign = () => {
     segmentMap.set(segment.id, segment.name);
   });
 
-  const isFormValid = message.trim().length > 0 && segments.included.length > 0;
+  const isFormValid =
+    message.trim().length > 0 &&
+    ((segments.included.length > 0 && !csvFile) || csvFile !== null);
+
+  const isPending =
+    createCampaignMutation.isPending ||
+    createCampaignWithFileMutation.isPending;
 
   // Function to format segment description by listing all segment names
   const formatSegmentDescription = () => {
+    if (csvFile) {
+      return `CSV File: ${csvFile.name}`;
+    }
+
     if (segments.included.length === 0) {
       return 'No segments selected';
     }
@@ -76,73 +91,95 @@ const NewCampaign = () => {
       excluded?: Array<Segment | Segment[]> | null;
     },
     recipientCount?: number,
+    file?: File | null,
   ) => {
     setSegments(newSegments);
+    setCsvFile(file || null);
+
     if (recipientCount !== undefined) {
       setEstimatedRecipients(recipientCount);
     }
   };
 
-  const handleSendNow = () => {
+  const submitCampaign = async (runAt: number) => {
+    if (!isFormValid) return;
+
+    if (csvFile) {
+      // Handle CSV file upload with multipart/form-data
+      const formData = new FormData() as CreateCampaignFormData;
+      formData.append('file', csvFile);
+
+      // Add other campaign data
+      formData.append('title', campaignName || '');
+      formData.append('firstMessage', message);
+      if (followUpMessage) formData.append('secondMessage', followUpMessage);
+      if (delay !== undefined) formData.append('delay', delay.toString());
+      formData.append('runAt', runAt.toString());
+
+      return await createCampaignWithFileMutation.mutateAsync(formData);
+    } else {
+      // Handle segment-based campaign using the existing mutation
+      const payload = {
+        title: campaignName || undefined,
+        firstMessage: message,
+        secondMessage: followUpMessage || undefined,
+        segments,
+        delay: delay,
+        runAt: runAt,
+      };
+
+      return await createCampaignMutation.mutateAsync(payload);
+    }
+  };
+
+  const handleSendNow = async () => {
     if (!isFormValid) return;
 
     const twoMinutesFromNow = Math.floor((Date.now() + 2 * 60 * 1000) / 1000);
 
-    const payload = {
-      title: campaignName || undefined, // Don't send empty strings, use undefined
-      firstMessage: message,
-      secondMessage: followUpMessage || undefined, // Don't send empty strings
-      segments,
-      delay: delay,
-      runAt: twoMinutesFromNow, // Send now
-    };
+    try {
+      await submitCampaign(twoMinutesFromNow);
 
-    createCampaignMutation.mutate(payload, {
-      onSuccess: () => {
-        toast({
-          title: 'Campaign Sent',
-          description: 'Your campaign has been sent successfully.',
-        });
-        resetForm();
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: `Failed to send campaign: ${error.message}`,
-          variant: 'destructive',
-        });
-      },
-    });
+      toast({
+        title: 'Campaign Sent',
+        description: 'Your campaign has been sent successfully.',
+      });
+      resetForm();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+
+      toast({
+        title: 'Error',
+        description: `Failed to send campaign: ${errorMessage}`,
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleSchedule = (date: Date) => {
+  const handleSchedule = async (date: Date) => {
     if (!isFormValid) return;
 
-    const payload = {
-      title: campaignName || undefined,
-      firstMessage: message,
-      secondMessage: followUpMessage || undefined,
-      segments,
-      delay: delay,
-      runAt: Math.floor(date.getTime() / 1000),
-    };
+    const scheduledTime = Math.floor(date.getTime() / 1000);
 
-    createCampaignMutation.mutate(payload, {
-      onSuccess: () => {
-        toast({
-          title: 'Campaign Scheduled',
-          description: `Your campaign has been scheduled for ${date.toLocaleString()}.`,
-        });
-        resetForm();
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: `Failed to schedule campaign: ${error.message}`,
-          variant: 'destructive',
-        });
-      },
-    });
+    try {
+      await submitCampaign(scheduledTime);
+
+      toast({
+        title: 'Campaign Scheduled',
+        description: `Your campaign has been scheduled for ${date.toLocaleString()}.`,
+      });
+      resetForm();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+
+      toast({
+        title: 'Error',
+        description: `Failed to schedule campaign: ${errorMessage}`,
+        variant: 'destructive',
+      });
+    }
   };
 
   const resetForm = () => {
@@ -150,6 +187,7 @@ const NewCampaign = () => {
     setMessage('');
     setFollowUpMessage('');
     setSegments({ included: [] });
+    setCsvFile(null);
     setDelay(undefined);
     setEstimatedRecipients(undefined);
 
@@ -188,17 +226,17 @@ const NewCampaign = () => {
       <div className="flex gap-2">
         <ScheduleDialog
           onSchedule={handleSchedule}
-          disabled={!isFormValid || createCampaignMutation.isPending}
+          disabled={!isFormValid || isPending}
         />
- <SendNowDialog
-        onSend={handleSendNow}
-        recipientCount={estimatedRecipients}
-        messagePreview={message}
-        followUpMessagePreview={followUpMessage || undefined} // Only pass if not empty
-        segmentDescription={formatSegmentDescription()}
-        disabled={!isFormValid || createCampaignMutation.isPending}
-      />
-        {createCampaignMutation.isPending && (
+        <SendNowDialog
+          onSend={handleSendNow}
+          recipientCount={estimatedRecipients}
+          messagePreview={message}
+          followUpMessagePreview={followUpMessage || undefined}
+          segmentDescription={formatSegmentDescription()}
+          disabled={!isFormValid || isPending}
+        />
+        {isPending && (
           <p className="text-sm text-muted-foreground ml-2 self-center">
             Creating campaign...
           </p>
