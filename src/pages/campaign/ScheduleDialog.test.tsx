@@ -112,7 +112,4 @@ describe('ScheduleDialog', () => {
     // Check that the date was selected
     expect(screen.getByTestId('selected-date')).toHaveTextContent('2025-03-15');
   });
-
-  it('calls onSchedule with the correct date when scheduled', async () => {
-});
 });
