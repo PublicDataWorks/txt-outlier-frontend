@@ -145,10 +145,13 @@ const NewCampaign = () => {
         description: 'Your campaign has been sent successfully.',
       });
       resetForm();
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+
       toast({
         title: 'Error',
-        description: `Failed to send campaign: ${error.message}`,
+        description: `Failed to send campaign: ${errorMessage}`,
         variant: 'destructive',
       });
     }
@@ -167,10 +170,13 @@ const NewCampaign = () => {
         description: `Your campaign has been scheduled for ${date.toLocaleString()}.`,
       });
       resetForm();
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+
       toast({
         title: 'Error',
-        description: `Failed to schedule campaign: ${error.message}`,
+        description: `Failed to schedule campaign: ${errorMessage}`,
         variant: 'destructive',
       });
     }

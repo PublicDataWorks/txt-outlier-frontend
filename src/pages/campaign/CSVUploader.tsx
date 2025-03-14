@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
 interface CsvUploaderProps {
-  onUpload: (file: File, recipientCount: number) => void;
+  onUpload: (file: File | null, recipientCount: number) => void;
   currentFile: File | null;
 }
 
@@ -80,7 +80,7 @@ export function CsvUploader({ onUpload, currentFile }: CsvUploaderProps) {
     setError(null);
     setUploadSuccess(false);
     setRecipientCount(0);
-    onUpload(null as any, 0);
+    onUpload(null, 0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
