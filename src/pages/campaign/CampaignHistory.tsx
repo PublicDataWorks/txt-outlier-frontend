@@ -42,7 +42,7 @@ const CampaignHistory = () => {
 
   // Properly typed function to extract segment names
   const getSegmentNames = (segments: Campaign['segments']) => {
-    if (!segments || !segments.included) return '';
+    if (!segments || !segments.included) return 'Uploaded via CSV file';
 
     // Extract segment IDs safely handling all possible data shapes
     const segmentIds: string[] = [];

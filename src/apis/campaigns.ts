@@ -38,10 +38,10 @@ export interface CampaignsResponse {
   past: PastCampaigns;
 }
 
-export interface CreateCampaignPayload {
+export interface CampaignPayload {
   title?: string;
   firstMessage: string;
-  secondMessage?: string;
+  secondMessage?: string | null;
   segments?: {
     included: Array<Segment | Segment[]>;
     excluded?: Array<Segment | Segment[]> | null;
@@ -50,6 +50,9 @@ export interface CreateCampaignPayload {
   runAt: number;
 }
 
+// Renamed to be more generic since it's now used for both create and update
+export type CreateCampaignPayload = CampaignPayload;
+export type UpdateCampaignPayload = CampaignPayload;
 export interface CreateCampaignFormData extends FormData {
   // This is just for TypeScript to understand what fields might be in the FormData
   append(name: 'file' | 'title' | 'firstMessage' | 'secondMessage' | 'delay' | 'runAt', value: string | Blob): void;
@@ -77,6 +80,24 @@ export const createCampaign = async (campaignData: CreateCampaignPayload): Promi
   } catch (error) {
     console.error('Error creating campaign:', error);
     throw error;
+  }
+};
+
+export const updateCampaign = async (id: number, campaignData: UpdateCampaignPayload): Promise<Campaign> => {
+  try {
+    const response = await axios.patch<Campaign>(`${CAMPAIGNS_URL}${id}/`, campaignData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating campaign:', error);
+    throw error;
+  }
+};
+
+export const deleteCampaign = async (id: number): Promise<void> => {
+  try {
+    await axios.delete(`${CAMPAIGNS_URL}${id}/`);
+  } catch (error) {
+    console.error('Error deleting campaign:', error);
   }
 };
 

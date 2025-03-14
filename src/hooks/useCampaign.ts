@@ -1,13 +1,17 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { 
-  createCampaign, 
+import {
+  createCampaign,
+  CreateCampaignPayload,
+  deleteCampaign,
+  getCampaigns,
+  getRecipientCount,
+  RecipientCountPayload,
+  updateCampaign,
+  UpdateCampaignPayload,
+  Campaign,
   createCampaignWithFile,
-  CreateCampaignPayload, 
   CreateCampaignFormData,
-  getCampaigns, 
-  getRecipientCount, 
-  RecipientCountPayload 
 } from '@/apis/campaigns';
 
 export function useUpcomingCampaigns() {
@@ -59,6 +63,55 @@ export function useCreateCampaign() {
       queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
       queryClient.invalidateQueries({ queryKey: ['pastCampaigns'] });
     },
+  });
+}
+
+export function useUpdateCampaign() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (campaign: Campaign) => {
+      // Extract the data we need to send to the API
+      // We don't want to send the id in the payload
+      const { id, ...campaignData } = campaign;
+      return updateCampaign(id, campaignData as UpdateCampaignPayload);
+    },
+    onSuccess: (_, variables) => {
+      // After successful update, update the cache
+      queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
+
+      // Optionally update the specific campaign in the cache to avoid a refetch
+      queryClient.setQueryData(['upcomingCampaigns'], (oldData: Campaign[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(campaign =>
+          campaign.id === variables.id ? variables : campaign
+        );
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating campaign:', error);
+    }
+  });
+}
+
+export function useDeleteCampaign() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => deleteCampaign(id),
+    onSuccess: (_, id) => {
+      // After successful deletion, update the cache
+      queryClient.invalidateQueries({ queryKey: ['upcomingCampaigns'] });
+
+      // Optionally remove the campaign from the cache to avoid a refetch
+      queryClient.setQueryData(['upcomingCampaigns'], (oldData: Campaign[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.filter(campaign => campaign.id !== id);
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting campaign:', error);
+    }
   });
 }
 
