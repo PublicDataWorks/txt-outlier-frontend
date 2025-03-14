@@ -168,7 +168,7 @@ const RecipientsSelector = forwardRef<RecipientsRef, RecipientsSelectorProps>(
       handleSegmentsChange(includeSegmentGroups, groups);
     };
 
-    const handleCsvUpload = (file: File, recipientCount: number) => {
+    const handleCsvUpload = (file: File | null, recipientCount: number) => {
       setCsvFile(file);
       setCsvRecipientCount(recipientCount);
 
