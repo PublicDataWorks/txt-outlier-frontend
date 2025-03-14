@@ -489,7 +489,11 @@ export default function UpcomingCampaigns() {
                                   timestamp,
                                 );
                               }}
-                              className="mt-1 text-sm"
+                              className="mt-1 text-sm cursor-pointer"
+                              onClick={(e) => {
+                                const input = e.target as HTMLInputElement;
+                                input.showPicker();
+                              }}
                             />
                           </div>
                           <div>
