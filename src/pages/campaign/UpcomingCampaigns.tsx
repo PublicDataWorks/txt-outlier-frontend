@@ -410,7 +410,7 @@ export default function UpcomingCampaigns() {
                             )}
                           </div>
                           <div className="mt-1 flex flex-wrap">
-                            {editedCampaign.segments.included &&
+                            {editedCampaign.segments?.included &&
                               renderSegmentGroup(
                                 editedCampaign.segments.included,
                               )}
@@ -608,15 +608,19 @@ export default function UpcomingCampaigns() {
                                 Target Segments
                               </h5>
                               <div className="flex flex-wrap">
-                                {editedCampaign.segments.included &&
+                                {editedCampaign.segments?.included ? (
                                   renderSegmentGroup(
                                     editedCampaign.segments.included,
-                                  )}
+                                  )
+                                ) : (
+                                  <Badge variant="outline">Uploaded via CSV file</Badge>
+                                )}
                               </div>
                             </div>
 
                             {/* Exclusions */}
-                            {editedCampaign.segments.excluded &&
+                            {editedCampaign.segments &&
+                              editedCampaign.segments.excluded &&
                               editedCampaign.segments.excluded.length > 0 && (
                                 <div>
                                   <h5 className="text-xs font-medium mb-1">
