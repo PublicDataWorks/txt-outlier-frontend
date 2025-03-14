@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { set } from 'date-fns';
 import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 
 import { ScheduleDialog } from './ScheduleDialog';
