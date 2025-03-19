@@ -19,6 +19,11 @@ export interface Campaign {
   delay: number;
   recipientCount: number;
   runAt: number;
+  firstMessageCount: number;
+  secondMessageCount: number;
+  successfulDeliveries: number;
+  failedDeliveries: number;
+  unsubscribes: number;
 }
 
 export interface Pagination {
