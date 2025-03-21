@@ -175,6 +175,45 @@ const CampaignHistory = () => {
                           </p>
                         </div>
                       )}
+
+                      <div className="bg-muted p-3 rounded-md">
+                        <h4 className="text-sm font-medium mb-2">
+                          Response breakdown:
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="font-medium">
+                              Conversation starters sent:
+                            </p>
+                            {campaign.firstMessageCount}
+                          </div>
+                          {campaign.secondMessage && (
+                            <div>
+                              <p className="font-medium">
+                                Second Message Count:
+                              </p>
+                              {campaign.secondMessageCount}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium">
+                              Delivered successfully:
+                            </p>
+                            {campaign.successfulDeliveries}
+                          </div>
+                          <div>
+                            <p className="font-medium">Failed to deliver:</p>
+                            {campaign.failedDeliveries}
+                          </div>
+
+                          <div>
+                            <p className="font-medium">
+                              Unsubscribed:
+                            </p>
+                            {campaign.unsubscribes}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
