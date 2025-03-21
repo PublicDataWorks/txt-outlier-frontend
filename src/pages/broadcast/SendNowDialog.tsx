@@ -30,7 +30,6 @@ export function SendNowDialog({ sendNow }: SendConfirmationModalProps) {
     try {
       setSending(true);
       await sendNow();
-      toast({ title: 'Broadcast sent' });
       setOpen(false);
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -63,9 +62,7 @@ export function SendNowDialog({ sendNow }: SendConfirmationModalProps) {
       <DialogContent className="sm:max-w-[400px] bg-background border border-input dark:bg-[#1E1E1E] dark:border-neutral-700">
         <DialogDescription />
         <DialogHeader>
-          <DialogTitle className="text-base">
-            Send now
-          </DialogTitle>
+          <DialogTitle className="text-base">Send now</DialogTitle>
         </DialogHeader>
         <div className="py-3">
           <p className="text-sm text-muted-foreground dark:text-neutral-400">
@@ -86,11 +83,7 @@ export function SendNowDialog({ sendNow }: SendConfirmationModalProps) {
             className="flex-1 bg-[#2F80ED] hover:bg-[#2D7BE5] text-white"
             disabled={sending}
           >
-            {sending ? (
-              <LoadingSpinner className="h-4 w-4" />
-            ) : (
-              'Send now'
-            )}
+            {sending ? <LoadingSpinner className="h-4 w-4" /> : 'Send now'}
           </Button>
         </DialogFooter>
       </DialogContent>
