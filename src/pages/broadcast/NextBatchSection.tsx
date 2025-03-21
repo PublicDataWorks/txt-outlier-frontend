@@ -1,17 +1,17 @@
 import { CalendarClockIcon } from 'lucide-react';
 
 import { sendNowBroadcast, UpcomingBroadcast } from '@/apis/broadcasts';
-import BroadcastCard from '@/components/BroadcastCard';
-import EditConversationMessageDialog from '@/components/EditConversationMessageDialog';
-import EditNumberOfRecipientsDialog from '@/components/EditNumberOfRecipientsDialog.tsx';
-import ReScheduleDialog from '@/components/ReScheduleDialog';
-import { SendNowDialog } from '@/components/SendNowDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useBroadcastMutation,
   useBroadcastsQuery,
 } from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
+import BroadcastCard from '@/pages/broadcast/BroadcastCard';
+import EditConversationMessageDialog from '@/pages/broadcast/EditConversationMessageDialog';
+import EditNumberOfRecipientsDialog from '@/pages/broadcast/EditNumberOfRecipientsDialog.tsx';
+import ReScheduleDialog from '@/pages/broadcast/ReScheduleDialog';
+import { SendNowDialog } from '@/pages/broadcast/SendNowDialog';
 
 const NextBatchSection = () => {
   const broadcastsQuery = useBroadcastsQuery();

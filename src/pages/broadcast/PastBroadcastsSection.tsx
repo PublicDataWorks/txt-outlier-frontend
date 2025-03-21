@@ -1,11 +1,11 @@
 import { History } from 'lucide-react';
 import { Fragment } from 'react';
 
-import BatchItem from '@/components/BatchItem';
-import BroadcastCard from '@/components/BroadcastCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePastBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
+import BatchItem from '@/pages/broadcast/BatchItem';
+import BroadcastCard from '@/pages/broadcast/BroadcastCard';
 
 const PastBroadcastsSection = () => {
   const {
@@ -43,9 +43,9 @@ const PastBroadcastsSection = () => {
       <div className="space-y-4">
         {data?.pages.map((page, pageIndex) => (
           <Fragment key={pageIndex}>
-            {page.past.map((broadcast) => (
+            {page.past ? page.past.map((broadcast) => (
               <BatchItem key={broadcast.id} broadcast={broadcast} />
-            ))}
+            )) : null}
           </Fragment>
         ))}
       </div>

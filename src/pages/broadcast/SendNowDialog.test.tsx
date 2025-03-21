@@ -18,7 +18,7 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 // Mock the loading spinner component
-vi.mock('./ui/loading-spinner', () => ({
+vi.mock('@/components/ui/loading-spinner', () => ({
   LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
 }));
 

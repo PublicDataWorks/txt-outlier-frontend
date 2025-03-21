@@ -141,8 +141,8 @@ const NewCampaign = () => {
       await submitCampaign(twoMinutesFromNow);
 
       toast({
-        title: 'Campaign Sent',
-        description: 'Your campaign has been sent successfully.',
+        title: 'Campaign Scheduled',
+        description: 'Your campaign will be sent after two minutes.',
       });
       resetForm();
     } catch (error) {

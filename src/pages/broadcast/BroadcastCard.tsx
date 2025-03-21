@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 
-import SettingsModal from '@/components/SettingsModal.tsx';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import SettingsModal from '@/pages/broadcast/SettingsModal.tsx';
 
 interface BroadcastCardProps {
   title: string;
