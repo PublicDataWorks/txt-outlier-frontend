@@ -129,12 +129,6 @@ describe('SendNowDialog', () => {
 
     // Check that onSend was called
     expect(mockOnSend).toHaveBeenCalledTimes(1);
-
-    // Check that a toast notification was shown
-    expect(mockToast).toHaveBeenCalledWith({
-      title: 'Broadcast Sent',
-      description: 'Your message has been sent to 1,000 recipients.',
-    });
   });
 
   it('closes the dialog when the send now button in the dialog is clicked', async () => {

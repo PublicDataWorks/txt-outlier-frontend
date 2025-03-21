@@ -1,10 +1,10 @@
 import { CheckCircle2 } from 'lucide-react';
 
-import BroadcastCard from '@/components/BroadcastCard';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
 import { formatDateTime } from '@/lib/date';
+import BroadcastCard from '@/pages/broadcast/BroadcastCard';
 
 const LastBatchSection = () => {
   const broadcastsQuery = useBroadcastsQuery();
@@ -32,8 +32,8 @@ const LastBatchSection = () => {
   if (!lastBatch) {
     return (
       <BroadcastCard title="Last batch" icon={CheckCircle2}>
-      <div>Empty</div>
-    </BroadcastCard>
+        <div>Empty</div>
+      </BroadcastCard>
     );
   }
 

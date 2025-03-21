@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input.tsx';
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +22,7 @@ const formSchema = z.object({
     .number()
     .int()
     .min(1, 'Recipient count must be at least 1')
-    .max(100_000, 'Recipient count cannot exceed 100,000')
+    .max(100_000, 'Recipient count cannot exceed 100,000'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -36,7 +36,7 @@ interface EditNumberOfRecipientsDialogProps {
 const EditNumberOfRecipientsDialog = ({
   title,
   noRecipients,
-  onSave
+  onSave,
 }: EditNumberOfRecipientsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,8 +46,8 @@ const EditNumberOfRecipientsDialog = ({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      noRecipients
-    }
+      noRecipients,
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -59,7 +59,7 @@ const EditNumberOfRecipientsDialog = ({
     } catch {
       toast({
         title: 'Error',
-        description: 'Could not update recipient count. Please try again!'
+        description: 'Could not update recipient count. Please try again!',
       });
     } finally {
       setIsSaving(false);
@@ -69,16 +69,12 @@ const EditNumberOfRecipientsDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div
-          className="flex items-center gap-2 p-2 w-full whitespace-pre-wrap rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
+        <div className="flex items-center gap-2 p-2 w-full whitespace-pre-wrap rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer hover:bg-accent/50 transition-colors dark:bg-[#1E1E1E] dark:border-neutral-600 dark:hover:bg-neutral-800">
           <Users className="h-4 w-4" />
-          <span className="text-sm">
-            {noRecipients} recipients
-            </span>
+          <span className="text-sm">{noRecipients} recipients</span>
         </div>
       </DialogTrigger>
-      <DialogContent
-        className="h-svh w-svw max-w-none rounded-none overflow-y-scroll bg-background border border-input dark:bg-[#1E1E1E] dark:border-neutral-700">
+      <DialogContent className="h-svh w-svw max-w-none rounded-none overflow-y-scroll bg-background border border-input dark:bg-[#1E1E1E] dark:border-neutral-700">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle className="text-base">{title}</DialogTitle>
@@ -88,7 +84,10 @@ const EditNumberOfRecipientsDialog = ({
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="flex items-center gap-4">
-              <label htmlFor="recipientCount" className="text-right dark:text-neutral-400">
+              <label
+                htmlFor="recipientCount"
+                className="text-right dark:text-neutral-400"
+              >
                 Recipients
               </label>
               <Input
