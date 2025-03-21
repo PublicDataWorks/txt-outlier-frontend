@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
 
 interface SendNowDialogProps {
   onSend: () => void;
@@ -30,16 +29,11 @@ export function SendNowDialog({
   segmentDescription,
   disabled = false,
 }: SendNowDialogProps) {
-  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const handleSend = () => {
     onSend();
     setOpen(false);
-    toast({
-      title: 'Broadcast Sent',
-      description: `Your message has been sent to ${recipientCount?.toLocaleString() || 'your'} recipients.`,
-    });
   };
 
   const formattedRecipientCount =
