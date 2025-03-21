@@ -7,7 +7,7 @@ import { useBroadcastsQuery } from '@/hooks/useBroadcastsQuery';
 
 // Mock the hooks and components
 vi.mock('@/hooks/useBroadcastsQuery');
-vi.mock('@/components/BroadcastCard', () => ({
+vi.mock('@/pages/broadcast/BroadcastCard', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="broadcast-card">{children}</div>
   ),

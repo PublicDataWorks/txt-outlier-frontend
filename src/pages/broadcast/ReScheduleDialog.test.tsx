@@ -11,7 +11,7 @@ import { describe, it, expect, vi } from 'vitest';
 import ReScheduleDialog from './ReScheduleDialog';
 
 // Mock the loading spinner component
-vi.mock('./ui/loading-spinner', () => ({
+vi.mock('@/components/ui/loading-spinner', () => ({
   LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
 }));
 

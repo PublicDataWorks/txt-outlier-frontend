@@ -10,10 +10,8 @@ import Home from './convo-sidebar/pages/Home/index.tsx';
 import AuthProvider from './convo-sidebar/providers/auth.tsx';
 import AnonKeyProvider from './convo-sidebar/providers/key.tsx';
 
-import LastBatchSection from '@/components/LastBatchSection';
-import NextBatchSection from '@/components/NextBatchSection';
-import PastBroadcastsSection from '@/components/PastBroadcastsSection';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import BroadcastPage from '@/pages/broadcast/index.tsx';
 import CampaignPage from '@/pages/campaign/index.tsx';
 
 import './App.css';
@@ -22,8 +20,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      staleTime: 2 * 60 * 1000, // 2 minutes
+      refetchOnWindowFocus: true,
+      staleTime: 1 * 60 * 1000, // 1 minutes
     },
   },
 });
@@ -65,9 +63,7 @@ function App() {
                   <PrivateRoute>
                     <ScrollArea className="h-screen w-full border-l bg-background dark:border-l-neutral-800">
                       <div className="space-y-6 p-4">
-                        <NextBatchSection />
-                        <LastBatchSection />
-                        <PastBroadcastsSection />
+                        <BroadcastPage />
                       </div>
                     </ScrollArea>
                   </PrivateRoute>
