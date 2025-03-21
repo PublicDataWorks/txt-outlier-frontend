@@ -43,9 +43,11 @@ const PastBroadcastsSection = () => {
       <div className="space-y-4">
         {data?.pages.map((page, pageIndex) => (
           <Fragment key={pageIndex}>
-            {page.past ? page.past.map((broadcast) => (
-              <BatchItem key={broadcast.id} broadcast={broadcast} />
-            )) : null}
+            {page.past
+              ? page.past.map((broadcast) => (
+                  <BatchItem key={broadcast.id} broadcast={broadcast} />
+                ))
+              : null}
           </Fragment>
         ))}
       </div>

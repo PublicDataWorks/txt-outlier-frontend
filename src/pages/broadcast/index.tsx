@@ -12,4 +12,4 @@ const BroadcastPage = () => {
   );
 };
 
-export default BroadcastPage
+export default BroadcastPage;

@@ -55,7 +55,8 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
 // Form validation schema
 const formSchema = z.object({
   schedule: z.record(z.string(), z.string().nullable()),
-  batchSize: z.number()
+  batchSize: z
+    .number()
     .min(MIN_BATCH_SIZE, `Batch size must be at least ${MIN_BATCH_SIZE}`)
     .max(MAX_BATCH_SIZE, `Batch size cannot exceed ${MAX_BATCH_SIZE}`),
 });
@@ -75,7 +76,12 @@ export function SettingsModal() {
     defaultValues: settings,
   });
 
-  const { handleSubmit, setValue, watch, formState: { errors } } = form;
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form;
 
   React.useLayoutEffect(() => {
     if (settings) {
@@ -83,18 +89,23 @@ export function SettingsModal() {
     }
   }, [settings, form]);
 
+  const handleDayToggle = React.useCallback(
+    (dayKey: string) => {
+      const currentSchedule = watch('schedule');
+      setValue('schedule', {
+        ...currentSchedule,
+        [dayKey]: currentSchedule[dayKey] ? null : '09:00',
+      });
+    },
+    [setValue, watch],
+  );
 
-  const handleDayToggle = React.useCallback((dayKey: string) => {
-    const currentSchedule = watch('schedule');
-    setValue('schedule', {
-      ...currentSchedule,
-      [dayKey]: currentSchedule[dayKey] ? null : '09:00',
-    });
-  }, [setValue, watch]);
-
-  const handleTimeChange = React.useCallback((dayKey: string, time: string) => {
-    setValue(`schedule.${dayKey}`, time);
-  }, [setValue]);
+  const handleTimeChange = React.useCallback(
+    (dayKey: string, time: string) => {
+      setValue(`schedule.${dayKey}`, time);
+    },
+    [setValue],
+  );
 
   const onSubmit = async (data: BroadcastSettings) => {
     updateSettings(data, {
@@ -103,7 +114,10 @@ export function SettingsModal() {
         toast({ description: 'Settings updated successfully' });
       },
       onError: () => {
-        toast({ title: 'Error', description: 'Failed to save settings. Please try again later!' });
+        toast({
+          title: 'Error',
+          description: 'Failed to save settings. Please try again later!',
+        });
       },
     });
   };
@@ -128,11 +142,17 @@ export function SettingsModal() {
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
-              <Label className="text-foreground dark:text-white">Weekly Schedule</Label>
+              <Label className="text-foreground dark:text-white">
+                Weekly Schedule
+              </Label>
               <p className="text-sm text-muted-foreground dark:text-neutral-400">
                 Select days and set times for each broadcast
               </p>
-              <ToggleGroup type="multiple" variant="outline" className="justify-start">
+              <ToggleGroup
+                type="multiple"
+                variant="outline"
+                className="justify-start"
+              >
                 {DAYS_OF_WEEK.map((day) => (
                   <ToggleGroupItem
                     key={day}
@@ -151,12 +171,17 @@ export function SettingsModal() {
                   (day) =>
                     watch(`schedule.${day}`) !== null && (
                       <div key={day} className="flex items-center gap-2">
-                        <Label htmlFor={`time-${day}`} className="w-8 dark:text-white">
+                        <Label
+                          htmlFor={`time-${day}`}
+                          className="w-8 dark:text-white"
+                        >
                           {DAY_MAPPING[day]}
                         </Label>
                         <Select
                           value={watch(`schedule.${day}`) || '09:00'}
-                          onValueChange={(value) => handleTimeChange(day, value)}
+                          onValueChange={(value) =>
+                            handleTimeChange(day, value)
+                          }
                         >
                           <SelectTrigger
                             id={`time-${day}`}
@@ -177,7 +202,7 @@ export function SettingsModal() {
                           </SelectContent>
                         </Select>
                       </div>
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -186,7 +211,8 @@ export function SettingsModal() {
                 Batch Size
               </Label>
               <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                Number of recipients per batch ({MIN_BATCH_SIZE}-{MAX_BATCH_SIZE})
+                Number of recipients per batch ({MIN_BATCH_SIZE}-
+                {MAX_BATCH_SIZE})
               </p>
               <Input
                 {...form.register('batchSize', { valueAsNumber: true })}
@@ -194,13 +220,15 @@ export function SettingsModal() {
                 type="number"
                 className={cn(
                   'bg-background dark:bg-[#1E1E1E] border-input dark:border-neutral-600',
-                  errors.batchSize && 'border-red-500'
+                  errors.batchSize && 'border-red-500',
                 )}
                 min={MIN_BATCH_SIZE}
                 max={MAX_BATCH_SIZE}
               />
               {errors.batchSize && (
-                <p className="text-sm text-red-400">{errors.batchSize.message}</p>
+                <p className="text-sm text-red-400">
+                  {errors.batchSize.message}
+                </p>
               )}
             </div>
           </div>
