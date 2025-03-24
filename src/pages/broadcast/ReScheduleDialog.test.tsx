@@ -111,8 +111,10 @@ describe('PauseScheduleDialog', () => {
     fireEvent.click(screen.getByText('Reschedule'));
 
     // Select a different date
-    fireEvent.click(screen.getByText(targetDate.getDate().toString()));
-
+    const dateButtons = screen.getAllByText(targetDate.getDate().toString());
+    const activeButton = dateButtons.find(button => !button.hasAttribute('disabled'));
+    fireEvent.click(activeButton!);
+    
     // Click confirm button in dialog
     fireEvent.click(
       await within(await screen.findByRole('dialog')).findByRole('button', {
