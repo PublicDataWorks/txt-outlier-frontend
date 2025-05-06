@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Tag, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { MessageInput } from './MessageInput';
 import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
@@ -7,6 +8,7 @@ import { SendNowDialog } from './SendNowDialog';
 
 import { Segment, CreateCampaignFormData } from '@/apis/campaigns';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -34,6 +36,7 @@ const NewCampaign = () => {
   const [estimatedRecipients, setEstimatedRecipients] = useState<
     number | undefined
   >(undefined);
+  const [campaignLabelName, setCampaignLabelName] = useState<string | undefined>(undefined);
 
   // Create a map of segment IDs to segment names for quick lookup
   const segmentMap = new Map<string, string>();
@@ -114,6 +117,7 @@ const NewCampaign = () => {
       formData.append('firstMessage', message);
       if (followUpMessage) formData.append('secondMessage', followUpMessage);
       if (delay !== undefined) formData.append('delay', delay.toString());
+      if (campaignLabelName) formData.append('campaignLabelName', campaignLabelName);
       formData.append('runAt', runAt.toString());
 
       return await createCampaignWithFileMutation.mutateAsync(formData);
@@ -124,8 +128,9 @@ const NewCampaign = () => {
         firstMessage: message,
         secondMessage: followUpMessage || undefined,
         segments,
-        delay: delay,
-        runAt: runAt,
+        delay,
+        runAt,
+        campaignLabelName,
       };
 
       return await createCampaignMutation.mutateAsync(payload);
@@ -190,6 +195,7 @@ const NewCampaign = () => {
     setCsvFile(null);
     setDelay(undefined);
     setEstimatedRecipients(undefined);
+    setCampaignLabelName(undefined);
 
     // Call the reset method on the RecipientsSelector component
     if (recipientsSelectorRef.current) {
@@ -219,6 +225,16 @@ const NewCampaign = () => {
           ref={recipientsSelectorRef}
           onSegmentsChange={handleSegmentsChange}
         />
+
+        <div>
+          <Input
+            id="campaign-label"
+            placeholder="Missive label for campaign conversations (optional)"
+            value={campaignLabelName || ''}
+            onChange={(e) => setCampaignLabelName(e.target.value || undefined)}
+            className="text-sm"
+          />
+        </div>
       </div>
 
       <Separator className="my-6" />

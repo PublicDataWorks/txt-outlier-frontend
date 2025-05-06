@@ -86,7 +86,6 @@ function Home() {
   }
 
   const handleConversationChange = useCallback((ids: string[]) => {
-    console.log('----- Missive on change', ids)
     Missive.fetchConversations(ids)
       .then(conversations => {
         console.log('---- convo: ', conversations)

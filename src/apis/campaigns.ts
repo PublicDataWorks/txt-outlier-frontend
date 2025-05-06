@@ -24,6 +24,7 @@ export interface Campaign {
   successfulDeliveries: number;
   failedDeliveries: number;
   unsubscribes: number;
+  campaignLabelName?: string;
 }
 
 export interface Pagination {
@@ -53,6 +54,7 @@ export interface CampaignPayload {
   };
   delay?: number;
   runAt: number;
+  campaignLabelName?: string;
 }
 
 // Renamed to be more generic since it's now used for both create and update
@@ -60,7 +62,7 @@ export type CreateCampaignPayload = CampaignPayload;
 export type UpdateCampaignPayload = CampaignPayload;
 export interface CreateCampaignFormData extends FormData {
   // This is just for TypeScript to understand what fields might be in the FormData
-  append(name: 'file' | 'title' | 'firstMessage' | 'secondMessage' | 'delay' | 'runAt', value: string | Blob): void;
+  append(name: 'file' | 'title' | 'firstMessage' | 'secondMessage' | 'delay' | 'runAt' | 'campaignLabelName', value: string | Blob): void;
 }
 
 export const getCampaigns = async (pageSize: number = 10, page: number = 1): Promise<CampaignsResponse> => {
