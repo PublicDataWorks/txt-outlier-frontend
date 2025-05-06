@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
-import { Tag, AlertCircle, CheckCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { debounce } from 'lodash';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 
 import { MessageInput } from './MessageInput';
 import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
@@ -8,12 +9,11 @@ import { SendNowDialog } from './SendNowDialog';
 
 import { Segment, CreateCampaignFormData } from '@/apis/campaigns';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import {
   useCreateCampaign,
-  useCreateCampaignWithFile,
+  useCreateCampaignWithFile
 } from '@/hooks/useCampaign';
 import { useSegments } from '@/hooks/useSegments';
 
@@ -37,6 +37,41 @@ const NewCampaign = () => {
     number | undefined
   >(undefined);
   const [campaignLabelName, setCampaignLabelName] = useState<string | undefined>(undefined);
+  const [labelExists, setLabelExists] = useState(false);
+  const [isCheckingLabel, setIsCheckingLabel] = useState(false);
+
+  const checkLabelExistence = useCallback(async (labelName: string | undefined) => {
+    // Handle empty label name
+    if (!labelName) {
+      setLabelExists(false);
+      setIsCheckingLabel(false);
+      return;
+    }
+    
+    setIsCheckingLabel(true);
+    try {
+      const labels = await Missive.fetchLabels();
+      const exists = labels.some(
+        label => label.name.toLowerCase() === labelName.toLowerCase()
+      );
+      setLabelExists(exists);
+    } catch (error) {
+      console.error('Error checking label existence:', error);
+      setLabelExists(false); // Assume it doesn't exist or couldn't check
+    } finally {
+      setIsCheckingLabel(false);
+    }
+  }, [setLabelExists, setIsCheckingLabel]);
+
+  const debouncedCheckRef = useRef(debounce(checkLabelExistence, 500));
+  
+  useEffect(() => {
+    const currentDebouncedFn = debouncedCheckRef.current;
+    void currentDebouncedFn(campaignLabelName);
+    return () => {
+      currentDebouncedFn.cancel();
+    };
+  }, [campaignLabelName, checkLabelExistence]);
 
   // Create a map of segment IDs to segment names for quick lookup
   const segmentMap = new Map<string, string>();
@@ -94,7 +129,7 @@ const NewCampaign = () => {
       excluded?: Array<Segment | Segment[]> | null;
     },
     recipientCount?: number,
-    file?: File | null,
+    file?: File | null
   ) => {
     setSegments(newSegments);
     setCsvFile(file || null);
@@ -130,7 +165,7 @@ const NewCampaign = () => {
         segments,
         delay,
         runAt,
-        campaignLabelName,
+        campaignLabelName
       };
 
       return await createCampaignMutation.mutateAsync(payload);
@@ -147,7 +182,7 @@ const NewCampaign = () => {
 
       toast({
         title: 'Campaign Scheduled',
-        description: 'Your campaign will be sent after two minutes.',
+        description: 'Your campaign will be sent after two minutes.'
       });
       resetForm();
     } catch (error) {
@@ -157,7 +192,7 @@ const NewCampaign = () => {
       toast({
         title: 'Error',
         description: `Failed to send campaign: ${errorMessage}`,
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -172,7 +207,7 @@ const NewCampaign = () => {
 
       toast({
         title: 'Campaign Scheduled',
-        description: `Your campaign has been scheduled for ${date.toLocaleString()}.`,
+        description: `Your campaign has been scheduled for ${date.toLocaleString()}.`
       });
       resetForm();
     } catch (error) {
@@ -182,7 +217,7 @@ const NewCampaign = () => {
       toast({
         title: 'Error',
         description: `Failed to schedule campaign: ${errorMessage}`,
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -234,6 +269,32 @@ const NewCampaign = () => {
             onChange={(e) => setCampaignLabelName(e.target.value || undefined)}
             className="text-sm"
           />
+
+          {isCheckingLabel && (
+            <div className="text-xs text-muted-foreground mt-2">
+              Checking label...
+            </div>
+          )}
+
+          {!isCheckingLabel && campaignLabelName && (
+            <div className="flex items-center mt-2 text-xs">
+              {labelExists ? (
+                <div className="text-amber-600 flex items-start">
+                  <AlertCircle className="h-3 w-3 mr-2 mt-0.5" />
+                  <span className="leading-snug">
+                    Label already exists. Recipients will be added to this existing label.
+                  </span>
+                </div>
+              ) : (
+                <div className="text-green-600 flex items-start">
+                  <CheckCircle className="h-3 w-3 mr-2 mt-0.5" />
+                  <span className="leading-snug">
+                    This label will be created for this campaign.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

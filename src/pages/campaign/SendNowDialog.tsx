@@ -16,7 +16,7 @@ interface SendNowDialogProps {
   onSend: () => void;
   recipientCount: number | undefined;
   messagePreview: string;
-  followUpMessagePreview?: string; // Add follow-up message prop
+  followUpMessagePreview?: string;
   segmentDescription: string;
   disabled?: boolean;
 }
@@ -25,7 +25,7 @@ export function SendNowDialog({
   onSend,
   recipientCount,
   messagePreview,
-  followUpMessagePreview, // Include follow-up message in props
+  followUpMessagePreview,
   segmentDescription,
   disabled = false,
 }: SendNowDialogProps) {
