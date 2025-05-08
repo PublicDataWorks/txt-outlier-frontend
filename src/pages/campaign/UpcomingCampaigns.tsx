@@ -10,6 +10,7 @@ import {
   Plus,
   X,
   Filter,
+  Tag,
 } from 'lucide-react';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
@@ -78,10 +79,30 @@ export default function UpcomingCampaigns() {
   useEffect(() => {
     if (campaigns && campaigns.length > 0) {
       const initialEdited: Record<number, Campaign> = {};
-      campaigns.forEach((campaign) => {
-        initialEdited[campaign.id] = { ...campaign };
-      });
-      setEditedCampaigns(initialEdited);
+      
+      const fetchLabels = async () => {
+        // First, try to fetch all labels at once to avoid multiple API calls
+        let missiveLabels: { id: string; name: string; parent_id: string }[] = [];
+        try {
+          missiveLabels = await Missive.fetchLabels();
+        } catch (error) {
+          console.error('Error fetching Missive labels:', error);
+        }
+        
+        for (const campaign of campaigns) {
+          initialEdited[campaign.id] = { ...campaign };
+          
+          if (campaign.labelId) {
+            const label = missiveLabels.find(label => label.id === campaign.labelId);
+            if (label?.name) {
+              initialEdited[campaign.id].campaignLabelName = label.name;
+            }
+          }
+        }
+        setEditedCampaigns(initialEdited);
+      };
+      
+      void fetchLabels();
     }
   }, [campaigns]);
 
@@ -407,6 +428,12 @@ export default function UpcomingCampaigns() {
                             {format(
                               new Date(editedCampaign.runAt * 1000),
                               'h:mm a',
+                            )}
+                            {editedCampaign.campaignLabelName && (
+                              <>
+                                <Tag className="h-3 w-3 ml-2 mr-1" />
+                                {editedCampaign.campaignLabelName}
+                              </>
                             )}
                           </div>
                           <div className="mt-1 flex flex-wrap">

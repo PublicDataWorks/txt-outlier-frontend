@@ -1,5 +1,5 @@
-import { Users, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
+import { Users, ChevronDown, ChevronUp, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 import { Campaign, Segment as CampaignSegment } from '@/apis/campaigns';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,9 @@ import { unixTimestampInSecondToDate } from '@/lib/date';
 
 const CampaignHistory = () => {
   const [expandedCampaignId, setExpandedCampaignId] = useState<number | null>(
-    null,
+    null
   );
+  const [campaignsWithLabels, setCampaignsWithLabels] = useState<Campaign[]>([]);
 
   const {
     campaigns,
@@ -22,7 +23,7 @@ const CampaignHistory = () => {
     error,
     hasNextPage,
     loadMore,
-    pagination,
+    pagination
   } = usePastCampaigns(10);
 
   // Use the existing useSegments hook
@@ -34,9 +35,37 @@ const CampaignHistory = () => {
     segmentMap.set(segment.id, segment.name);
   });
 
+  // Initialize campaigns and fetch label names if needed
+  useEffect(() => {
+    if (campaigns.length === 0) return;
+
+    const fetchLabels = async () => {
+      // First, try to fetch all labels at once to avoid multiple API calls
+      let missiveLabels: { id: string; name: string; parent_id: string }[] = [];
+      try {
+        missiveLabels = await Missive.fetchLabels();
+      } catch (error) {
+        console.error('Error fetching Missive labels:', error);
+      }
+
+      const updatedCampaigns = campaigns.map(campaign => {
+        if (campaign.labelId) {
+          const label = missiveLabels.find(label => label.id === campaign.labelId);
+          if (label?.name) {
+            return { ...campaign, campaignLabelName: label.name };
+          }
+        }
+        return campaign;
+      });
+
+      setCampaignsWithLabels(updatedCampaigns);
+    };
+    void fetchLabels();
+  }, [campaigns]);
+
   const toggleExpand = (campaignId: number) => {
     setExpandedCampaignId(
-      expandedCampaignId === campaignId ? null : campaignId,
+      expandedCampaignId === campaignId ? null : campaignId
     );
   };
 
@@ -122,7 +151,7 @@ const CampaignHistory = () => {
       ) : (
         <>
           <div className="space-y-4">
-            {campaigns.map((campaign) => (
+            {campaignsWithLabels.map((campaign) => (
               <Card
                 key={campaign.id}
                 className="overflow-hidden cursor-pointer  hover:bg-accent hover:text-accent-foreground transition-colors"
@@ -139,6 +168,12 @@ const CampaignHistory = () => {
                       </h4>
                       <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
+                        {campaign.campaignLabelName && (
+                          <span className="ml-2 inline-flex items-center">
+                            <Tag className="h-3 w-3 mr-1" />
+                            {campaign.campaignLabelName}
+                          </span>
+                        )}
                       </p>
                       <p className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">
                         {getSegmentNames(campaign.segments)}

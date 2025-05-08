@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { MessageInput } from './MessageInput';
 import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
@@ -61,16 +61,24 @@ const NewCampaign = () => {
     }
   }, [setLabelExists, setIsCheckingLabel]);
 
-  const debouncedCheckRef = useRef(debounce(checkLabelExistence, 500));
+  // Create a memoized debounced function that updates only when checkLabelExistence changes
+  const debouncedCheckLabel = useCallback(
+    debounce((labelName: string | undefined) => {
+      setIsCheckingLabel(true);
+      void checkLabelExistence(labelName);
+    }, 500),
+    [checkLabelExistence]
+  );
   
+  // Call the debounced function when campaignLabelName changes
   useEffect(() => {
-    const currentDebouncedFn = debouncedCheckRef.current;
-    setIsCheckingLabel(true);
-    void currentDebouncedFn(campaignLabelName);
+    debouncedCheckLabel(campaignLabelName);
+    
+    // Return cleanup function
     return () => {
-      currentDebouncedFn.cancel();
+      debouncedCheckLabel.cancel();
     };
-  }, [campaignLabelName, checkLabelExistence]);
+  }, [campaignLabelName, debouncedCheckLabel]);
 
   // Create a map of segment IDs to segment names for quick lookup
   const segmentMap = new Map<string, string>();
