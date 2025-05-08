@@ -41,18 +41,16 @@ const NewCampaign = () => {
   const [isCheckingLabel, setIsCheckingLabel] = useState(false);
 
   const checkLabelExistence = useCallback(async (labelName: string | undefined) => {
-    // Handle empty label name
-    if (!labelName) {
+    if (!labelName || labelName.trim() === '') {
       setLabelExists(false);
       setIsCheckingLabel(false);
       return;
     }
     
-    setIsCheckingLabel(true);
     try {
       const labels = await Missive.fetchLabels();
       const exists = labels.some(
-        label => label.name.toLowerCase() === labelName.toLowerCase()
+        label => label.name.trim().toLowerCase() === labelName.trim().toLowerCase()
       );
       setLabelExists(exists);
     } catch (error) {
@@ -67,6 +65,7 @@ const NewCampaign = () => {
   
   useEffect(() => {
     const currentDebouncedFn = debouncedCheckRef.current;
+    setIsCheckingLabel(true);
     void currentDebouncedFn(campaignLabelName);
     return () => {
       currentDebouncedFn.cancel();
@@ -152,7 +151,7 @@ const NewCampaign = () => {
       formData.append('firstMessage', message);
       if (followUpMessage) formData.append('secondMessage', followUpMessage);
       if (delay !== undefined) formData.append('delay', delay.toString());
-      if (campaignLabelName) formData.append('campaignLabelName', campaignLabelName);
+      if (campaignLabelName && campaignLabelName.trim()) formData.append('campaignLabelName', campaignLabelName);
       formData.append('runAt', runAt.toString());
 
       return await createCampaignWithFileMutation.mutateAsync(formData);
@@ -276,7 +275,7 @@ const NewCampaign = () => {
             </div>
           )}
 
-          {!isCheckingLabel && campaignLabelName && (
+          {!isCheckingLabel && campaignLabelName && campaignLabelName.trim() && (
             <div className="flex items-center mt-2 text-xs">
               {labelExists ? (
                 <div className="text-amber-600 flex items-start">
