@@ -1,6 +1,6 @@
 import { debounce } from 'lodash';
 import { AlertCircle, CheckCircle } from 'lucide-react';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 import { MessageInput } from './MessageInput';
 import RecipientsSelector, { RecipientsRef } from './RecipientsSelector';
@@ -61,20 +61,17 @@ const NewCampaign = () => {
     }
   }, [setLabelExists, setIsCheckingLabel]);
 
-  // Create a memoized debounced function that updates only when checkLabelExistence changes
-  const debouncedCheckLabel = useCallback(
-    debounce((labelName: string | undefined) => {
+  const debouncedCheckLabel = useMemo(
+    () => debounce((labelName: string | undefined) => {
       setIsCheckingLabel(true);
       void checkLabelExistence(labelName);
     }, 500),
-    [checkLabelExistence]
+    [checkLabelExistence, setIsCheckingLabel]
   );
   
-  // Call the debounced function when campaignLabelName changes
   useEffect(() => {
     debouncedCheckLabel(campaignLabelName);
     
-    // Return cleanup function
     return () => {
       debouncedCheckLabel.cancel();
     };
@@ -273,7 +270,12 @@ const NewCampaign = () => {
             id="campaign-label"
             placeholder="Missive label for campaign conversations (optional)"
             value={campaignLabelName || ''}
-            onChange={(e) => setCampaignLabelName(e.target.value || undefined)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Remove any '/' characters from the input
+              const sanitizedValue = value.replace(/\//g, '');
+              setCampaignLabelName(sanitizedValue || undefined);
+            }}
             className="text-sm"
           />
 
