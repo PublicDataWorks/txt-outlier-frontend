@@ -47,13 +47,24 @@ const CampaignHistory = () => {
       } catch (error) {
         console.error('Error fetching Missive labels:', error);
       }
+      
+      const labelLookup: Record<string, string> = {};
+      missiveLabels.forEach(label => {
+        if (label.id && label.name) {
+          labelLookup[label.id] = label.name;
+        }
+      });
 
       const updatedCampaigns = campaigns.map(campaign => {
-        if (campaign.labelId) {
-          const label = missiveLabels.find(label => label.id === campaign.labelId);
-          if (label?.name) {
-            return { ...campaign, campaignLabelName: label.name };
-          }
+        if (campaign.labelIds && campaign.labelIds.length > 0) {
+          const labelNames = campaign.labelIds
+            .map(labelId => labelLookup[labelId])
+            .filter(Boolean) as string[];
+          
+          return {
+            ...campaign, 
+            campaignLabelNames: labelNames
+          };
         }
         return campaign;
       });
@@ -168,10 +179,14 @@ const CampaignHistory = () => {
                       </h4>
                       <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
-                        {campaign.campaignLabelName && (
-                          <span className="ml-2 inline-flex items-center">
-                            <Tag className="h-3 w-3 mr-1" />
-                            {campaign.campaignLabelName}
+                        {campaign.campaignLabelNames && campaign.campaignLabelNames.length > 0 && (
+                          <span className="ml-2 inline-flex items-center flex-wrap gap-1">
+                            {campaign.campaignLabelNames.map((labelName, idx) => (
+                              <span key={idx} className="inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                <Tag className="h-3 w-3 mr-1" />
+                                {labelName}
+                              </span>
+                            ))}
                           </span>
                         )}
                       </p>

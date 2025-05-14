@@ -24,8 +24,8 @@ export interface Campaign {
   successfulDeliveries: number;
   failedDeliveries: number;
   unsubscribes: number;
-  campaignLabelName?: string;
-  labelId?: string;
+  campaignLabelNames?: string[];
+  labelIds?: string[];
 }
 
 export interface Pagination {

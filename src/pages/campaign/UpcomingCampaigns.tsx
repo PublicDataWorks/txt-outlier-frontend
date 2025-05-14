@@ -89,14 +89,20 @@ export default function UpcomingCampaigns() {
           console.error('Error fetching Missive labels:', error);
         }
         
+        const labelLookup: Record<string, string> = {};
+        missiveLabels.forEach(label => {
+          if (label.id && label.name) {
+            labelLookup[label.id] = label.name;
+          }
+        });
+        
         for (const campaign of campaigns) {
           initialEdited[campaign.id] = { ...campaign };
           
-          if (campaign.labelId) {
-            const label = missiveLabels.find(label => label.id === campaign.labelId);
-            if (label?.name) {
-              initialEdited[campaign.id].campaignLabelName = label.name;
-            }
+          if (campaign.labelIds && campaign.labelIds.length > 0) {
+            initialEdited[campaign.id].campaignLabelNames = campaign.labelIds
+              .map(labelId => labelLookup[labelId])
+              .filter(Boolean) as string[];
           }
         }
         setEditedCampaigns(initialEdited);
@@ -429,10 +435,14 @@ export default function UpcomingCampaigns() {
                               new Date(editedCampaign.runAt * 1000),
                               'h:mm a',
                             )}
-                            {editedCampaign.campaignLabelName && (
+                            {editedCampaign.campaignLabelNames && editedCampaign.campaignLabelNames.length > 0 && (
                               <>
-                                <Tag className="h-3 w-3 ml-2 mr-1" />
-                                {editedCampaign.campaignLabelName}
+                                {editedCampaign.campaignLabelNames.map((labelName, idx) => (
+                                  <span key={idx} className="ml-2 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                    <Tag className="h-3 w-3 mr-1" />
+                                    {labelName}
+                                  </span>
+                                ))}
                               </>
                             )}
                           </div>
