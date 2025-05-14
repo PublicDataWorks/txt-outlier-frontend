@@ -49,11 +49,18 @@ const CampaignHistory = () => {
       }
 
       const updatedCampaigns = campaigns.map(campaign => {
-        if (campaign.labelId) {
-          const label = missiveLabels.find(label => label.id === campaign.labelId);
-          if (label?.name) {
-            return { ...campaign, campaignLabelName: label.name };
-          }
+        if (campaign.labelIds && campaign.labelIds.length > 0) {
+          const labelNames = campaign.labelIds
+            .map(labelId => {
+              const label = missiveLabels.find(l => l.id === labelId);
+              return label?.name;
+            })
+            .filter(Boolean) as string[];
+          
+          return {
+            ...campaign, 
+            campaignLabelNames: labelNames
+          };
         }
         return campaign;
       });
@@ -168,10 +175,14 @@ const CampaignHistory = () => {
                       </h4>
                       <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
-                        {campaign.campaignLabelName && (
-                          <span className="ml-2 inline-flex items-center">
-                            <Tag className="h-3 w-3 mr-1" />
-                            {campaign.campaignLabelName}
+                        {campaign.campaignLabelNames && campaign.campaignLabelNames.length > 0 && (
+                          <span className="ml-2 inline-flex items-center flex-wrap gap-1">
+                            {campaign.campaignLabelNames.map((labelName, idx) => (
+                              <span key={idx} className="inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                <Tag className="h-3 w-3 mr-1" />
+                                {labelName}
+                              </span>
+                            ))}
                           </span>
                         )}
                       </p>

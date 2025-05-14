@@ -92,11 +92,15 @@ export default function UpcomingCampaigns() {
         for (const campaign of campaigns) {
           initialEdited[campaign.id] = { ...campaign };
           
-          if (campaign.labelId) {
-            const label = missiveLabels.find(label => label.id === campaign.labelId);
-            if (label?.name) {
-              initialEdited[campaign.id].campaignLabelName = label.name;
-            }
+          if (campaign.labelIds && campaign.labelIds.length > 0) {
+            const labelNames = campaign.labelIds
+              .map(labelId => {
+                const label = missiveLabels.find(l => l.id === labelId);
+                return label?.name;
+              })
+              .filter(Boolean) as string[];
+            
+            initialEdited[campaign.id].campaignLabelNames = labelNames;
           }
         }
         setEditedCampaigns(initialEdited);
@@ -429,10 +433,14 @@ export default function UpcomingCampaigns() {
                               new Date(editedCampaign.runAt * 1000),
                               'h:mm a',
                             )}
-                            {editedCampaign.campaignLabelName && (
+                            {editedCampaign.campaignLabelNames && editedCampaign.campaignLabelNames.length > 0 && (
                               <>
-                                <Tag className="h-3 w-3 ml-2 mr-1" />
-                                {editedCampaign.campaignLabelName}
+                                {editedCampaign.campaignLabelNames.map((labelName, idx) => (
+                                  <span key={idx} className="ml-2 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                    <Tag className="h-3 w-3 mr-1" />
+                                    {labelName}
+                                  </span>
+                                ))}
                               </>
                             )}
                           </div>
