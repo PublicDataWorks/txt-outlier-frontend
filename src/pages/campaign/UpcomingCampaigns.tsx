@@ -436,14 +436,14 @@ export default function UpcomingCampaigns() {
                               'h:mm a',
                             )}
                             {editedCampaign.campaignLabelNames && editedCampaign.campaignLabelNames.length > 0 && (
-                              <>
+                              <div className="w-full mt-1 flex">
                                 {editedCampaign.campaignLabelNames.map((labelName, idx) => (
-                                  <span key={idx} className="ml-2 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                  <span key={idx} className="mr-1 mb-1 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
                                     <Tag className="h-3 w-3 mr-1" />
                                     {labelName}
                                   </span>
                                 ))}
-                              </>
+                              </div>
                             )}
                           </div>
                           <div className="mt-1 flex flex-wrap">

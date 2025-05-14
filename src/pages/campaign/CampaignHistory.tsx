@@ -180,14 +180,14 @@ const CampaignHistory = () => {
                       <p className="text-sm text-muted-foreground">
                         {unixTimestampInSecondToDate(campaign.runAt)}
                         {campaign.campaignLabelNames && campaign.campaignLabelNames.length > 0 && (
-                          <span className="ml-2 inline-flex items-center flex-wrap gap-1">
+                          <div className="w-full mt-1 flex">
                             {campaign.campaignLabelNames.map((labelName, idx) => (
-                              <span key={idx} className="inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                              <span key={idx} className="mr-1 mb-1 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
                                 <Tag className="h-3 w-3 mr-1" />
                                 {labelName}
                               </span>
                             ))}
-                          </span>
+                          </div>
                         )}
                       </p>
                       <p className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">
