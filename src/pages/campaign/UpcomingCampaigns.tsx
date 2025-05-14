@@ -424,7 +424,7 @@ export default function UpcomingCampaigns() {
                           <h4 className="font-medium text-primary text-sm">
                             {editedCampaign.title || 'Untitled Campaign'}
                           </h4>
-                          <div className="flex items-center text-xs text-muted-foreground mt-1">
+                          <div className="flex items-center text-xs text-muted-foreground mt-1 flex-wrap">
                             <Calendar className="h-3 w-3 mr-1" />
                             {format(
                               new Date(editedCampaign.runAt * 1000),
@@ -438,7 +438,7 @@ export default function UpcomingCampaigns() {
                             {editedCampaign.campaignLabelNames && editedCampaign.campaignLabelNames.length > 0 && (
                               <div className="w-full mt-1 flex">
                                 {editedCampaign.campaignLabelNames.map((labelName, idx) => (
-                                  <span key={idx} className="mr-1 mb-1 inline-flex items-center bg-muted rounded px-1.5 py-0.5 text-xs">
+                                  <span key={idx} className="mr-1 mb-1 inline-flex items-center bg-muted rounded pr-1.5 py-0.5 text-xs">
                                     <Tag className="h-3 w-3 mr-1" />
                                     {labelName}
                                   </span>
