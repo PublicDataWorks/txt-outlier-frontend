@@ -89,18 +89,20 @@ export default function UpcomingCampaigns() {
           console.error('Error fetching Missive labels:', error);
         }
         
+        const labelLookup: Record<string, string> = {};
+        missiveLabels.forEach(label => {
+          if (label.id && label.name) {
+            labelLookup[label.id] = label.name;
+          }
+        });
+        
         for (const campaign of campaigns) {
           initialEdited[campaign.id] = { ...campaign };
           
           if (campaign.labelIds && campaign.labelIds.length > 0) {
-            const labelNames = campaign.labelIds
-              .map(labelId => {
-                const label = missiveLabels.find(l => l.id === labelId);
-                return label?.name;
-              })
+            initialEdited[campaign.id].campaignLabelNames = campaign.labelIds
+              .map(labelId => labelLookup[labelId])
               .filter(Boolean) as string[];
-            
-            initialEdited[campaign.id].campaignLabelNames = labelNames;
           }
         }
         setEditedCampaigns(initialEdited);

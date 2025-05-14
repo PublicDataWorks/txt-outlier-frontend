@@ -47,14 +47,18 @@ const CampaignHistory = () => {
       } catch (error) {
         console.error('Error fetching Missive labels:', error);
       }
+      
+      const labelLookup: Record<string, string> = {};
+      missiveLabels.forEach(label => {
+        if (label.id && label.name) {
+          labelLookup[label.id] = label.name;
+        }
+      });
 
       const updatedCampaigns = campaigns.map(campaign => {
         if (campaign.labelIds && campaign.labelIds.length > 0) {
           const labelNames = campaign.labelIds
-            .map(labelId => {
-              const label = missiveLabels.find(l => l.id === labelId);
-              return label?.name;
-            })
+            .map(labelId => labelLookup[labelId])
             .filter(Boolean) as string[];
           
           return {
