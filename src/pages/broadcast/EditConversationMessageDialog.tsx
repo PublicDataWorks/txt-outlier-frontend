@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -11,13 +11,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
-  message: z.string().min(1, 'Message is required'),
+  message: z.string().min(1, 'Message is required')
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -31,18 +31,15 @@ interface EditConversationMessageDialogProps {
 const EditConversationMessageDialog = ({
   title,
   message,
-  onSave,
+  onSave
 }: EditConversationMessageDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
   const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      message: message,
-    },
+    defaultValues: { message }
   });
 
   const onSubmit = async (data: FormData) => {
@@ -54,12 +51,16 @@ const EditConversationMessageDialog = ({
     } catch {
       toast({
         title: 'Error',
-        description: 'Failed to save message. Please try again!',
+        description: 'Failed to save message. Please try again!'
       });
     } finally {
       setIsSaving(false);
     }
   };
+
+  useEffect(() => {
+    form.reset({ message });
+  }, [message, form]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
