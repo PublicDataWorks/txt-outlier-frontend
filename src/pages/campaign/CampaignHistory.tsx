@@ -247,9 +247,9 @@ const CampaignHistory = () => {
                           )}
                           <div>
                             <p className="font-medium">
-                              Delivered successfully:
+                              Responded:
                             </p>
-                            {campaign.successfulDeliveries}
+                            {campaign.totalReplies}
                           </div>
                           <div>
                             <p className="font-medium">Failed to deliver:</p>

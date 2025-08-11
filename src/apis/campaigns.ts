@@ -21,9 +21,9 @@ export interface Campaign {
   runAt: number;
   firstMessageCount: number;
   secondMessageCount: number;
-  successfulDeliveries: number;
   failedDeliveries: number;
   unsubscribes: number;
+  totalReplies: number;
   campaignLabelNames?: string[];
   labelIds?: string[];
 }

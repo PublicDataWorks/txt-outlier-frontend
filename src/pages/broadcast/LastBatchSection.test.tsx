@@ -45,7 +45,7 @@ describe('LastBatchSection', () => {
           runAt: 1619827200,
           totalFirstSent: 100,
           totalSecondSent: 50,
-          successfullyDelivered: 95,
+          totalReplies: 15,
           failedDelivered: 5,
           totalUnsubscribed: 10,
         },
@@ -76,9 +76,8 @@ describe('LastBatchSection', () => {
     expect(await screen.findByText('Follow-up messages sent')).toBeInTheDocument();
     expect(await screen.findByText('50')).toBeInTheDocument();
 
-    // Check delivery statistics
-    expect(await screen.findByText('Delivered successfully')).toBeInTheDocument();
-    expect(await screen.findByText('95')).toBeInTheDocument();
+    expect(await screen.findByText('Responded')).toBeInTheDocument();
+    expect(await screen.findByText('15')).toBeInTheDocument();
     expect(await screen.findByText('Failed to deliver')).toBeInTheDocument();
     expect(await screen.findByText('5')).toBeInTheDocument();
     expect(await screen.findByText('Unsubscribes')).toBeInTheDocument();
@@ -93,7 +92,7 @@ describe('LastBatchSection', () => {
           runAt: 1619827200,
           totalFirstSent: 1000000,
           totalSecondSent: 500000,
-          successfullyDelivered: 950000,
+          totalReplies: 150000,
           failedDelivered: 50000,
           totalUnsubscribed: 10000,
         },
@@ -110,7 +109,7 @@ describe('LastBatchSection', () => {
 
     expect(await screen.findByText('1,000,000')).toBeInTheDocument();
     expect(await screen.findByText('500,000')).toBeInTheDocument();
-    expect(await screen.findByText('950,000')).toBeInTheDocument();
+    expect(await screen.findByText('150,000')).toBeInTheDocument();
     expect(await screen.findByText('50,000')).toBeInTheDocument();
     expect(await screen.findByText('10,000')).toBeInTheDocument();
   });
