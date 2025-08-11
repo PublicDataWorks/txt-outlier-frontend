@@ -24,6 +24,7 @@ export interface Campaign {
   successfulDeliveries: number;
   failedDeliveries: number;
   unsubscribes: number;
+  totalReplies: number;
   campaignLabelNames?: string[];
   labelIds?: string[];
 }

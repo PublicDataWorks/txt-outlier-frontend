@@ -66,9 +66,9 @@ const LastBatchSection = () => {
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>Delivered successfully</span>
+            <span>Responded</span>
             <span className="font-medium tabular-nums text-green-600 dark:text-green-400">
-              {lastBatch?.successfullyDelivered.toLocaleString()}
+              {lastBatch?.totalReplies.toLocaleString()}
             </span>
           </div>
           <div className="flex justify-between text-sm">
