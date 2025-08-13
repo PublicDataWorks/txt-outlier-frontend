@@ -19,9 +19,9 @@ export interface PastBroadcast {
   runAt: number;
   totalFirstSent: number;
   totalSecondSent: number;
+  successfullyDelivered: number;
   failedDelivered: number;
   totalUnsubscribed: number;
-  totalReplies: number;
 }
 
 export interface BroadcastsResponse {
