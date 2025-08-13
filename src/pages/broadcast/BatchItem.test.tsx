@@ -12,7 +12,7 @@ const broadcastMock = {
   runAt: 1619827200,
   totalFirstSent: 150,
   totalSecondSent: 75,
-  totalReplies: 25,
+  successfullyDelivered: 140,
   failedDelivered: 10,
   totalUnsubscribed: 5,
 };
