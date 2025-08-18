@@ -268,7 +268,7 @@ export default function UpcomingCampaigns() {
           )}
         >
           {segmentName}
-          {segment.since && segment.since > 0 && (
+          {segment.since != null && segment.since > 0 && (
             <span className="ml-1 text-muted-foreground text-[10px]">
               since {format(new Date(segment!.since * 1000), 'MMM d, yyyy')}
             </span>
@@ -301,7 +301,7 @@ export default function UpcomingCampaigns() {
               )}
             >
               {segmentMap.get(baseSegment.id) || baseSegment.id}
-              {baseSegment.since && baseSegment.since > 0 && (
+              {baseSegment.since != null && baseSegment.since > 0 && (
                 <span className="ml-1 text-muted-foreground text-[10px]">
                   since{' '}
                   {format(new Date(baseSegment.since * 1000), 'MMM d, yyyy')}
@@ -313,7 +313,7 @@ export default function UpcomingCampaigns() {
                   {filters.map((filter, idx) => (
                     <span key={idx} className="mr-1">
                       {segmentMap.get(filter.id) || filter.id}
-                      {filter.since && filter.since > 0 && (
+                      {filter.since != null && filter.since > 0 && (
                         <span className="ml-1 text-muted-foreground text-[10px]">
                           since{' '}
                           {format(new Date(filter.since * 1000), 'MMM d, yyyy')}
